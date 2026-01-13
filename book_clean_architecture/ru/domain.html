@@ -36,6 +36,8 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             margin: 1.5rem 0;
         }
+        .hljs-comment, .hljs-quote { color: #475569 !important; font-weight: 700 !important; font-style: normal !important; }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
     </style>
 </head>
 <body class="flex bg-slate-50">
@@ -65,7 +67,8 @@
             <a href="application.html" class="nav-link ">⚙️ Application Layer</a>
             <a href="infrastructure.html" class="nav-link ">🔧 Infrastructure Layer</a>
             <a href="presentation.html" class="nav-link ">🌐 Presentation Layer</a>
-            
+            <a href="middleware.html" class="nav-link ">🔌 Middleware</a>
+
             <div class="nav-section">Принципы и паттерны</div>
             <a href="solid.html" class="nav-link ">📐 SOLID принципы</a>
             <a href="invariants.html" class="nav-link ">🛡️ Инварианты</a>
@@ -162,44 +165,52 @@ def register(email: Email):
                 Избегайте <strong>Anemic Domain Model</strong> (анемичной модели) — когда классы содержат только данные, а логика в сервисах.
             </p>
             
-            <div class="mb-6">
-                <h4 class="font-bold text-gray-900 mb-2">Пример богатой модели (Rich Model):</h4>
-<pre><code class="language-python">import uuid
-from dataclasses import dataclass, field
-from datetime import datetime
-from typing import List
-
-# Value Object
-@dataclass(frozen=True)
-class Money:
-    amount: float
-    currency: str = "USD"
-
-@dataclass
-class OrderLine:
-    product_id: str
-    quantity: int
-    price: Money
-
-# Entity
+            <div class="grid md:grid-cols-2 gap-4 items-stretch mb-6">
+                <!-- Bad Example -->
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex flex-col h-full">
+                    <h4 class="font-bold text-red-800 mb-2 flex items-center gap-2">
+                        <span>❌</span> Anemic Model (Плохо)
+                    </h4>
+                    <div class="flex-grow">
+<pre class="m-0 p-3 text-xs h-full"><code class="language-python"># Entity — просто мешок с данными
 @dataclass
 class Order:
-    id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    lines: List[OrderLine] = field(default_factory=list)
+    items: list
     status: str = "NEW"
-    
-    # ⭐️ БИЗНЕС ЛОГИКА ЖИВЕТ ЗДЕСЬ, А НЕ В СЕРВИСЕ
-    def add_line(self, product_id: str, quantity: int, price: Money):
-        if self.status != "NEW":
-            raise DomainException("Нельзя менять оформленный заказ")
-        
-        self.lines.append(OrderLine(product_id, quantity, price))
+    total_price: int = 0
 
-    def mark_paid(self):
-        if not self.lines:
-            raise DomainException("Нельзя оплатить пустой заказ")
-        self.status = "PAID"
+# Вся логика "живет" в сервисах
+def add_item(order, item):
+    order.items.append(item)
+    # Ручное управление состоянием снаружи
+    if order.total_price > 1000:
+        order.status = "VIP"
 </code></pre>
+                    </div>
+                </div>
+
+                <!-- Good Example -->
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 flex flex-col h-full">
+                    <h4 class="font-bold text-green-800 mb-2 flex items-center gap-2">
+                        <span>✅</span> Rich Model (Хорошо)
+                    </h4>
+                    <div class="flex-grow">
+<pre class="m-0 p-3 text-xs h-full"><code class="language-python"># Entity защищает свои инварианты
+@dataclass
+class Order:
+    _items: list
+    _status: str = "NEW"
+    
+    # Логика инкапсулирована внутри
+    def add_item(self, item):
+        if self._status != "NEW":
+            raise ValueError("Order closed")
+            
+        self._items.append(item)
+        self._recalculate_total()
+</code></pre>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -207,14 +218,41 @@ class Order:
         <section class="mb-16">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">3. Domain Services</h2>
             <p class="mb-4 text-gray-700">
-                Когда логика затрагивает несколько сущностей, и не принадлежит ни одной из них.
-                Например: перевод денег между счетами (не принадлежит ни счету А, ни счету Б).
+                Иногда возникают бизнес-операции, которые нельзя "приписать" ни к одной конкретной сущности.
+                Если вы запихнете эту логику в сущность, она станет громоздкой или будет знать слишком много о других классах (High Coupling).
             </p>
-            <pre><code class="language-python">class CurrencyConverter:
-    # Это Domain Service
-    def convert(self, money: Money, target_currency: str) -> Money:
-        # Логика конвертации
-        ...</code></pre>
+            
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                <h3 class="font-bold text-blue-800">Разница с Application Service:</h3>
+                <p class="text-sm text-blue-900 mt-1">
+                    🔍 <strong>Domain Service:</strong> Чистая бизнес-логика (расчеты, правила). Не ходит в базу, не отправляет API-запросы. Живет в Domain Layer.<br>
+                    🛠️ <strong>Application Service:</strong> Оркестратор. Загружает данные из БД, вызывает Domain Service, сохраняет результат.
+                </p>
+            </div>
+
+            <h4 class="font-bold text-gray-900 mb-2">Пример: Перевод средств</h4>
+            <p class="mb-4 text-gray-700 text-sm">
+                Банальный <code>account_a.transfer_to(account_b)</code> заставляет Account A зависеть от Account B. 
+                Лучше выделить это взаимодействие.
+            </p>
+
+            <pre><code class="language-python">class FundsTransferService:
+    def transfer(self, source: Account, destination: Account, amount: Money):
+        '''
+        Сервис не сохраняет данные сам! Он только меняет состояние объектов в памяти.
+        Сохранением займется Application Layer через UoW.
+        '''
+        
+        # 1. Проверяем правила, касающиеся ОБОИХ аккаунтов (инварианты процесса)
+        if source.currency != destination.currency:
+            raise DomainException("Валюты кошельков не совпадают")
+            
+        # 2. Выполняем действия
+        source.withdraw(amount)   # Внутри Account проверяет свой баланс
+        destination.deposit(amount)
+        
+        # Готово! Объекты изменены.
+</code></pre>
         </section>
 
         <!-- Section 5: Domain Events -->
@@ -223,6 +261,12 @@ class Order:
             <p class="mb-4 text-gray-700">
                 Это сайд-эффекты бизнес-логики. Сущность не должна сама отправлять email или писать в лог. Она должна сказать: "Это случилось".
                 События — это простые DTO.
+            </p>
+            <p class="mb-4 text-gray-700">
+                Доменные события живут в очереди фактов агрегата. Даже если, например, `OrderPaid` может произойти лишь один раз, агрегат добавляет его в список событий, потому что за одну транзакцию может сработать несколько инвариантов, и инфраструктурный слой должен последовательно обработать каждый факт до сохранения.
+            </p>
+            <p class="mb-4 text-gray-700">
+                Сущности вообще не занимаются отправкой писем или логов, они просто накапливают события. После транзакции Application-слой или UnitOfWork перебирает этот список, диспатчит уведомления, пишет логи и очищает очередь. Так бизнес-логика остается чистой, а все побочные эффекты последовательно попадают в обработку.
             </p>
             <pre><code class="language-python">@dataclass(frozen=True)
 class OrderPaid: # Имя в прошедшем времени!

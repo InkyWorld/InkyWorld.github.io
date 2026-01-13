@@ -33,7 +33,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             margin: 1.5rem 0;
         }
-        .code-comment { color: #475569; font-style: italic; font-weight: 600; }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
         .code-keyword { color: #c084fc; font-weight: bold; } 
         .code-class { color: #fbbf24; font-weight: bold; }   
         .code-func { color: #60a5fa; font-weight: bold; }    
@@ -79,7 +79,8 @@
             <a href="application.html" class="nav-link ">⚙️ Application Layer</a>
             <a href="infrastructure.html" class="nav-link active">🔧 Infrastructure Layer</a>
             <a href="presentation.html" class="nav-link ">🌐 Presentation Layer</a>
-            
+            <a href="middleware.html" class="nav-link ">🔌 Middleware</a>
+
             <div class="nav-section">Принципы и паттерны</div>
             <a href="solid.html" class="nav-link ">📐 SOLID принципы</a>
             <a href="invariants.html" class="nav-link ">🛡️ Инварианты</a>
@@ -183,6 +184,11 @@
                 <li>Если вы измените структуру таблицы, вы не должны ломать бизнес-логику.</li>
             </ul>
 
+            <p class="text-sm text-gray-600">
+                В примере ниже `OrderModel` — это <em>«грязная» модель</em>, то есть конструкция, которую принимают и ждут библиотеки БД. Она хранит простой `String`, `Float`, `JSON`, и потому что она связана с инфраструктурой, мы можем менять структуру таблиц без риска разорвать бизнес-логику в Domain Layer.
+                Domain Entity, напротив, хранит Value Objects, инварианты и поведение, и она живёт независимо от SQL.
+            </p>
+
 <pre><code class="language-python"><span class="code-comment"># infrastructure/db/models.py</span>
 <span class="code-keyword">from</span> sqlalchemy <span class="code-keyword">import</span> Column, String, Float, Boolean, JSON
 <span class="code-keyword">from</span> sqlalchemy.orm <span class="code-keyword">import</span> declarative_base
@@ -245,6 +251,9 @@ Base = declarative_base()
                 <summary>Вариант 2: С поддержкой Unit of Work (Рекомендуемый)</summary>
                 <div>
                     <p class="text-sm mb-4">Здесь мы делаем `flush()` вместо `commit()`. Коммит будет делать класс UnitOfWork. Это позволяет изменить заказ и списать баланс пользователя в <strong>одной атомарной транзакции</strong>.</p>
+                    <p class="text-sm text-gray-600">
+                        UnitOfWork — это объект, который открывает транзакцию, прокидывает одну сессию во все репозитории и в конце делает `commit()` или `rollback()` в зависимости от результата. Вариант 2 показывает, как репозиторий «кладёт» данные и позволяет UoW решить, когда фиксировать их целиком. Смотри реализацию `SqlAlchemyUnitOfWork` ниже — он создаёт `SqlAlchemyOrderRepository(self.session)` в `__enter__`, а Use Case пишет `with self.uow:` и вызывает `self.uow.orders.save(order)`; коммит происходит автоматом после выхода из блока.
+                    </p>
 <pre><code class="language-python"><span class="code-keyword">class</span> <span class="code-class">SqlAlchemyOrderRepository</span>(OrderRepository):
     <span class="code-keyword">def</span> <span class="code-func">__init__</span>(self, session):
         self.session = session
@@ -280,6 +289,12 @@ Base = declarative_base()
                 <summary>Вариант 3: С Кэшированием (Decorator Pattern)</summary>
                 <div>
                     <p class="text-sm mb-4">Мы не меняем код SQL репозитория. Мы оборачиваем его в декоратор. Принцип Open/Closed.</p>
+                    <p class="text-sm text-gray-600">
+                        Декоратор — это объект, реализующий тот же интерфейс, что и декорируемый репозиторий. Он держит ссылку на оригинал (`decoratee`) и делегирует ему запросы, добавляя свои шаги до или после. В примере ниже сначала идёт сохранение в БД, потом декоратор инвалидирует кэш.
+                    </p>
+                    <p class="text-sm text-gray-600">
+                        В реальном приложении `decoratee` — это наш Postgres-репозиторий (вариант 2), а `CachedOrderRepository` просто оборачивает его. Мы сохраняем все операции в основной репозиторий, а после этого сбрасываем и обновляем кеш, не переписывая базовые методы.
+                    </p>
 <pre><code class="language-python"><span class="code-keyword">import</span> json
 
 <span class="code-keyword">class</span> <span class="code-class">CachedOrderRepository</span>(OrderRepository):

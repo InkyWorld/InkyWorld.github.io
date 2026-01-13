@@ -40,6 +40,8 @@
         .code-class { color: #fbbf24; font-weight: bold; }   
         .code-func { color: #60a5fa; font-weight: bold; }    
         .code-str { color: #a3e635; }                        
+        .hljs-comment, .hljs-quote { color: #475569 !important; font-weight: 700 !important; font-style: normal !important; }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
     </style>
 </head>
 <body class="flex bg-slate-50">
@@ -70,7 +72,8 @@
             <a href="application.html" class="nav-link ">⚙️ Application Layer</a>
             <a href="infrastructure.html" class="nav-link ">🔧 Infrastructure Layer</a>
             <a href="presentation.html" class="nav-link ">🌐 Presentation Layer</a>
-            
+            <a href="middleware.html" class="nav-link ">🔌 Middleware</a>
+
             <div class="nav-section">Принципы и паттерны</div>
             <a href="solid.html" class="nav-link ">📐 SOLID принципы</a>
             <a href="invariants.html" class="nav-link ">🛡️ Инварианты</a>
@@ -134,21 +137,62 @@ class ResourceNotFound(AppException):
     pass
 </code></pre>
 
-        <h3 class="font-bold text-lg mt-6">2. Централизованная обработка</h3>
-        <p>В Presentation Layer (FastAPI) мы ловим доменные исключения и конвертируем их в HTTP ответы. Use Case не должен возвращать `JSONResponse`!</p>
+        <h3 class="font-bold text-lg mt-6">2. Централизованная обработка (Exception Handlers)</h3>
+        <p>Домен выбрасывает `DomainError`. Presentation Layer должен перехватить их и превратить в понятные HTTP-ответы. Use Case не должен возвращать `JSONResponse`!</p>
 
-        <pre><code class="language-python"># main.py
-@app.exception_handler(DomainException)
-async def domain_exception_handler(request, exc: DomainException):
+        <pre><code class="language-python"># presentation/exception_handlers.py
+from fastapi import Request
+from fastapi.responses import JSONResponse
+from starlette import status
+
+# Импортируем ошибки домена
+from domain.exceptions import (
+    DomainError,
+    InvalidEmailError,
+    OrderNotFoundError,
+    OrderAlreadyPaidError,
+    InsufficientFundsError
+)
+
+
+# Маппинг: Ошибка домена → HTTP статус + код
+ERROR_MAPPING = {
+    InvalidEmailError: (status.HTTP_400_BAD_REQUEST, "INVALID_EMAIL"),
+    OrderNotFoundError: (status.HTTP_404_NOT_FOUND, "ORDER_NOT_FOUND"),
+    OrderAlreadyPaidError: (status.HTTP_409_CONFLICT, "ORDER_ALREADY_PAID"),
+    InsufficientFundsError: (status.HTTP_402_PAYMENT_REQUIRED, "INSUFFICIENT_FUNDS"),
+}
+
+
+async def domain_error_handler(request: Request, exc: DomainError):
+    """
+    Глобальный обработчик всех ошибок домена.
+    Превращает DomainError в красивый JSON-ответ.
+    """
+    # Ищем маппинг для конкретного типа ошибки
+    error_type = type(exc)
+    status_code, error_code = ERROR_MAPPING.get(
+        error_type, 
+        (status.HTTP_400_BAD_REQUEST, "DOMAIN_ERROR")
+    )
+    
     return JSONResponse(
-        status_code=400,
-        content={"error": "BusinessViolation", "message": str(exc)}
+        status_code=status_code,
+        content={
+            "error": error_type.__name__,
+            "detail": str(exc),
+            "code": error_code
+        }
     )
 
-@app.exception_handler(ResourceNotFound)
-async def not_found_handler(request, exc: ResourceNotFound):
-    return JSONResponse(status_code=404, content={"message": "Not Found"})
+
+# Регистрация в main.py:
+# app.add_exception_handler(DomainError, domain_error_handler)
 </code></pre>
+
+        <div class="bg-green-50 p-4 rounded border border-green-200 mt-4 text-sm text-green-900">
+            <strong>Преимущество:</strong> Домен остается чистым. Он не знает про HTTP-коды. А мы можем легко менять формат ответов, не трогая бизнес-логику.
+        </div>
 
         <h3 class="font-bold text-lg mt-6">3. Result Pattern (Alternative)</h3>
         <p>Вместо `raise` можно возвращать результат "Успех или Ошибка" (монада Result). Это популярно в функциональном программировании и Rust.</p>

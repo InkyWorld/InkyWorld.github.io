@@ -32,7 +32,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             margin: 1.5rem 0;
         }
-        .code-comment { color: #475569; font-style: italic; font-weight: 600; }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
         .code-keyword { color: #c084fc; font-weight: bold; } 
         .code-class { color: #fbbf24; font-weight: bold; }   
         .code-func { color: #60a5fa; font-weight: bold; }    
@@ -65,6 +65,7 @@
             <div class="px-4 mb-4">
                 <div class="flex gap-2 text-xs font-bold text-slate-400">
                     <a href="presentation.html" class="text-blue-400 font-bold">RU</a>
+            <a href="middleware.html" class="nav-link ">🔌 Middleware</a>
                     <span class="text-slate-600">|</span>
                     <a href="../en/presentation.html" class="hover:text-white transition">EN</a>
                     <span class="text-slate-600">|</span>
@@ -80,7 +81,8 @@
             <a href="application.html" class="nav-link ">⚙️ Application Layer</a>
             <a href="infrastructure.html" class="nav-link ">🔧 Infrastructure Layer</a>
             <a href="presentation.html" class="nav-link active">🌐 Presentation Layer</a>
-            
+            <a href="middleware.html" class="nav-link ">🔌 Middleware</a>
+
             <div class="nav-section">Принципы и паттерны</div>
             <a href="solid.html" class="nav-link ">📐 SOLID принципы</a>
             <a href="invariants.html" class="nav-link ">🛡️ Инварианты</a>
@@ -132,21 +134,8 @@
         </header>
 
         <!-- ASCII DIAGRAM -->
-        <div class="ascii-art">
-    ┌───────────────────────────────────────────────────────────────────────┐
-    │                      PRESENTATION LAYER                               │
-    │                                                                       │
-    │   ┌─────────────┐     ┌─────────────┐    ┌─────────────────────────┐  │
-    │   │   Router    │───▶│  Controller │───▶│  Response Serializer    │  │
-    │   │ (endpoints) │     │  (handler)  │    │  (DTO → JSON)           │  │
-    │   └─────────────┘     └──────┬──────┘    └─────────────────────────┘  │
-    │                             │                                         │
-    │                             ▼                                         │
-    │                    ┌─────────────────┐                                │
-    │                    │   Use Case      │  ◀── Application Layer        │
-    │                    │   (execute)     │                                │
-    │                    └─────────────────┘                                │
-    └──────────────────────────────────────────────────────────────────────┘
+        <div class="mb-8" aria-label="Presentation Layer flow">
+            <img src="../assets/presentation-layer-diagram.svg" alt="Presentation Layer diagram" class="w-full h-auto rounded-lg shadow-lg" />
         </div>
 
         <!-- ANATOMY -->
@@ -376,65 +365,7 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
 </code></pre>
         </section>
 
-        <!-- EXCEPTION HANDLING -->
-        <section id="exceptions" class="mb-16">
-            <h2 class="text-2xl font-bold mb-4">3. Обработка Ошибок (Exception Handlers)</h2>
-            <p>Домен выбрасывает `DomainError`. Presentation Layer должен перехватить их и превратить в понятные HTTP-ответы.</p>
 
-<pre><code class="language-python"><span class="code-comment"># presentation/exception_handlers.py</span>
-<span class="code-keyword">from</span> fastapi <span class="code-keyword">import</span> Request
-<span class="code-keyword">from</span> fastapi.responses <span class="code-keyword">import</span> JSONResponse
-<span class="code-keyword">from</span> starlette <span class="code-keyword">import</span> status
-
-<span class="code-comment"># Импортируем ошибки домена</span>
-<span class="code-keyword">from</span> domain.exceptions <span class="code-keyword">import</span> (
-    DomainError,
-    InvalidEmailError,
-    OrderNotFoundError,
-    OrderAlreadyPaidError,
-    InsufficientFundsError
-)
-
-
-<span class="code-comment"># Маппинг: Ошибка домена → HTTP статус + код</span>
-ERROR_MAPPING = {
-    InvalidEmailError: (status.HTTP_400_BAD_REQUEST, <span class="code-str">"INVALID_EMAIL"</span>),
-    OrderNotFoundError: (status.HTTP_404_NOT_FOUND, <span class="code-str">"ORDER_NOT_FOUND"</span>),
-    OrderAlreadyPaidError: (status.HTTP_409_CONFLICT, <span class="code-str">"ORDER_ALREADY_PAID"</span>),
-    InsufficientFundsError: (status.HTTP_402_PAYMENT_REQUIRED, <span class="code-str">"INSUFFICIENT_FUNDS"</span>),
-}
-
-
-<span class="code-keyword">async def</span> <span class="code-func">domain_error_handler</span>(request: Request, exc: DomainError):
-    <span class="code-str">"""
-    Глобальный обработчик всех ошибок домена.
-    Превращает DomainError в красивый JSON-ответ.
-    """</span>
-    <span class="code-comment"># Ищем маппинг для конкретного типа ошибки</span>
-    error_type = type(exc)
-    status_code, error_code = ERROR_MAPPING.get(
-        error_type, 
-        (status.HTTP_400_BAD_REQUEST, <span class="code-str">"DOMAIN_ERROR"</span>)
-    )
-    
-    <span class="code-keyword">return</span> JSONResponse(
-        status_code=status_code,
-        content={
-            <span class="code-str">"error"</span>: error_type.__name__,
-            <span class="code-str">"detail"</span>: str(exc),
-            <span class="code-str">"code"</span>: error_code
-        }
-    )
-
-
-<span class="code-comment"># Регистрация в main.py:</span>
-<span class="code-comment"># app.add_exception_handler(DomainError, domain_error_handler)</span>
-</code></pre>
-
-            <div class="bg-green-50 p-4 rounded border border-green-200 mt-4 text-sm text-green-900">
-                <strong>Преимущество:</strong> Домен остается чистым. Он не знает про HTTP-коды. А мы можем легко менять формат ответов, не трогая бизнес-логику.
-            </div>
-        </section>
 
         <!-- DEPENDENCIES -->
         <section id="deps" class="card bg-gray-50 border-gray-200">

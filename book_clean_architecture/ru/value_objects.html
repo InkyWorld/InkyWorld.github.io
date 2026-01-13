@@ -40,6 +40,8 @@
         .code-class { color: #fbbf24; font-weight: bold; }   
         .code-func { color: #60a5fa; font-weight: bold; }    
         .code-str { color: #a3e635; }                        
+        .hljs-comment, .hljs-quote { color: #475569 !important; font-weight: 700 !important; font-style: normal !important; }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
     </style>
 </head>
 <body class="flex bg-slate-50">
@@ -70,7 +72,8 @@
             <a href="application.html" class="nav-link ">⚙️ Application Layer</a>
             <a href="infrastructure.html" class="nav-link ">🔧 Infrastructure Layer</a>
             <a href="presentation.html" class="nav-link ">🌐 Presentation Layer</a>
-            
+            <a href="middleware.html" class="nav-link ">🔌 Middleware</a>
+
             <div class="nav-section">Принципы и паттерны</div>
             <a href="solid.html" class="nav-link ">📐 SOLID принципы</a>
             <a href="invariants.html" class="nav-link ">🛡️ Инварианты</a>
@@ -143,6 +146,47 @@ class Money:
         return Money(self.amount + other.amount, self.currency)
 </code></pre>
         
+        <h3 class="font-bold text-lg mt-8 mb-4">Почему не просто строки? (Primitive Obsession)</h3>
+        <p>Использование примитивов (string, int) вместо объектов приводит к дублированию валидации.</p>
+        
+        <div class="grid md:grid-cols-2 gap-4 items-stretch">
+            <!-- Bad Example -->
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex flex-col h-full">
+                <h4 class="font-bold text-red-800 mb-2 flex items-center gap-2">
+                    <span>❌</span> Primitive Obsession
+                </h4>
+                <div class="flex-grow">
+<pre class="m-0 p-3 text-xs h-full"><code class="language-python"># Email передается просто как строка
+# Проверки размазаны по коду
+def register(email: str):
+    if "@" not in email:
+        raise ValueError("Invalid")
+    ...
+</code></pre>
+                </div>
+            </div>
+
+            <!-- Good Example -->
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 flex flex-col h-full">
+                <h4 class="font-bold text-green-800 mb-2 flex items-center gap-2">
+                    <span>✅</span> Value Object
+                </h4>
+                <div class="flex-grow">
+<pre class="m-0 p-3 text-xs h-full"><code class="language-python">@dataclass(frozen=True)
+class Email:
+    value: str
+
+    def __post_init__(self):
+        if "@" not in self.value:
+            raise ValueError("Некорректный email")
+
+def register(email: Email):
+    ...
+</code></pre>
+                </div>
+            </div>
+        </div>
+
             </div>
         </section>
     

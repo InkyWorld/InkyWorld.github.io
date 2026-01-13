@@ -33,7 +33,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             margin: 1.5rem 0;
         }
-        .code-comment { color: #475569; font-style: italic; font-weight: 600; }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
         .code-keyword { color: #c084fc; font-weight: bold; } 
         .code-class { color: #fbbf24; font-weight: bold; }   
         .code-func { color: #60a5fa; font-weight: bold; }    
@@ -78,7 +78,8 @@
             <a href="application.html" class="nav-link active">⚙️ Application Layer</a>
             <a href="infrastructure.html" class="nav-link ">🔧 Infrastructure Layer</a>
             <a href="presentation.html" class="nav-link ">🌐 Presentation Layer</a>
-            
+            <a href="middleware.html" class="nav-link ">🔌 Middleware</a>
+
             <div class="nav-section">Принципы и паттерны</div>
             <a href="solid.html" class="nav-link ">📐 SOLID принципы</a>
             <a href="invariants.html" class="nav-link ">🛡️ Инварианты</a>
@@ -217,6 +218,26 @@
     total_amount: float
     status: str
 </code></pre>
+
+        <div class="bg-indigo-50 border-l-4 border-indigo-400 p-4 my-6 text-sm rounded">
+            <strong>Query DTO на практике:</strong>
+            <p>Query ничего не меняет — он просто читает данные и возвращает их в удобной форме.</p>
+        </div>
+        <pre><code class="language-python"><span class="code-comment"># application/dto.py (Query part)</span>
+<span class="code-dec">@dataclass(frozen=True)</span>
+<span class="code-keyword">class</span> <span class="code-class">GetOrderQuery</span>:
+    order_id: str
+
+<span class="code-comment"># Output DTO для ответа на Query</span>
+<span class="code-dec">@dataclass(frozen=True)</span>
+<span class="code-keyword">class</span> <span class="code-class">OrderDetailsDTO</span>:
+    order_id: str
+    customer_email: str
+    items: List[dict]
+    total_amount: float
+</code></pre>
+
+        <p class="text-sm text-gray-600">Query Use Case получает `GetOrderQuery`, читает сущность через порт и возвращает `OrderDetailsDTO`, не изменяя состояние.</p>
         </section>
 
         <!-- 2. PORTS -->
