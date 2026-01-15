@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLID in Python - Clean Architecture Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
+        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
+        
+        .sidebar { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-right: 1px solid #334155; height: 100vh; position: fixed; width: 18rem; overflow-y: auto; z-index: 50; }
+        .sidebar-title { color: #f8fafc; }
+        .sidebar-subtitle { color: #60a5fa; }
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; }
+        .nav-link { display: block; padding: 0.6rem 1rem; color: #94a3b8; font-weight: 500; font-size: 0.875rem; transition: all 0.2s; border-left: 3px solid transparent; text-decoration: none; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: #f1f5f9; border-left-color: #475569; }
+        .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border-left-color: #3b82f6; }
+
+        /* Code Styling */
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin: 1.5rem 0;
+        }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
+        .code-keyword { color: #c084fc; font-weight: bold; } 
+        .code-class { color: #fbbf24; font-weight: bold; }   
+        .code-func { color: #60a5fa; font-weight: bold; }    
+        .code-str { color: #a3e635; }                        
+        .code-dec { color: #f472b6; } 
+
+        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 0.5rem; }
+        .badge-srp { background-color: #dbeafe; color: #1e40af; }
+        .badge-ocp { background-color: #dcfce7; color: #166534; }
+        .badge-lsp { background-color: #fef9c3; color: #854d0e; }
+        .badge-isp { background-color: #f3e8ff; color: #6b21a8; }
+        .badge-dip { background-color: #fee2e2; color: #991b1b; }
+        
+        .card { background: white; border-radius: 1rem; padding: 2.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; border: 1px solid #e2e8f0; }
+        
+        .mistake-box { background: #fff5f5; border-left: 4px solid #f87171; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; }
+        .mistake-title { font-weight: bold; color: #991b1b; font-size: 0.9rem; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body class="flex bg-slate-50">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hidden md:block">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold sidebar-title">Clean Architecture</h1>
+            <span class="sidebar-subtitle text-sm">Author: Alex | InkyWorld</span>
+        </div>
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400">
+                    <a href="../ru/solid.html" class="hover:text-white transition">RU</a>
+                    <span class="text-slate-600">|</span>
+                    <a href="solid.html" class="text-blue-400 font-bold">EN</a>
+                    <span class="text-slate-600">|</span>
+                    <a href="../ua/solid.html" class="hover:text-white transition">UA</a>
+                </div>
+            </div>
+
+            <div class="nav-section">Fundamentals</div>
+            <a href="index.html" class="nav-link">📘 Introduction</a>
+            <a href="solid.html" class="nav-link active">📐 SOLID Principles</a>
+            <a href="project_structure.html" class="nav-link">🧭 Project Structure (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Architecture Layers</div>
+            <a href="domain.html" class="nav-link">🎯 Domain Layer</a>
+            <a href="application.html" class="nav-link">⚙️ Application Layer</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Infrastructure Layer</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
+
+            <div class="nav-section">Tactical DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
+            <a href="invariants.html" class="nav-link">🛡️ Invariants</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
+            <a href="specification.html" class="nav-link">📋 Specification</a>
+            <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
+            <a href="policies.html" class="nav-link">📜 Policies</a>
+            <a href="versioning.html" class="nav-link">🔄 Versioning</a>
+
+            <div class="nav-section">Strategic DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Bounded Contexts</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS & Distributed Systems</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS & ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Reliability & Security</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
+            <a href="concurrency.html" class="nav-link">🛑 Concurrency & Migrations</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
+
+            <div class="nav-section">Quality & Practice</div>
+            <a href="testing.html" class="nav-link">🧪 Testing</a>
+            <a href="overengineering.html" class="nav-link">🛑 Overengineering</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
+            <a href="projects.html" class="nav-link">🚀 Mini-Projects</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Antipatterns</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">About</div>
+            <a href="afterword.html" class="nav-link">👋 Afterword</a>
+        </nav>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-5xl mx-auto">
+        
+        <header class="mb-12 pb-6 border-b border-gray-200">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="bg-gray-800 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Theory</span>
+            </div>
+            <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">SOLID Principles in Python</h1>
+            <p class="text-xl text-gray-500 mt-4 font-light">
+                Five laws of flexible code. If your code is hard to test or change—you've likely violated one of them.
+            </p>
+        </header>
+
+        <!-- S - SRP -->
+        <section id="srp" class="mb-16">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-6xl font-black text-blue-100">S</span>
+                <h2 class="text-3xl font-bold text-gray-900">Single Responsibility Principle (SRP)</h2>
+            </div>
+            <p class="text-lg font-bold text-blue-800 bg-blue-50 p-4 rounded-lg inline-block">
+                "A class should have only one reason to change."
+            </p>
+            <p class="mt-4">Don't confuse this: it doesn't mean a class should have only one method. It means a class should be responsible for <strong>one business function</strong>.</p>
+
+            <div class="grid md:grid-cols-2 gap-6 mt-6">
+                <!-- Bad Code -->
+                <div class="bg-red-50 border border-red-100 rounded-lg overflow-hidden">
+                    <div class="bg-red-100 px-4 py-2 font-bold text-red-800 text-sm">❌ God Object (Antipattern)</div>
+                    <pre class="m-0 border-0 rounded-none text-xs">
+<span class="code-keyword">class</span> <span class="code-class">Report</span>:
+    <span class="code-keyword">def</span> <span class="code-func">calculate_stats</span>(self):
+        <span class="code-comment"># Calculation logic</span>
+        pass
+
+    <span class="code-keyword">def</span> <span class="code-func">generate_pdf</span>(self):
+        <span class="code-comment"># PDF rendering logic</span>
+        pass
+
+    <span class="code-keyword">def</span> <span class="code-func">save_to_file</span>(self):
+        <span class="code-comment"># File system operations</span>
+        pass</pre>
+                </div>
+                
+                <!-- Good Code -->
+                <div class="bg-green-50 border border-green-100 rounded-lg overflow-hidden">
+                    <div class="bg-green-100 px-4 py-2 font-bold text-green-800 text-sm">✅ Separation of Concerns</div>
+                    <pre class="m-0 border-0 rounded-none text-xs">
+<span class="code-keyword">class</span> <span class="code-class">StatsCalculator</span>:
+    <span class="code-keyword">def</span> <span class="code-func">calculate</span>(self): ...
+
+<span class="code-keyword">class</span> <span class="code-class">PdfReporter</span>:
+    <span class="code-keyword">def</span> <span class="code-func">render</span>(self, data): ...
+
+<span class="code-keyword">class</span> <span class="code-class">FileSystemSaver</span>:
+    <span class="code-keyword">def</span> <span class="code-func">save</span>(self, content): ...</pre>
+                </div>
+            </div>
+
+            <div class="mistake-box">
+                <div class="mistake-title">Beginner Mistake:</div>
+                <p class="text-sm">Thinking that SRP prohibits adding helper methods. <br>
+                <em>Example:</em> A `get_full_name()` method in a `User` class is fine. But `save_to_db()` violates SRP, as it mixes data with persistence (storage).</p>
+            </div>
+        </section>
+
+        <!-- O - OCP -->
+        <section id="ocp" class="mb-16">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-6xl font-black text-green-100">O</span>
+                <h2 class="text-3xl font-bold text-gray-900">Open/Closed Principle (OCP)</h2>
+            </div>
+            <p class="text-lg font-bold text-green-800 bg-green-50 p-4 rounded-lg inline-block">
+                "Software entities should be open for extension, but closed for modification."
+            </p>
+            <p class="mt-4">You should be able to add a new feature (e.g., a new payment method) <strong>without changing existing working code</strong>.</p>
+
+            <div class="mt-6">
+                <h3 class="font-bold mb-2 text-red-600">❌ Bad: If/Elif Hell</h3>
+<pre><code class="language-python"><span class="code-keyword">class</span> <span class="code-class">PaymentProcessor</span>:
+    <span class="code-keyword">def</span> <span class="code-func">pay</span>(self, amount, type):
+        <span class="code-keyword">if</span> type == <span class="code-str">"credit_card"</span>:
+            <span class="code-comment"># Credit card logic</span>
+            pass
+        <span class="code-keyword">elif</span> type == <span class="code-str">"paypal"</span>:
+            <span class="code-comment"># PayPal logic</span>
+            pass
+        <span class="code-comment"># To add Bitcoin, you'd have to modify this file and risk breaking cards!</span>
+</code></pre>
+
+                <h3 class="font-bold mb-2 mt-4 text-green-600">✅ Good: Polymorphism</h3>
+<pre><code class="language-python"><span class="code-keyword">from</span> abc <span class="code-keyword">import</span> ABC, abstractmethod
+
+<span class="code-keyword">class</span> <span class="code-class">PaymentMethod</span>(ABC):
+    <span class="code-dec">@abstractmethod</span>
+    <span class="code-keyword">def</span> <span class="code-func">pay</span>(self, amount):
+        <span class="code-keyword">pass</span>
+
+<span class="code-keyword">class</span> <span class="code-class">CreditCard</span>(PaymentMethod):
+    <span class="code-keyword">def</span> <span class="code-func">pay</span>(self, amount): ...
+
+<span class="code-keyword">class</span> <span class="code-class">PayPal</span>(PaymentMethod):
+    <span class="code-keyword">def</span> <span class="code-func">pay</span>(self, amount): ...
+
+<span class="code-comment"># Adding Bitcoin doesn't touch existing code:</span>
+<span class="code-keyword">class</span> <span class="code-class">Bitcoin</span>(PaymentMethod):
+    <span class="code-keyword">def</span> <span class="code-func">pay</span>(self, amount): ...
+</code></pre>
+            </div>
+        </section>
+
+        <!-- L - LSP -->
+        <section id="lsp" class="mb-16">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-6xl font-black text-yellow-100">L</span>
+                <h2 class="text-3xl font-bold text-gray-900">Liskov Substitution Principle (LSP)</h2>
+            </div>
+            <p class="text-lg font-bold text-yellow-800 bg-yellow-50 p-4 rounded-lg inline-block">
+                "Subtypes must be substitutable for their base types."
+            </p>
+            <p class="mt-4">If your code expects an `Animal`, it should work correctly with both `Dog` and `Cat`. If `Dog` suddenly throws an error where `Animal` shouldn't—that's a violation.</p>
+
+            <div class="card bg-gray-50 border-gray-200 mt-6">
+                <h3 class="font-bold mb-2">Classic Example: Square is not a Rectangle</h3>
+                <p class="text-sm mb-4">In geometry, a square is a special case of a rectangle. In programming—no! If you change the width of a rectangle, the height stays the same. For a square—it doesn't.</p>
+                
+                <h3 class="font-bold mb-2 mt-4">Real-World Example: ReadOnly Repository</h3>
+                <pre><code class="language-python"><span class="code-keyword">class</span> <span class="code-class">Repository</span>:
+    <span class="code-keyword">def</span> <span class="code-func">save</span>(self, obj): ...
+
+<span class="code-keyword">class</span> <span class="code-class">ReadOnlyRepository</span>(Repository):
+    <span class="code-keyword">def</span> <span class="code-func">save</span>(self, obj):
+        <span class="code-comment"># LSP VIOLATION!</span>
+        <span class="code-comment"># Client code expects save() to save, but gets an error.</span>
+        <span class="code-keyword">raise</span> NotImplementedError(<span class="code-str">"I'm read-only"</span>)
+</code></pre>
+                <div class="mt-2 text-sm text-green-700 font-bold">Solution: Split the hierarchy into `Readable` and `Writable`.</div>
+            </div>
+        </section>
+
+        <!-- I - ISP -->
+        <section id="isp" class="mb-16">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-6xl font-black text-purple-100">I</span>
+                <h2 class="text-3xl font-bold text-gray-900">Interface Segregation Principle (ISP)</h2>
+            </div>
+            <p class="text-lg font-bold text-purple-800 bg-purple-50 p-4 rounded-lg inline-block">
+                "Clients should not be forced to depend on methods they don't use."
+            </p>
+            <p class="mt-4">Many small interfaces are better than one huge (Fat Interface).</p>
+
+            <div class="grid md:grid-cols-2 gap-6 mt-6">
+                <!-- Bad Code -->
+                <div>
+                    <h3 class="font-bold text-red-600 mb-2">❌ Fat Interface</h3>
+                    <pre class="text-xs">
+<span class="code-keyword">class</span> <span class="code-class">SmartDevice</span>(ABC):
+    <span class="code-keyword">def</span> <span class="code-func">print</span>(self): ...
+    <span class="code-keyword">def</span> <span class="code-func">scan</span>(self): ...
+    <span class="code-keyword">def</span> <span class="code-func">fax</span>(self): ...
+
+<span class="code-comment"># If I have an old printer, 
+# I still have to implement 
+# scan() and fax(), even if empty.</span>
+</pre>
+                </div>
+                <!-- Good Code -->
+                <div>
+                    <h3 class="font-bold text-green-600 mb-2">✅ Segregated Interfaces</h3>
+                    <pre class="text-xs">
+<span class="code-keyword">class</span> <span class="code-class">Printer</span>(ABC):
+    <span class="code-keyword">def</span> <span class="code-func">print</span>(self): ...
+
+<span class="code-keyword">class</span> <span class="code-class">Scanner</span>(ABC):
+    <span class="code-keyword">def</span> <span class="code-func">scan</span>(self): ...
+
+<span class="code-comment"># Now you can build an MFP via 
+# multiple inheritance</span>
+<span class="code-keyword">class</span> <span class="code-class">MFP</span>(Printer, Scanner): ...
+</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- D - DIP -->
+        <section id="dip" class="mb-16">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-6xl font-black text-red-100">D</span>
+                <h2 class="text-3xl font-bold text-gray-900">Dependency Inversion Principle (DIP)</h2>
+            </div>
+            <p class="text-lg font-bold text-red-800 bg-red-50 p-4 rounded-lg inline-block">
+                "Depend on abstractions, not on concretions."
+            </p>
+            <p class="mt-4">This is the foundation of Clean Architecture. Use Case shouldn't know about Postgres. It should know about an abstract `Repository`.</p>
+
+<pre><code class="language-python"><span class="code-comment"># ❌ DIP VIOLATION: Hard dependency</span>
+<span class="code-keyword">class</span> <span class="code-class">CreateOrderService</span>:
+    <span class="code-keyword">def</span> <span class="code-func">__init__</span>(self):
+        <span class="code-comment"># We've nailed down a specific SQL database implementation!</span>
+        <span class="code-comment"># Now this code can't be tested without a real database.</span>
+        self.repo = SqlAlchemyRepository() 
+
+<span class="code-comment"># ✅ DIP COMPLIANCE: Dependency injection</span>
+<span class="code-keyword">class</span> <span class="code-class">CreateOrderService</span>:
+    <span class="code-comment"># We ask for "some repository" (Abstraction)</span>
+    <span class="code-keyword">def</span> <span class="code-func">__init__</span>(self, repo: OrderRepository):
+        self.repo = repo
+</code></pre>
+
+            <div class="mistake-box">
+                <div class="mistake-title">Beginner Mistake:</div>
+                <p class="text-sm">Using `import` inside methods or functions to "hide" the dependency. This doesn't solve the problem—the dependency is still hard-coded, it's just harder to find.</p>
+            </div>
+        </section>
+
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="index.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Back</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 📘 Introduction</span>
+                </a>
+                <a href="project_structure.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Next</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🧭 Project Structure (DDD) &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

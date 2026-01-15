@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Ball of Mud - Clean Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
+        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
+        .sidebar { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-right: 1px solid #334155; height: 100vh; position: fixed; width: 18rem; overflow-y: auto; z-index: 50; }
+        .sidebar-title { color: #f8fafc; }
+        .sidebar-subtitle { color: #60a5fa; }
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; }
+        .nav-link { display: block; padding: 0.6rem 1rem; color: #94a3b8; font-weight: 500; font-size: 0.875rem; transition: all 0.2s; border-left: 3px solid transparent; text-decoration: none; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: #f1f5f9; border-left-color: #475569; }
+        .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border-left-color: #3b82f6; }
+    </style>
+</head>
+<body class="flex bg-slate-50">
+    <aside class="sidebar hidden md:block">
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400">
+                    <a href="big_ball_of_mud.html" class="text-blue-400 font-bold">RU</a>
+                    <span class="text-slate-600">|</span>
+                    <a href="../en/big_ball_of_mud.html" class="hover:text-white transition">EN</a>
+                    <span class="text-slate-600">|</span>
+                    <a href="../ua/big_ball_of_mud.html" class="hover:text-white transition">UA</a>
+                </div>
+            </div>
+
+            <div class="nav-section">Fundamentals</div>
+            <a href="index.html" class="nav-link">📘 Introduction</a>
+            <a href="solid.html" class="nav-link">📐 SOLID Principles</a>
+            <a href="project_structure.html" class="nav-link">🧭 Project Structure (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Architecture Layers</div>
+            <a href="domain.html" class="nav-link">🎯 Domain Layer</a>
+            <a href="application.html" class="nav-link">⚙️ Application Layer</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Infrastructure Layer</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
+
+            <div class="nav-section">Tactical DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
+            <a href="invariants.html" class="nav-link">🛡️ Invariants</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
+            <a href="specification.html" class="nav-link">📋 Specification</a>
+            <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
+            <a href="policies.html" class="nav-link">📜 Policies</a>
+            <a href="versioning.html" class="nav-link">🔄 Versioning</a>
+
+            <div class="nav-section">Strategic DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Bounded Contexts</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
+            <a href="big_ball_of_mud.html" class="nav-link active">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS & Distributed Systems</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS & ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Reliability & Security</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
+            <a href="concurrency.html" class="nav-link">🛑 Concurrency & Migrations</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
+
+            <div class="nav-section">Quality & Practice</div>
+            <a href="testing.html" class="nav-link">🧪 Testing</a>
+            <a href="overengineering.html" class="nav-link">🛑 Overengineering</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
+            <a href="projects.html" class="nav-link">🚀 Mini Projects</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Antipatterns</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">About</div>
+            <a href="afterword.html" class="nav-link">👋 Afterword</a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-4xl mx-auto">
+        <header class="mb-12 pb-8 border-b border-gray-200">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Big Ball of Mud</h1>
+            <p class="text-xl text-gray-600">Antipattern or reality? How not to drown in the swamp.</p>
+        </header>
+
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">What is it?</h2>
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-4 mb-6">
+                <strong>Definition:</strong> "A chaotically designed, sprawling system where no one knows exactly how everything is interconnected. Spaghetti code at architectural scale."
+            </div>
+            
+            <p class="mb-4">In DDD, "Big Ball of Mud" is not a swear word, but <strong>an acknowledgment of fact</strong>. Sometimes you inherit legacy that\'s impossible to refactor quickly.</p>
+            
+            <h3 class="text-xl font-bold mt-8 mb-4">What to do with it? (DDD Strategy)</h3>
+            <ol class="list-decimal pl-6 space-y-2 mb-6">
+                <li><strong>Don\'t try to "fix everything at once".</strong> This will kill the project.</li>
+                <li><strong>Draw boundaries (Draw a line).</strong> Acknowledge: "Inside this old module is chaos. We know this".</li>
+                <li><strong>Isolation.</strong> Build new features OUTSIDE this swamp, communicating through a strict <strong>ACL (Anti-Corruption Layer)</strong>.</li>
+            </ol>
+
+            <h3 class="text-xl font-bold mt-8 mb-4">Real-life Example</h3>
+            <p>You have a PHP 5.3 monolith with global variables. Business asks for a new loyalty program.</p>
+            <p class="mb-2"><strong>Bad path:</strong> Embed loyalty inside the monolith because "it has order data".</p>
+            <p><strong>DDD path:</strong> Create a "Loyalty" microservice (clean code). Set up event synchronization from the monolith. Put a fence around the dirt.</p>
+        </section>
+
+        <div class="mt-12 pt-8 border-t border-gray-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="strategic_integration.html" class="text-blue-600 font-bold hover:underline">&larr; Integration Styles</a>
+                <a href="bounded_context.html" class="text-blue-600 font-bold hover:underline">Bounded Contexts &rarr;</a>
+            </div>
+        </div>
+
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="strategic_integration.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Previous</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🌐 Strategic Integration</span>
+                </a>
+                <a href="boundaries_first.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Next</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🧠 Boundaries First &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

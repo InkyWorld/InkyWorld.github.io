@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aggregates - Clean Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
+        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
+        
+        .sidebar { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-right: 1px solid #334155; height: 100vh; position: fixed; width: 18rem; overflow-y: auto; z-index: 50; }
+        .sidebar-title { color: #f8fafc; }
+        .sidebar-subtitle { color: #60a5fa; }
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; }
+        .nav-link { display: block; padding: 0.6rem 1rem; color: #94a3b8; font-weight: 500; font-size: 0.875rem; transition: all 0.2s; border-left: 3px solid transparent; text-decoration: none; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: #f1f5f9; border-left-color: #475569; }
+        .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border-left-color: #3b82f6; }
+
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin: 1.5rem 0;
+        }
+        .code-keyword { color: #c084fc; font-weight: bold; } 
+        .code-class { color: #fbbf24; font-weight: bold; }   
+        .code-func { color: #60a5fa; font-weight: bold; }    
+        .code-str { color: #a3e635; }                        
+        .hljs-comment, .hljs-quote { color: #475569 !important; font-weight: 700 !important; font-style: normal !important; }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
+    </style>
+</head>
+<body class="flex bg-slate-50">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hidden md:block">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold sidebar-title">Clean Architecture</h1>
+            <span class="sidebar-subtitle text-sm">Author: Alex | InkyWorld</span>
+        </div>
+        
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400">
+                    <a href="../ru/aggregates.html" class="hover:text-white transition">RU</a>
+                    <span class="text-slate-600">|</span>
+                    <a href="aggregates.html" class="text-blue-400 font-bold">EN</a>
+                    <span class="text-slate-600">|</span>
+                    <a href="../ua/aggregates.html" class="hover:text-white transition">UA</a>
+                </div>
+            </div>
+
+            <div class="nav-section">Fundamentals</div>
+            <a href="index.html" class="nav-link">📘 Introduction</a>
+            <a href="solid.html" class="nav-link">📐 SOLID Principles</a>
+            <a href="project_structure.html" class="nav-link">🧭 Project Structure (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Architecture Layers</div>
+            <a href="domain.html" class="nav-link">🎯 Domain Layer</a>
+            <a href="application.html" class="nav-link">⚙️ Application Layer</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Infrastructure Layer</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
+
+            <div class="nav-section">Tactical DDD</div>
+            <a href="aggregates.html" class="nav-link active">📦 Aggregates</a>
+            <a href="invariants.html" class="nav-link">🛡️ Invariants</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
+            <a href="specification.html" class="nav-link">📋 Specification</a>
+            <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
+            <a href="policies.html" class="nav-link">📜 Policies</a>
+            <a href="versioning.html" class="nav-link">🔄 Versioning</a>
+
+            <div class="nav-section">Strategic DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Bounded Contexts</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS and Distributed Systems</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS and ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Reliability and Security</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
+            <a href="concurrency.html" class="nav-link">🛑 Concurrency & Migrations</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
+
+            <div class="nav-section">Quality and Practice</div>
+            <a href="testing.html" class="nav-link">🧪 Testing</a>
+            <a href="overengineering.html" class="nav-link">🛑 Overengineering</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
+            <a href="projects.html" class="nav-link">🚀 Mini-Projects</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Antipatterns</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">About</div>
+            <a href="afterword.html" class="nav-link">👋 Afterword</a>
+        </nav>
+
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-4xl mx-auto">
+        <header class="mb-12 pb-8 border-b border-gray-200">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Aggregates</h1>
+            <p class="text-xl text-gray-600">Transactional boundaries and data consistency.</p>
+        </header>
+
+        <section class="mb-16">
+            <div class="prose prose-slate max-w-none text-gray-700">
+                <p class="mb-6 text-lg">
+                    <strong>Aggregate</strong> is a cluster of objects (Entities and Value Objects) that we treat as a single unit for data changes.
+                    It's a <strong>consistency boundary</strong>.
+                </p>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-8">
+                    <h3 class="font-bold text-blue-800">Analogy: Automobile</h3>
+                    <p class="text-sm text-blue-900 mt-2">
+                        Imagine a car. It has wheels, an engine. <br>
+                        Wheels are entities, but they don't make sense without the car. You can't just "tweak" a wheel without considering the state of the entire car (is it moving or parked). <br>
+                        <strong>Car</strong> is the Aggregate Root. All commands (accelerate, turn) go through the steering wheel (Root), not directly to the wheels.
+                    </p>
+                </div>
+
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Core Rules</h2>
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white p-5 rounded border shadow-sm">
+                        <div class="font-bold text-lg mb-2">1. Single Root</div>
+                        <p class="text-sm text-gray-600">
+                            An aggregate has only one main entity — the Root. The external world (other services, repositories) can reference <strong>only</strong> the Root. Internal objects (OrderLine) are hidden from the outside.
+                        </p>
+                    </div>
+                    <div class="bg-white p-5 rounded border shadow-sm">
+                        <div class="font-bold text-lg mb-2">2. Transactional Boundary</div>
+                        <p class="text-sm text-gray-600">
+                            A single database transaction should modify only <strong>one instance</strong> of an aggregate. If you need to modify two aggregates — use Eventual Consistency (Domain Events).
+                        </p>
+                    </div>
+                    <div class="bg-white p-5 rounded border shadow-sm">
+                        <div class="font-bold text-lg mb-2">3. References by ID</div>
+                        <p class="text-sm text-gray-600">
+                            Aggregates reference each other only by ID (`customer_id`), not direct object references (`self.customer`). This allows easy separation in memory and database.
+                        </p>
+                    </div>
+                    <div class="bg-white p-5 rounded border shadow-sm">
+                        <div class="font-bold text-lg mb-2">4. Invariants</div>
+                        <p class="text-sm text-gray-600">
+                            The Root is responsible for validity of the entire object graph. For example, order `Total` should always equal the sum of `LineItems`. You can't add a line without updating Total.
+                        </p>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Code Example</h2>
+                <div class="mb-4">
+                    <p class="mb-2">Note: `OrderLine` is created and lives only inside `Order`.</p>
+                </div>
+                
+                <pre><code class="language-python">@dataclass
+class OrderLine:
+    sku: str
+    price: Money
+    qty: int
+
+@dataclass
+class Order(AggregateRoot): # Root
+    id: str
+    _lines: List[OrderLine] = field(default_factory=list) # Internal entities
+    _status: str = "NEW"
+    total_amount: Money = Money(0, "USD")
+
+    def add_product(self, sku: str, price: Money, qty: int):
+        '''
+        Root's method - the only entry point for changes.
+        Guarantees that order total is always up-to-date.
+        '''
+        if self._status != "NEW":
+            raise DomainException("Cannot modify a confirmed order")
+
+        # Logic for working with internal entities
+        existing_line = next((l for l in self._lines if l.sku == sku), None)
+        if existing_line:
+            existing_line.qty += qty
+        else:
+            self._lines.append(OrderLine(sku, price, qty))
+        
+        # Recalculate invariant (total amount)
+        self._recalculate_total()
+
+    def _recalculate_total(self):
+        # Private method, called on any change
+        self.total_amount = sum(l.price * l.qty for l in self._lines)</code></pre>
+        
+                <h3 class="font-bold text-lg mt-8 mb-4">Common Mistake: Huge Aggregates</h3>
+                <p>Don't make an aggregate "for the entire world". If a `Shop` aggregate contains a list of all `Product` (thousands of objects), then:</p>
+                <ol class="list-decimal list-inside mb-4">
+                    <li>Loading Shop will load all 10,000 products into memory.</li>
+                    <li>Two managers cannot simultaneously edit different products, as they lock the same Shop (Optimistic Lock error).</li>
+                </ol>
+                <p class="font-bold text-green-700">Solution:</p>
+                <p>Split into smaller aggregates. `Shop` separately, `Product` separately. Reference by ID.</p>
+
+            </div>
+        </section>
+
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="middleware.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Previous</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🔌 Middleware</span>
+                </a>
+                <a href="invariants.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Next</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🛡️ Invariants &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

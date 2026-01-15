@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Middleware - Clean Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
+        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
+        
+        .sidebar { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-right: 1px solid #334155; height: 100vh; position: fixed; width: 18rem; overflow-y: auto; z-index: 50; }
+        .sidebar-title { color: #f8fafc; }
+        .sidebar-subtitle { color: #60a5fa; }
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; }
+        .nav-link { display: block; padding: 0.6rem 1rem; color: #94a3b8; font-weight: 500; font-size: 0.875rem; transition: all 0.2s; border-left: 3px solid transparent; text-decoration: none; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: #f1f5f9; border-left-color: #475569; }
+        .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border-left-color: #3b82f6; }
+
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin: 1.5rem 0;
+        }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
+        .code-keyword { color: #c084fc; font-weight: bold; } 
+        .code-class { color: #fbbf24; font-weight: bold; }   
+        .code-func { color: #60a5fa; font-weight: bold; }    
+        .code-str { color: #a3e635; }                        
+        
+        .card { background: white; border-radius: 1rem; padding: 2.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; border: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body class="flex bg-slate-50">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hidden md:block">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold sidebar-title">Clean Architecture</h1>
+            <span class="sidebar-subtitle text-sm">Author: Alex | InkyWorld</span>
+        </div>
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400">
+                    <a href="middleware.html" class="text-blue-400 font-bold">RU</a>
+                    <span class="text-slate-600">|</span>
+                    <a href="../en/middleware.html" class="hover:text-white transition">EN</a>
+                    <span class="text-slate-600">|</span>
+                    <a href="../ua/middleware.html" class="hover:text-white transition">UA</a>
+                </div>
+            </div>
+
+            <div class="nav-section">Fundamentals</div>
+            <a href="index.html" class="nav-link">📘 Introduction</a>
+            <a href="solid.html" class="nav-link">📐 SOLID Principles</a>
+            <a href="project_structure.html" class="nav-link">🧭 Project Structure (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Architecture Layers</div>
+            <a href="domain.html" class="nav-link">🎯 Domain Layer</a>
+            <a href="application.html" class="nav-link">⚙️ Application Layer</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Infrastructure Layer</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link active">🔌 Middleware</a>
+
+            <div class="nav-section">Tactical DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
+            <a href="invariants.html" class="nav-link">🛡️ Invariants</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
+            <a href="specification.html" class="nav-link">📋 Specification</a>
+            <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
+            <a href="policies.html" class="nav-link">📜 Policies</a>
+            <a href="versioning.html" class="nav-link">🔄 Versioning</a>
+
+            <div class="nav-section">Strategic DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Bounded Contexts</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS & Distributed Systems</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS & ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Reliability & Security</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
+            <a href="concurrency.html" class="nav-link">🛑 Concurrency & Migrations</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
+
+            <div class="nav-section">Quality & Practice</div>
+            <a href="testing.html" class="nav-link">🧪 Testing</a>
+            <a href="overengineering.html" class="nav-link">🛑 Overengineering</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
+            <a href="projects.html" class="nav-link">🚀 Mini Projects</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Antipatterns</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">About</div>
+            <a href="afterword.html" class="nav-link">👋 Afterword</a>
+        </nav>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-5xl mx-auto">
+        
+        <header id="intro" class="mb-12 pb-6 border-b border-gray-200">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Infrastructure / Presentation</span>
+                <span class="text-gray-400 text-sm font-mono">FastAPI Middleware / Django Middleware</span>
+            </div>
+            <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Middleware</h1>
+            <p class="text-xl text-gray-500 mt-4 font-light">
+                Invisible guardians of your application. Code that "embraces" every request.
+            </p>
+        </header>
+
+        <!-- CONCEPT -->
+        <section class="card">
+            <h2 class="text-2xl font-bold mb-6">How It Works (Onion Model)</h2>
+            <p>Imagine Middleware as layers of an onion around your application. A request must pass through all layers to reach the core (Router → Controller → Use Case). The response flies back through the same layers.</p>
+            
+            <div class="bg-indigo-50 p-6 rounded-lg border border-indigo-100 mb-6 font-mono text-sm leading-relaxed">
+                <span class="text-gray-400">Request ➡</span> [ Middleware 1 ] ➡ [ Middleware 2 ] ➡ <strong class="text-indigo-700">[ ROUTER / APP ]</strong><br>
+                <span class="text-gray-400">Response ⬅</span> [ Middleware 1 ] ⬅ [ Middleware 2 ] ⬅ <strong class="text-indigo-700">[ RESULT ]</strong>
+            </div>
+
+            <h3 class="font-bold text-lg mb-4">What's It Used For? (Cross-Cutting Concerns)</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <ul class="space-y-2 list-disc list-inside text-gray-700">
+                    <li><strong>Authentication:</strong> Who is this user? (JWT, Session)</li>
+                    <li><strong>Context Management:</strong> Request ID, DB session, user_id.</li>
+                    <li><strong>Logging:</strong> Recording all incoming requests and errors.</li>
+                    <li><strong>CORS:</strong> Allowing access from the frontend.</li>
+                </ul>
+                <ul class="space-y-2 list-disc list-inside text-gray-700">
+                    <li><strong>GZIP / Compression:</strong> Compressing responses.</li>
+                    <li><strong>Rate Limiting:</strong> Protection from spam (N requests per minute).</li>
+                    <li><strong>Error Handling:</strong> Global exception handling (500 Server Error).</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- IMPLEMENTATION -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">Implementation Examples</h2>
+
+            <div class="mb-8">
+                <h3 class="text-xl font-bold mb-3 text-indigo-600">1. Logging and Timing</h3>
+                <p>Classic example: measure how long a request takes to process.</p>
+                <pre><code class="language-python">import time
+from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi import Request
+
+class TimingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        start_time = time.time()
+        
+        # 🟢 BEFORE processing the request
+        print(f"Start: {request.method} {request.url}")
+        
+        # Passing control further down the chain
+        response = await call_next(request)
+        
+        # 🔴 AFTER processing
+        process_time = time.time() - start_time
+        response.headers["X-Process-Time"] = str(process_time)
+        print(f"Done in {process_time:.4f}s")
+        
+        return response
+</code></pre>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-xl font-bold mb-3 text-indigo-600">2. Context Management (Correlation ID)</h3>
+                <p>To track logs of the same request, it's useful to assign it a unique ID (Request ID) and pass it to the context.</p>
+                <pre><code class="language-python">import uuid
+from contextvars import ContextVar
+
+# Global variable for Request ID
+request_id_ctx: ContextVar[str] = ContextVar("request_id", default=None)
+
+class RequestIDMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Generate ID
+        req_id = str(uuid.uuid4())
+        
+        # Set in ContextVar
+        token = request_id_ctx.set(req_id)
+        
+        try:
+            # Execute request
+            response = await call_next(request)
+            # Return to client so they can provide this ID to support
+            response.headers["X-Request-ID"] = req_id
+            return response
+        finally:
+            # Clear context (important for asyncio!)
+            request_id_ctx.reset(token)
+</code></pre>
+            </div>
+        </section>
+
+        <!-- WARNINGS -->
+        <section class="card bg-red-50 border-red-200">
+            <h2 class="text-2xl font-bold text-red-900 mb-4">⛔ Middleware Dangers</h2>
+            <ul class="space-y-4 text-red-800">
+                <li class="flex gap-3">
+                    <span class="text-2xl">🐢</span>
+                    <div>
+                        <strong>Performance Impact:</strong> Middleware runs for <em>every</em> request. If you add database queries or heavy computations here, <em>everything</em> slows down.
+                    </div>
+                </li>
+                <li class="flex gap-3">
+                    <span class="text-2xl">🙈</span>
+                    <div>
+                        <strong>Hidden Logic:</strong> Don't hide business logic in Middleware. Magic changes to request data can drive other developers crazy.
+                    </div>
+                </li>
+                <li class="flex gap-3">
+                    <span class="text-2xl">🕸️</span>
+                    <div>
+                        <strong>Order Matters:</strong> Middleware is executed in order. If <code>AuthMiddleware</code> comes after <code>BusinessMiddleware</code>, business logic runs for unauthorized users!
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="presentation.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Previous</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🌐 Presentation Layer</span>
+                </a>
+                <a href="aggregates.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Next</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">📦 Aggregates &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

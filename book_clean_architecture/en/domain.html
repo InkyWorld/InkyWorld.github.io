@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Layer - Clean Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
+        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
+        
+        .sidebar { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-right: 1px solid #334155; height: 100vh; position: fixed; width: 18rem; overflow-y: auto; z-index: 50; }
+        .sidebar-title { color: #f8fafc; }
+        .sidebar-subtitle { color: #60a5fa; }
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; }
+        .nav-link { display: block; padding: 0.6rem 1rem; color: #94a3b8; font-weight: 500; font-size: 0.875rem; transition: all 0.2s; border-left: 3px solid transparent; text-decoration: none; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: #f1f5f9; border-left-color: #475569; }
+        .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border-left-color: #3b82f6; }
+
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin: 1.5rem 0;
+        }
+        .hljs-comment, .hljs-quote { color: #475569 !important; font-weight: 700 !important; font-style: normal !important; }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
+    </style>
+</head>
+<body class="flex bg-slate-50">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hidden md:block">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold sidebar-title">Clean Architecture</h1>
+            <span class="sidebar-subtitle text-sm">Author: Alex | InkyWorld</span>
+        </div>
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400">
+                    <a href="../ru/domain.html" class="hover:text-white transition">RU</a>
+                    <span class="text-slate-600">|</span>
+                    <a href="domain.html" class="text-blue-400 font-bold">EN</a>
+                    <span class="text-slate-600">|</span>
+                    <a href="../ua/domain.html" class="hover:text-white transition">UA</a>
+                </div>
+            </div>
+
+            <div class="nav-section">Fundamentals</div>
+            <a href="index.html" class="nav-link">📘 Introduction</a>
+            <a href="solid.html" class="nav-link">📐 SOLID Principles</a>
+            <a href="project_structure.html" class="nav-link">🧭 Project Structure (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Architecture Layers</div>
+            <a href="domain.html" class="nav-link active">🎯 Domain Layer</a>
+            <a href="application.html" class="nav-link">⚙️ Application Layer</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Infrastructure Layer</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
+
+            <div class="nav-section">Tactical DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
+            <a href="invariants.html" class="nav-link">🛡️ Invariants</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
+            <a href="specification.html" class="nav-link">📋 Specification</a>
+            <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
+            <a href="policies.html" class="nav-link">📜 Policies</a>
+            <a href="versioning.html" class="nav-link">🔄 Versioning</a>
+
+            <div class="nav-section">Strategic DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Bounded Contexts</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS & Distributed Systems</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS & ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Reliability & Security</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
+            <a href="concurrency.html" class="nav-link">🛑 Concurrency & Migrations</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
+
+            <div class="nav-section">Quality & Practice</div>
+            <a href="testing.html" class="nav-link">🧪 Testing</a>
+            <a href="overengineering.html" class="nav-link">🛑 Over-engineering</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
+            <a href="projects.html" class="nav-link">🚀 Mini-projects</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Antipatterns</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">About</div>
+            <a href="afterword.html" class="nav-link">👋 Afterword</a>
+        </nav>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-4xl mx-auto">
+        <header class="mb-12 pb-8 border-b border-gray-200">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Domain Layer</h1>
+            <p class="text-xl text-gray-600">The heart of the application. Pure business logic, isolated from the external world.</p>
+        </header>
+
+        <!-- Section 1: Definition -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">What lives here?</h2>
+            <p class="mb-4 text-gray-700">
+                The domain layer contains <strong>Enterprise Business Rules</strong>. These are rules that would exist even if you didn't have a computer. 
+                This code reflects the real world of your business.
+            </p>
+            <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
+                <h3 class="font-bold text-yellow-700">Iron rule:</h3>
+                <p class="text-yellow-800">NO external imports. No SQLAlchemy, Pydantic, Requests, Django. Only Python standard library (dataclasses, typing, datetime, uuid).</p>
+            </div>
+        </section>
+
+        <!-- Section 2: Value Objects -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">1. Value Objects</h2>
+            <p class="mb-4 text-gray-700">
+                These are objects defined by their <strong>attributes</strong>, not by an identifier. 
+                If you have two 100-dollar bills — they are equivalent, you don't care which specific one is in your pocket. That's a Value Object.
+            </p>
+            <p class="mb-4 text-gray-700">
+                Unlike Entities (User, Order), Value Objects are <strong>Immutable</strong>. 
+                If you need to change the amount, you create a new <code>Money</code> object, not modify the old one.
+            </p>
+            
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                 <h3 class="font-bold text-blue-800">Why are they needed?</h3>
+                 <ul class="list-disc list-inside text-sm text-blue-900 mt-2">
+                     <li><strong>Validity guarantee:</strong> You can't create an <code>Email</code> object with invalid format. If the object exists — it's 100% valid.</li>
+                     <li><strong>Fighting Primitive Obsession:</strong> Instead of passing <code>str</code> or <code>int</code> everywhere and guessing what it is (email? url? price?), you pass a specific type.</li>
+                     <li><strong>Behavior inside:</strong> Value Objects contain logic. <code>Price(100) + Price(20)</code> is clearer than just adding numbers.</li>
+                 </ul>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4">
+                <div>
+                    <h4 class="font-bold text-red-600 mb-2">❌ Just primitives</h4>
+                    <pre><code class="language-python"># Money is just numbers?
+# Where's the currency? What if we add rubles and dollars?
+price = 100 
+currency = "USD"
+
+def set_price(amount: int):
+    # Validation scattered across the code
+    if amount < 0: 
+        raise ValueError("Price < 0")
+    ...</code></pre>
+                </div>
+                <div>
+                    <h4 class="font-bold text-green-600 mb-2">✅ Value Object</h4>
+                    <pre><code class="language-python">@dataclass(frozen=True)
+class Money:
+    amount: Decimal
+    currency: str
+
+    def __post_init__(self):
+        if self.amount < 0:
+            raise ValueError("Amount cannot be negative")
+
+    def __add__(self, other):
+        if self.currency != other.currency:
+            raise ValueError("Currencies don't match")
+        return Money(self.amount + other.amount, self.currency)
+
+# Usage
+price = Money(100, "USD") # Guaranteed valid object</code></pre>
+                </div>
+            </div>
+            
+            <p class="mt-4 text-gray-700">
+                <strong>Examples of Value Objects:</strong> <code>Email</code>, <code>Address</code>, <code>Coordinate(x, y)</code>, <code>DateRange</code>, <code>PasswordHash</code>.
+            </p>
+        </section>
+
+        <!-- Section 3: Entities -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">2. Entities</h2>
+            <p class="mb-4 text-gray-700">
+                Objects with a unique ID. They live through time, changing their state. 
+                Avoid the <strong>Anemic Domain Model</strong> — when classes contain only data, and logic is in services.
+            </p>
+            
+            <div class="grid md:grid-cols-2 gap-4 items-stretch mb-6">
+                <!-- Bad Example -->
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex flex-col h-full">
+                    <h4 class="font-bold text-red-800 mb-2 flex items-center gap-2">
+                        <span>❌</span> Anemic Model (Bad)
+                    </h4>
+                    <div class="flex-grow">
+<pre class="m-0 p-3 text-xs h-full"><code class="language-python"># Entity — just a bag of data
+@dataclass
+class Order:
+    items: list
+    status: str = "NEW"
+    total_price: int = 0
+
+# All logic "lives" in services
+def add_item(order, item):
+    order.items.append(item)
+    # Manual state management from outside
+    if order.total_price > 1000:
+        order.status = "VIP"
+</code></pre>
+                    </div>
+                </div>
+
+                <!-- Good Example -->
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 flex flex-col h-full">
+                    <h4 class="font-bold text-green-800 mb-2 flex items-center gap-2">
+                        <span>✅</span> Rich Model (Good)
+                    </h4>
+                    <div class="flex-grow">
+<pre class="m-0 p-3 text-xs h-full"><code class="language-python"># Entity protects its invariants
+@dataclass
+class Order:
+    _items: list
+    _status: str = "NEW"
+    
+    # Logic encapsulated inside
+    def add_item(self, item):
+        if self._status != "NEW":
+            raise ValueError("Order closed")
+            
+        self._items.append(item)
+        self._recalculate_total()
+</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Domain Services -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">3. Domain Services</h2>
+            <p class="mb-4 text-gray-700">
+                Sometimes business operations arise that can't be "assigned" to any specific entity.
+                If you cram this logic into an entity, it becomes cumbersome or knows too much about other classes (High Coupling).
+            </p>
+            
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                <h3 class="font-bold text-blue-800">Difference from Application Service:</h3>
+                <p class="text-sm text-blue-900 mt-1">
+                    🔍 <strong>Domain Service:</strong> Pure business logic (calculations, rules). Doesn't access database, doesn't send API requests. Lives in Domain Layer.<br>
+                    🛠️ <strong>Application Service:</strong> Orchestrator. Loads data from DB, calls Domain Service, saves result.
+                </p>
+            </div>
+
+            <h4 class="font-bold text-gray-900 mb-2">Example: Funds Transfer</h4>
+            <p class="mb-4 text-gray-700 text-sm">
+                A trivial <code>account_a.transfer_to(account_b)</code> makes Account A depend on Account B. 
+                It's better to extract this interaction.
+            </p>
+
+            <pre><code class="language-python">class FundsTransferService:
+    def transfer(self, source: Account, destination: Account, amount: Money):
+        '''
+        Service doesn't save data itself! It only changes object state in memory.
+        Saving will be handled by Application Layer through UoW.
+        '''
+        
+        # 1. Check rules affecting BOTH accounts (process invariants)
+        if source.currency != destination.currency:
+            raise DomainException("Wallet currencies don't match")
+            
+        # 2. Perform actions
+        source.withdraw(amount)   # Inside Account checks its balance
+        destination.deposit(amount)
+        
+        # Done! Objects are modified.
+</code></pre>
+
+            <div class="mt-6 bg-gray-50 border-l-4 border-gray-300 p-4 rounded">
+                <h4 class="font-bold text-gray-900 mb-2">Why extract transfer to Domain Service?</h4>
+                <ul class="list-disc list-inside text-gray-700 mb-3">
+                    <li>Operation affects multiple aggregates and requires coordination (multiple accounts).</li>
+                    <li>Preserves Single Responsibility Principle: aggregate manages its state, service — the process between them.</li>
+                    <li>Application / UnitOfWork guarantees atomic save (commit/rollback) and proper error handling.</li>
+                </ul>
+
+                <h5 class="font-bold mt-2 mb-2">Quick comparison</h5>
+                <pre><code class="language-python"># Bad: method in Account hides coordination and saving
+class Account:
+    def transfer_to(self, other: 'Account', amount: Money):
+        self.withdraw(amount)
+        other.deposit(amount)
+        # Where and how to save both accounts? How to rollback on error?
+
+# Good: Domain Service + UoW coordinate changes and saving
+class FundsTransferService:
+    def transfer(self, source: Account, destination: Account, amount: Money):
+        if source.currency != destination.currency:
+            raise DomainException("Currencies don't match")
+        source.withdraw(amount)
+        destination.deposit(amount)
+
+# In Application layer:
+# with uow:
+#     source = uow.accounts.get(src_id)
+#     dest = uow.accounts.get(dest_id)
+#     svc.transfer(source, dest, amount)
+#     uow.commit()  # atomically saves both accounts
+</code></pre>
+            </div>
+        </section>
+
+        <!-- Section 5: Domain Events -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">4. Domain Events</h2>
+            <p class="mb-4 text-gray-700">
+                These are side effects of business logic. An entity shouldn't send emails or write to logs itself. It should say: "This happened".
+                Events are simple DTOs.
+            </p>
+            <p class="mb-4 text-gray-700">
+                Domain events live in an aggregate's fact queue. Even though, for example, <code>OrderPaid</code> may only happen once, the aggregate adds it to the event list because multiple invariants can trigger in one transaction, and the infrastructure layer must sequentially process each fact before saving.
+            </p>
+            <p class="mb-4 text-gray-700">
+                Entities don't deal with sending emails or logs at all, they just accumulate events. After the transaction, the Application layer or UnitOfWork iterates through this list, dispatches notifications, writes logs, and clears the queue. This way business logic stays clean, and all side effects are sequentially processed.
+            </p>
+            <pre><code class="language-python">@dataclass(frozen=True)
+class OrderPaid:  # Name in past tense
+    order_id: str
+    paid_at: datetime
+
+@dataclass(frozen=True)
+class InventoryReserved:
+    order_id: str
+    items: List[tuple]  # [(sku, qty), ...]
+
+@dataclass(frozen=True)
+class LoyaltyPointsAwarded:
+    user_id: str
+    points: int
+
+@dataclass
+class Order:
+    id: str
+    user_id: str
+    items: List[object]
+    status: str = "NEW"
+    events: List[object] = field(default_factory=list, init=False)
+
+    def pay(self):
+        # 1) change internal state
+        self.status = "PAID"
+
+        # 2) record several facts describing the operation result
+        self.events.append(OrderPaid(self.id, datetime.now()))
+
+        # Example: reserve inventory — list of (sku, qty)
+        reserved = [(it.sku, it.qty) for it in self.items]
+        self.events.append(InventoryReserved(self.id, reserved))
+
+        # Award loyalty points to user (if applicable)
+        points = sum(getattr(it, 'price', 0) * getattr(it, 'qty', 1) for it in self.items) // 100
+        if points > 0:
+            self.events.append(LoyaltyPointsAwarded(self.user_id, points))
+
+        # Done — all facts accumulated in order of occurrence.
+</code></pre>
+            <p class="text-sm text-gray-600 mt-2">
+                An entity can accumulate multiple domain events in one transaction (e.g., payment, inventory reservation, loyalty points award).
+                Application/UnitOfWork then iterates through these events in the order they were recorded, dispatches handlers (remote tasks, email, external system updates) and clears the queue after successful commit.
+            </p>
+        </section>
+
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="dependency.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Back</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 💉 Dependency Injection</span>
+                </a>
+                <a href="application.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Next</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">⚙️ Application Layer &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
