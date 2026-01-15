@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anti-Corruption Layer (ACL) - Clean Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
+        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
+        
+        .sidebar { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-right: 1px solid #334155; height: 100vh; position: fixed; width: 18rem; overflow-y: auto; z-index: 50; }
+        .sidebar-title { color: #f8fafc; }
+        .sidebar-subtitle { color: #60a5fa; }
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; }
+        .nav-link { display: block; padding: 0.6rem 1rem; color: #94a3b8; font-weight: 500; font-size: 0.875rem; transition: all 0.2s; border-left: 3px solid transparent; text-decoration: none; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: #f1f5f9; border-left-color: #475569; }
+        .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border-left-color: #3b82f6; }
+    </style>
+</head>
+<body class="flex bg-slate-50">
+    <aside class="sidebar hidden md:block">
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400">
+                    <a href="../ru/acl.html" class="hover:text-white transition">RU</a>
+                    <span class="text-slate-600">|</span>
+                    <a href="../en/acl.html" class="hover:text-white transition">EN</a>
+                    <span class="text-slate-600">|</span>
+                    <a href="acl.html" class="text-blue-400 font-bold">UA</a>
+                </div>
+            </div>
+
+            <div class="nav-section">Основи</div>
+            <a href="index.html" class="nav-link">📘 Вступ</a>
+            <a href="solid.html" class="nav-link">📐 SOLID принципи</a>
+            <a href="project_structure.html" class="nav-link">🧭 Структура проєкту (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Шари архітектври</div>
+            <a href="domain.html" class="nav-link">🎯 Domain Layer</a>
+            <a href="application.html" class="nav-link">⚙️ Application Layer</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Infrastructure Layer</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
+
+            <div class="nav-section">Тактичний DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
+            <a href="invariants.html" class="nav-link">🛡️ Інваріанти</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
+            <a href="specification.html" class="nav-link">📋 Specification</a>
+            <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
+            <a href="policies.html" class="nav-link">📜 Policies</a>
+            <a href="versioning.html" class="nav-link">🔄 Versioning</a>
+
+            <div class="nav-section">Стратегічний DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Bounded Contexts</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
+            <a href="acl.html" class="nav-link active">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS і Розподілені системи</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS і ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Надійність і Безпека</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
+            <a href="concurrency.html" class="nav-link">🛑 Concurrency & Migrations</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
+
+            <div class="nav-section">Якість і Практика</div>
+            <a href="testing.html" class="nav-link">🧪 Тестування</a>
+            <a href="overengineering.html" class="nav-link">🛑 Надлишковість</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
+            <a href="projects.html" class="nav-link">🚀 Міні-проєкти</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Антипатерни</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">Про проєкт</div>
+            <a href="afterword.html" class="nav-link">👋 Післямова</a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-4xl mx-auto">
+        <header class="mb-12 pb-8 border-b border-gray-200">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Anti-Corruption Layer (ACL)</h1>
+            <p class="text-xl text-gray-600">Таможня, которая не пвскает ментальный мвсор в ваш чистый код.</p>
+        </header>
+
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">Навіщо це потрібно?</h2>
+            <p>Коли вы интегрирветесь з Legacy-системой або внешним API (наприклад, SAP, 1C або старий CRM), їх модель даних зазвичай вжасна. </p>
+            <ul class="list-disc pl-5 mb-6">
+                <li>Названия полів непонятны (<code>KUNNR</code>, <code>BUKRS</code>).</li>
+                <li>Логика размазана.</li>
+                <li>Типы даних не збігаються.</li>
+            </ul>
+            <p><strong>Помилка новичка:</strong> Использовать класи внешней системи (или JSON ответы API) прямо в своей бізнес-логике. Це заражает ваш код.</p>
+
+            <div class="bg-green-50 p-6 rounded-xl border border-green-200 my-8">
+                <h3 class="font-bold text-green-900 text-lg mb-2">✅ Рішення: ACL</h3>
+                <p>Вы создаете шар-транслятор. Он конвертирвет "їх странные дані" в "ваши красивые об'єкти".</p>
+                <div class="font-mono text-sm mt-4 bg-white p-4 rounded border">
+                    External System (KUNNR) -> [ ACL ] -> Internal System (CustomerId)
+                </div>
+            </div>
+
+            <h3 class="font-bold text-lg mb-4">Реализация в коді</h3>
+            <pre><code class="language-python"># 1. External DTO (Грязная модель)
+@dataclass
+class SapCustomerResponse:
+    KUNNR: str  # Customer Number
+    NAME1: str  # Name
+
+# 2. Internal Entity (Чистая модель)
+@dataclass
+class Customer:
+    id: CustomerId
+    full_name: str
+
+# 3. ACL (Translator / Adapter)
+class SapAdapter(CustomerRepository):
+    def get_customer(self, id: CustomerId) -> Customer:
+        # A. Call dirty API
+        response = self.client.get_kna1(id.value)
+        
+        # B. Translate (Map) to Domain
+        return Customer(
+            id=CustomerId(response.KUNNR),
+            full_name=response.NAME1.title()
+        )
+</code></pre>
+        </section>
+
+        <div class="mt-12 pt-8 border-t border-gray-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="context_relationships.html" class="text-blue-600 font-bold hover:underline">&larr; Context Relationships</a>
+                <a href="subdomains.html" class="text-blue-600 font-bold hover:underline">Subdomains &rarr;</a>
+            </div>
+        </div>
+
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="context_relationships.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Назад</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🤝 Context Relationships</span>
+                </a>
+                <a href="subdomains.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Далі</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🧬 Subdomains &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
