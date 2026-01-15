@@ -144,8 +144,8 @@
         <!-- 1. WHAT IS INVARIANT -->
         <section class="card">
             <h2 class="text-2xl font-bold mb-6">1. Що таке Инвариант?</h2>
-            <p><strong>Инвариант</strong> — це условие, которое завжди повинно оставаться истинным для системи або об'єкта, щоб он считался корректным.</p>
-            <p>Це законы физики вашего мира. Якщо у вашем мире "Не можна тратить більше, ніж есть на счете" — це инвариант. Якщо он нарушен, значит, программа сломана.</p>
+            <p><strong>Инвариант</strong> — це условие, которое завжди повинно оставаться истинным для системи або об'єкта, щоб він считался корректным.</p>
+            <p>Це законы физики вашего мира. Якщо у вашем мире "Не можна тратить більше, ніж есть на счете" — це інваріант. Якщо він нарушен, значит, программа сломана.</p>
             
             <div class="alert-yellow">
                 <strong>Приклад из жизни:</strong> Инвариант лифта — "Двери не можуть быть открыты, пока лифт движется". Якщо це правило нарушится хотя бы на миллисекунду, случится катастрофа.
@@ -166,7 +166,7 @@
             <p><strong>Чому?</strong></p>
             <ol class="list-decimal pl-6 text-sm mb-4">
                 <li><strong>Читаемость:</strong> `raise InsufficientFundsError` говорит більше, ніж `raise ValueError("Not enough money")`.</li>
-                <li><strong>Обработка:</strong> В слое Presentation (FastAPI) вы сможете поймать конкретную ошибку і повернути пользователю красивый ответ 400 або 409.</li>
+                <li><strong>Обработка:</strong> В слое Presentation (FastAPI) вы сможете поймать конкретную помилку і повернути користувачу красивый ответ 400 або 409.</li>
             </ol>
 
 <pre><code class="language-python"><span class="code-comment"># domain/exceptions.py</span>
@@ -225,7 +225,7 @@
         <section id="entity-check" class="mb-16">
             <h2 class="text-2xl font-bold mb-4">4. Перевірка у Entities (State Consistency)</h2>
             <p>Сутності живуть во времени. Их инварианты часто залежать від <strong>текущего стану</strong>.</p>
-            <p>Мы використовуємо "Guard Clauses" (Защитные условия) у начале методів.</p>
+            <p>Ми використовуємо "Guard Clauses" (Защитные условия) у начале методів.</p>
 
 <pre><code class="language-python"><span class="code-keyword">class</span> <span class="code-class">Order</span>:
     <span class="code-keyword">def</span> <span class="code-func">__init__</span>(self, ...):

@@ -142,7 +142,7 @@
             </div>
             <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Presentation Layer (Шар Представлення)</h1>
             <p class="text-xl text-gray-500 mt-4 font-light">
-                Точка входа у додаток. Тут мы принимаем HTTP-запити, вызываем Use Cases і возвращаем красивые ответы.
+                Точка входа у додаток. Тут ми принимаем HTTP-запити, вызываем Use Cases і возвращаем красивые ответы.
             </p>
         </header>
 
@@ -205,7 +205,7 @@
         <section id="schemas" class="mb-16">
             <h2 class="text-2xl font-bold mb-4">1. Request/Response Schemas (Pydantic)</h2>
             <p><strong>Pydantic</strong> — це библиотека для валидации даних. В FastAPI вона встроена. Используем її для создания "контрактов" API.</p>
-            <p>Важливо: Pydantic схемы — це <strong>не то же самое</strong>, що DTO из Application Layer. Схемы знають про JSON, сериализацию, HTTP. DTO — чистые дані.</p>
+            <p>Важливо: Pydantic схемы — це <strong>не те ж саме самое</strong>, що DTO из Application Layer. Схемы знають про JSON, сериализацию, HTTP. DTO — чистые дані.</p>
 
 <pre><code class="language-python"><span class="code-comment"># presentation/schemas/order.py</span>
 <span class="code-keyword">from</span> pydantic <span class="code-keyword">import</span> BaseModel, EmailStr, Field, field_validator
@@ -405,7 +405,7 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
 
 <span class="code-dec">@lru_cache</span>()
 <span class="code-keyword">def</span> <span class="code-func">get_email_service</span>():
-    <span class="code-str">"""Singleton: создается один раз за все время роботи додатку"""</span>
+    <span class="code-str">"""Singleton: создается один раз за все час роботи додатку"""</span>
     <span class="code-keyword">return</span> SmtpEmailService(
         host=settings.SMTP_HOST,
         port=settings.SMTP_PORT,
@@ -518,7 +518,7 @@ app = create_app()
 <span class="code-keyword">from</span> application.dto <span class="code-keyword">import</span> CreateOrderCommand
 <span class="code-keyword">from</span> domain.exceptions <span class="code-keyword">import</span> DomainError
 
-<span class="code-comment"># DI вручную (или используйте django-injector)</span>
+<span class="code-comment"># DI вручну (или используйте django-injector)</span>
 <span class="code-keyword">from</span> .dependencies <span class="code-keyword">import</span> get_create_order_use_case
 
 

@@ -302,7 +302,7 @@
         <span class="code-str">"spaces in@email.com"</span>,
     ])
     <span class="code-keyword">def</span> <span class="code-func">test_invalid_emails_raise_error</span>(self, invalid_email):
-        <span class="code-str">"""Невалидные email выбрасывают ошибку"""</span>
+        <span class="code-str">"""Невалидные email выбрасывают помилку"""</span>
         <span class="code-keyword">with</span> pytest.raises(InvalidEmailError):
             Email(invalid_email)
 </code></pre>
@@ -376,7 +376,7 @@
             order_with_items.pay()
 
     <span class="code-keyword">def</span> <span class="code-func">test_cannot_add_item_after_payment</span>(self, order_with_items):
-        <span class="code-str">"""ИНВАРИАНТ: Не можна змінювати оплаченный замовлення"""</span>
+        <span class="code-str">"""ИНВАРИАНТ: Не можна змінювати оплачене замовлення"""</span>
         order_with_items.pay()
         
         <span class="code-keyword">with</span> pytest.raises(OrderAlreadyPaidError):
@@ -387,7 +387,7 @@
     <span class="code-comment"># ═══════════════════════════════════════════════</span>
 
     <span class="code-keyword">def</span> <span class="code-func">test_order_paid_event_generated</span>(self, order_with_items):
-        <span class="code-str">"""При оплате генерируется подія OrderPaid"""</span>
+        <span class="code-str">"""При оплате генерируется подію OrderPaid"""</span>
         order_with_items.pay()
         
         events = order_with_items.collect_events()
@@ -408,7 +408,7 @@
         <!-- APPLICATION TESTS -->
         <section id="app-tests" class="card">
             <h2 class="text-2xl font-bold mb-6">2. Тестування Application Layer (Use Cases)</h2>
-            <p>Тут мы тестируем Use Cases. Они залежать від интерфейсов (Repositories, Services), которые мы <strong>мокаем</strong>.</p>
+            <p>Тут ми тестируем Use Cases. Они залежать від интерфейсов (Repositories, Services), которые ми <strong>мокаем</strong>.</p>
             <p class="text-sm bg-blue-50 p-3 rounded border border-blue-200"><strong>Мок (Mock)</strong> — це поддельная реалізація інтерфейсу. Вона дозволяє тестировать логіку без реальной БД або email-сервера.</p>
 
 <pre><code class="language-python"><span class="code-comment"># tests/application/test_use_cases.py</span>
@@ -486,7 +486,7 @@
 
     <span class="code-keyword">def</span> <span class="code-func">test_transaction_rollback_on_error</span>(self, mock_uow, mock_email_service):
         <span class="code-str">"""Транзакция откатывается при ошибке"""</span>
-        <span class="code-comment"># Arrange: email сервіс выбрасывает ошибку</span>
+        <span class="code-comment"># Arrange: email сервіс выбрасывает помилку</span>
         mock_email_service.send_order_confirmation.side_effect = Exception(<span class="code-str">"SMTP Error"</span>)
         
         use_case = CreateOrderUseCase(
@@ -551,7 +551,7 @@
         <!-- INFRASTRUCTURE TESTS -->
         <section id="infra-tests" class="mb-16">
             <h2 class="text-2xl font-bold mb-4">3. Тестування Infrastructure Layer (Integration)</h2>
-            <p>Тут мы тестируем реальные реалізації: SQLAlchemy Repository, Email Adapter і т.д. Нужна тестовая БД.</p>
+            <p>Тут ми тестируем реальные реалізації: SQLAlchemy Repository, Email Adapter і т.д. Нужна тестовая БД.</p>
 
 <pre><code class="language-python"><span class="code-comment"># tests/infrastructure/test_repositories.py</span>
 <span class="code-keyword">import</span> pytest
@@ -774,7 +774,7 @@ TEST_DATABASE_URL = <span class="code-str">"sqlite:///:memory:"</span>
         <span class="code-keyword">assert</span> pay_response.status_code == 200
         <span class="code-keyword">assert</span> pay_response.json()[<span class="code-str">"status"</span>] == <span class="code-str">"paid"</span>
 
-        <span class="code-comment"># 4. Повторная оплата повинна повернути ошибку</span>
+        <span class="code-comment"># 4. Повторная оплата повинна повернути помилку</span>
         pay_again = test_app.post(<span class="code-str">f"/api/v1/orders/{order_id}/pay"</span>)
         <span class="code-keyword">assert</span> pay_again.status_code == 409  <span class="code-comment"># Conflict</span>
 </code></pre>

@@ -142,7 +142,7 @@
     <p>Рішення: Присвоить каждому запросу уникальный идентификатор (<code>trace_id</code> або <code>request_id</code>) на самом входе і писати його у <strong>каждую</strong> строчку лога.</p>
     
     <h3 class="font-bold text-lg mt-6 mb-2">Навіщо тут ContextVar?</h3>
-    <p>Щоб не передавати <code>request_id</code> аргументом у каждую функцию (наприклад, <code>get_user(user_id, request_id)</code>), мы використовуємо <strong>ContextVars</strong>. Це механизм Python для хранения даних, которые доступны глобально, но <em>только у рамках текущего асинхронного таска (запиту)</em>.</p>
+    <p>Щоб не передавати <code>request_id</code> аргументом у каждую функцию (наприклад, <code>get_user(user_id, request_id)</code>), ми використовуємо <strong>ContextVars</strong>. Це механизм Python для хранения даних, которые доступны глобально, но <em>только у рамках текущего асинхронного таска (запиту)</em>.</p>
 
     <h3 class="font-bold text-lg mt-6 mb-2">Реализация (Context Vars + Structlog)</h3>
     <pre><code class="language-python">import uuid
@@ -172,7 +172,7 @@ async def logging_middleware(request: Request, call_next):
     
     try:
         response = await call_next(request)
-        # (Полезно) Возвращаем ID клиенту, щоб он мог сообщить його поддержке при ошибке
+        # (Полезно) Возвращаем ID клиенту, щоб він мог сообщить його поддержке при ошибке
         response.headers["X-Request-ID"] = req_id
         return response
     finally:
@@ -206,7 +206,7 @@ settings = Settings()
 @lru_cache
 def get_settings():
     # Эта функція выполнится только один раз при первом вызове.
-    # В последующие разы будет повертатися тот же самый об'єкт из памяти.
+    # В последующие разы будет повертатися той самий самый об'єкт из памяти.
     return Settings()
 
 # Приклад использования у FastAPI

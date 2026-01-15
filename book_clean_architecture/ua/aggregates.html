@@ -135,7 +135,7 @@
         <section class="mb-16">
             <div class="prose prose-slate max-w-none text-gray-700">
                 <p class="mb-6 text-lg">
-                    <strong>Агрегат (Aggregate)</strong> — це кластер об'єктів (Entities і Value Objects), которые мы рассматриваем як єдине целое з точки зрения изменений даних.
+                    <strong>Агрегат (Aggregate)</strong> — це кластер об'єктів (Entities і Value Objects), которые ми рассматриваем як єдине целое з точки зрения изменений даних.
                     Це <strong>граница консистентности</strong>.
                 </p>
 
@@ -178,7 +178,7 @@
 
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">Приклад коду</h2>
                 <div class="mb-4">
-                    <p class="mb-2">Обратите внимание: `OrderLine` создается і живе только всередині `Order`.</p>
+                    <p class="mb-2">Зверніть увагу: `OrderLine` создается і живе только всередині `Order`.</p>
                 </div>
                 
                 <pre><code class="language-python">@dataclass
@@ -220,7 +220,7 @@ class Order(AggregateRoot): # Корень
                 <p>Не делайте агрегат "на весь мир". Якщо у агрегате `Shop` будет список всех `Product` (тысячи об'єктів), то:</p>
                 <ol class="list-decimal list-inside mb-4">
                     <li>При загрузке Shop вы загрузите всі 10,000 товаров у память.</li>
-                    <li>Два менеджера не смогут одновременно редактировать різні товари, так як вони блокируют один і тот же Shop (Optimistic Lock error).</li>
+                    <li>Два менеджера не смогут одночасно редактировать різні товари, так як вони блокируют один і той самий Shop (Optimistic Lock error).</li>
                 </ol>
                 <p class="font-bold text-green-700">Рішення:</p>
                 <p>Разбить на мелкие агрегати. `Shop` отдельно, `Product` отдельно. Ссылаться по ID.</p>

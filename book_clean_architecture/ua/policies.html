@@ -118,7 +118,7 @@
                 </p>
                 <p>
                     Например, расчет стоимости замовлення (`Order.calculate_total`). Скидки можуть зависеть от:
-                    праздников, статуса VIP, дня недели, истории покупок. Якщо запихнуть всі эти `if` у клас `Order`, он превратится у монстра.
+                    праздников, статуса VIP, дня недели, истории покупок. Якщо запихнуть всі эти `if` у клас `Order`, він превратится у монстра.
                 </p>
                 <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-4">
                     <strong>Рішення:</strong> вынесите алгоритм у окремий клас-функцию — <strong>Policy</strong>. В ООП це известно як паттерн <em>Strategy</em>.
@@ -158,7 +158,7 @@ class StandardVipPolicy:
 class Order:
     items: List[Item]
     
-    # Мы передаем Политику як аргумент метода (Method Injection)
+    # Ми передаем Политику як аргумент метода (Method Injection)
     def calculate_final_price(self, user: User, policy: PricingPolicy):
         base_price = sum(i.price for i in self.items)
         discount = policy.calculate_discount(self.items, user)

@@ -154,7 +154,7 @@
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
                  <h3 class="font-bold text-blue-800">Навіщо вони потрібні?</h3>
                  <ul class="list-disc list-inside text-sm text-blue-900 mt-2">
-                     <li><strong>Гарантія валідності:</strong> Не можна створити об'єкт <code>Email</code> з неверным форматом. Якщо об'єкт существует — он 100% валиден.</li>
+                     <li><strong>Гарантія валідності:</strong> Не можна створити об'єкт <code>Email</code> з неверным форматом. Якщо об'єкт существует — він 100% валиден.</li>
                      <li><strong>Борьба з Primitive Obsession:</strong> Замість того щоб передавати везде <code>str</code> або <code>int</code> і гадать, що там (email? url? цена?), вы передаете конкретный тип.</li>
                      <li><strong>Поведінка всередині:</strong> Value Object містить логіку. <code>Price(100) + Price(20)</code> зрозуміліше, ніж просто додавання чисел.</li>
                  </ul>
@@ -378,7 +378,7 @@ class Order:
         reserved = [(it.sku, it.qty) for it in self.items]
         self.events.append(InventoryReserved(self.id, reserved))
 
-        # Начисляем бонусы пользователю (якщо применимо)
+        # Начисляем бонусы користувачу (якщо применимо)
         points = sum(getattr(it, 'price', 0) * getattr(it, 'qty', 1) for it in self.items) // 100
         if points > 0:
             self.events.append(LoyaltyPointsAwarded(self.user_id, points))

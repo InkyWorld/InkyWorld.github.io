@@ -102,30 +102,30 @@
     <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-4xl mx-auto">
         <header class="mb-12 pb-8 border-b border-gray-200">
             <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Versioning (Версионирование)</h1>
-            <p class="text-xl text-gray-600">Optimistic Locking і разрешение конфликтов при сохранении агрегатов.</p>
+            <p class="text-xl text-gray-600">Optimistic Locking і разрешение конфликтов при збереженні агрегатов.</p>
         </header>
 
         <section class="mb-12">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Проблема конкуренции</h2>
             <div class="prose max-w-none text-gray-700">
                 <p>
-                    Два менеджера, Alice і Bob, открыли один і тот же Заказ одновременно. Alice перевела його у статус "Paid", а Bob, не зная об этом, добавил товар. 
-                    Якщо Bob сохранит замовлення після Alice, он затрет її зміни (т.н. <em>Lost Update Problem</em>).
+                    Два менеджера, Alice і Bob, відкрили один і той самий Заказ одночасно. Alice перевела його у статус "Paid", а Bob, не знаючи про це, додав товар. 
+                    Якщо Bob збереже замовлення після Alice, він затре її зміни (т.н. <em>Lost Update Problem</em>).
                 </p>
                 <div class="bg-red-50 border-l-4 border-red-500 p-4 my-4">
-                     <strong>Опасность:</strong> Мы можем отримати оплаченный замовлення з новыми неоплаченными товарами, нарушив инвариант согласованности.
+                     <strong>Небезпека:</strong> Ми можемо отримати оплачене замовлення з новими неоплаченими товарами, порушивши інваріант узгодженості.
                 </div>
             </div>
         </section>
 
         <section class="mb-12">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Optimistic Concurrency Control (OCC)</h2>
-            <p class="mb-4">Рішення — додати поле <code>version</code> (int) у Агрегат.</p>
+            <p class="mb-4">Рішення — додати поле <code>version</code> (int) в Агрегат.</p>
             <ul class="list-decimal list-inside space-y-2 mb-6">
-                <li>При чтении агрегата мы запоминаем `version_at_load = 5`.</li>
-                <li>При сохранении мы говорим БД: <br><code>UPDATE orders SET ..., version = 6 WHERE id = X AND version = 5</code>.</li>
-                <li>Якщо за це время хто-то успел змінити версию на 6, наш запит не обновит ни однієї строки.</li>
-                <li>Application Layer ловит це і либо кидает ошибку пользователю, либо перезагружает агрегат і пробует снова (retry).</li>
+                <li>При читанні агрегата ми запам'ятовуємо `version_at_load = 5`.</li>
+                <li>При збереженні ми кажемо БД: <br><code>UPDATE orders SET ..., version = 6 WHERE id = X AND version = 5</code>.</li>
+                <li>Якщо за це час хтось встиг змінити версію на 6, наш запит не оновить жодного рядка.</li>
+                <li>Application Layer ловить це і або кидає помилку користувачу, або перезавантажує агрегат і пробує знову (retry).</li>
             </ul>
 
             <h3 class="font-bold text-lg mb-2">Приклад реалізації</h3>
@@ -138,8 +138,8 @@ class Order(AggregateRoot):
 
     def add_item(self, item):
         self.items.append(item)
-        # Обратите внимание: мы НЕ инкрементируем версию тут вручную.
-        # Це обязанность Репозитория при сохранении.
+        # Зверніть увагу: ми НЕ інкрементуємо версію тут вручну.
+        # Це обов'язок Репозиторію при збереженні.
 
 # В Repository (Infrastructure)
 def save(self, order: Order):
@@ -164,9 +164,9 @@ def save(self, order: Order):
         <section class="mb-12">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">В Event Sourcing</h2>
             <p>
-                В Event Sourcing поле <code>ExpectedVersion</code> играет ту же роль. 
-                Коли вы пытаетесь додати події у поток, вы говорите: "Я ожидаю, що зараз у потоке 10 подій". 
-                Якщо там вже 11 (хто-то добавил подія), Event Store отклонит запис.
+                В Event Sourcing поле <code>ExpectedVersion</code> грає ту же роль. 
+                Коли вы намагаєтеся додати події у потік, вы говорите: "Я очікую, що зараз в потоці 10 подій". 
+                Якщо там вже 11 (хтось додав подію), Event Store відхилить запис.
             </p>
         </section>
 

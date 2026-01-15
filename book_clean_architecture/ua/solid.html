@@ -251,7 +251,7 @@
             <p class="text-lg font-bold text-yellow-800 bg-yellow-50 p-4 rounded-lg inline-block">
                 "Наследники повинні быть взаимозаменяемы з родителями."
             </p>
-            <p class="mt-4">Якщо ваш код ожидает `Animal`, он повинен корректно працювати і з `Dog`, і з `Cat`. Якщо `Dog` внезапно выкидывает ошибку там, де `Animal` не повинен — це нарушение.</p>
+            <p class="mt-4">Якщо ваш код ожидает `Animal`, він повинен корректно працювати і з `Dog`, і з `Cat`. Якщо `Dog` внезапно выкидывает помилку там, де `Animal` не повинен — це нарушение.</p>
 
             <div class="card bg-gray-50 border-gray-200 mt-6">
                 <h3 class="font-bold mb-2">Классический пример: Квадрат не Прямоугольник</h3>
@@ -264,7 +264,7 @@
 <span class="code-keyword">class</span> <span class="code-class">ReadOnlyRepository</span>(Repository):
     <span class="code-keyword">def</span> <span class="code-func">save</span>(self, obj):
         <span class="code-comment"># НАРУШЕНИЕ LSP!</span>
-        <span class="code-comment"># Клиентский код ожидает, що save() сохранит, а отримує ошибку.</span>
+        <span class="code-comment"># Клиентский код ожидает, що save() збереже, а отримує помилку.</span>
         <span class="code-keyword">raise</span> NotImplementedError(<span class="code-str">"Я только для читання"</span>)
 </code></pre>
                 <div class="mt-2 text-sm text-green-700 font-bold">Рішення: Разделить иерархию на `Readable` і `Writable`.</div>
@@ -329,13 +329,13 @@
 <pre><code class="language-python"><span class="code-comment"># ❌ НАРУШЕНИЕ DIP: Жесткая залежність</span>
 <span class="code-keyword">class</span> <span class="code-class">CreateOrderService</span>:
     <span class="code-keyword">def</span> <span class="code-func">__init__</span>(self):
-        <span class="code-comment"># Мы прибили гвоздями конкретную реализацию SQL бази!</span>
+        <span class="code-comment"># Ми прибили гвоздями конкретную реализацию SQL бази!</span>
         <span class="code-comment"># Теперь цей код невозможно тестировать без реальной БД.</span>
         self.repo = SqlAlchemyRepository() 
 
 <span class="code-comment"># ✅ СОБЛЮДЕНИЕ DIP: Инъекция залежності</span>
 <span class="code-keyword">class</span> <span class="code-class">CreateOrderService</span>:
-    <span class="code-comment"># Мы просим "какой-то репозиторій" (Абстракцию)</span>
+    <span class="code-comment"># Ми просим "какой-то репозиторій" (Абстракцию)</span>
     <span class="code-keyword">def</span> <span class="code-func">__init__</span>(self, repo: OrderRepository):
         self.repo = repo
 </code></pre>

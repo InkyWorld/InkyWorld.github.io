@@ -204,7 +204,7 @@
         <section id="dto" class="mb-16">
             <h2 class="text-2xl font-bold mb-4">1. DTO & Commands</h2>
             <p><strong>DTO (Data Transfer Object)</strong> — це коробка для передачі даних. Вона не має поведінки.</p>
-            <p>Внешний мир (Web API) присылает нам JSON (примитивы: строки, числа). Домен працює со сложными объектами (Money, Email). Application Layer повинен принять примитивы через DTO і превратить їх у об'єкти Домена.</p>
+            <p>Внешний мир (Web API) присылает нам JSON (примитивы: рядка, числа). Домен працює со сложными объектами (Money, Email). Application Layer повинен принять примитивы через DTO і превратить їх у об'єкти Домена.</p>
             
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-4 text-sm">
                 <strong>Command vs Query:</strong>
@@ -241,7 +241,7 @@
 
         <div class="bg-indigo-50 border-l-4 border-indigo-400 p-4 my-6 text-sm rounded">
             <strong>Query DTO на практике:</strong>
-            <p>Query ничего не змінює — он просто читає дані і повертає їх у удобной форме.</p>
+            <p>Query ничего не змінює — він просто читає дані і повертає їх у удобной форме.</p>
         </div>
         <pre><code class="language-python"><span class="code-comment"># application/dto.py (Query part)</span>
 <span class="code-dec">@dataclass(frozen=True)</span>
@@ -266,15 +266,15 @@
                 <h2 class="text-2xl font-bold">2. Ports (Интерфейсы)</h2>
                 <span class="badge badge-purple">Dependency Inversion</span>
             </div>
-            <p>Use Case хочет зберегти замовлення. Но он не може вызвать `SQLAlchemy`. Поэтому он объявляет <strong>Порт</strong> (Інтерфейс): <em>"Мне потрібен хто-то, хто умеет сохранять заказы"</em>.</p>
-            <p>Позже, у слое Infrastructure, мы реализуем цей інтерфейс. Це дозволяє Use Case зависеть від абстракции, а не від деталей.</p>
+            <p>Use Case хочет зберегти замовлення. Но він не може вызвать `SQLAlchemy`. Поэтому він объявляет <strong>Порт</strong> (Інтерфейс): <em>"Мне потрібен хтось, хто умеет сохранять заказы"</em>.</p>
+            <p>Позже, у слое Infrastructure, ми реализуем цей інтерфейс. Це дозволяє Use Case зависеть від абстракции, а не від деталей.</p>
 
 <pre><code class="language-python"><span class="code-comment"># application/interfaces.py</span>
 <span class="code-keyword">from</span> abc <span class="code-keyword">import</span> ABC, abstractmethod
 <span class="code-keyword">from</span> typing <span class="code-keyword">import</span> Optional
 <span class="code-keyword">import</span> uuid
 
-<span class="code-comment"># Мы імпортуємо Entity, потому що Порт працює з Доменом</span>
+<span class="code-comment"># Ми імпортуємо Entity, потому що Порт працює з Доменом</span>
 <span class="code-keyword">from</span> domain.entities <span class="code-keyword">import</span> Order 
 
 <span class="code-keyword">class</span> <span class="code-class">OrderRepository</span>(ABC):
@@ -318,7 +318,7 @@
 
 <span class="code-keyword">class</span> <span class="code-class">CreateOrderUseCase</span>:
     <span class="code-comment"># DEPENDENCY INJECTION:</span>
-    <span class="code-comment"># Мы просим любые реалізації этих интерфейсов.</span>
+    <span class="code-comment"># Ми просим любые реалізації этих интерфейсов.</span>
     <span class="code-keyword">def</span> <span class="code-func">__init__</span>(
         self, 
         repo: OrderRepository, 
@@ -376,7 +376,7 @@
     order = Order(...)
     
     <span class="code-comment"># 3. Оркестрація: логіка взаимодействия</span>
-    <span class="code-comment"># Мы берем дані из однієї сутності і передаем у другую</span>
+    <span class="code-comment"># Ми берем дані из однієї сутності і передаем у другую</span>
     <span class="code-keyword">if</span> user.is_vip():
         order.apply_discount(percent=10)
     

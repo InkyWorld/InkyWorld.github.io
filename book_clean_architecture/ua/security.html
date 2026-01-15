@@ -157,7 +157,7 @@
                     <h3 class="text-xl font-bold text-purple-700 flex items-center gap-2">
                         <span class="bg-purple-100 px-2 rounded">Шаг 0</span> Охрана на входе (Middleware)
                     </h3>
-                    <p class="mb-2">Це шар <span class="font-bold">Infrastructure</span>. Middleware перехватывает запит <strong>ДО</strong> того, як он попадет у бізнес-логіку.</p>
+                    <p class="mb-2">Це шар <span class="font-bold">Infrastructure</span>. Middleware перехватывает запит <strong>ДО</strong> того, як він попадет у бізнес-логіку.</p>
                     <pre><code class="language-python"># infrastructure/web/middleware.py
 
 # Фреймворк вызывает це для КАЖДОГО запита
@@ -168,8 +168,8 @@ def auth_middleware(request, next_handler):
     if not is_valid(token):
         return ErrorResponse("Доступ запрещен", 401)
 
-    # 2. Якщо всі ок — запоминаем ID користувача
-    # (Мы кладем його у "context", щоб UseCase мог його найти)
+    # 2. Якщо всі ок — запам'ятовуємо ID користувача
+    # (Ми кладем його у "context", щоб UseCase мог його найти)
     user_context.set(extract_user_id(token))
     
     # 3. Проходи! (Вызываем следующий шар)
@@ -182,12 +182,12 @@ def auth_middleware(request, next_handler):
                     <h3 class="text-xl font-bold text-blue-700 flex items-center gap-2">
                         <span class="bg-blue-100 px-2 rounded">Шаг 1</span> Створюємо "Службу безопасности"
                     </h3>
-                    <p class="mb-2">В слое Application мы просто говорим: "Мне потрібен спосіб узнать, хто зараз пользуется системой".</p>
+                    <p class="mb-2">В слое Application ми просто кажемо: "Мне потрібен спосіб узнать, хто зараз пользуется системой".</p>
                     <pre><code class="language-python"># application/security.py
 
 class SecurityService:
     def get_user_id(self) -> str:
-        # Цет метод просто описує, що мы ХОТИМ отримати ID.
+        # Цет метод просто описує, що ми ХОТИМ отримати ID.
         pass
 </code></pre>
                 </div>
@@ -222,7 +222,7 @@ class DeleteOrderUseCase:
                 
                 <div class="bg-yellow-50 p-6 rounded border-l-4 border-yellow-400">
                     <strong>В ніж магия?</strong>
-                    <p class="mt-2 text-sm text-gray-800">Обратите внимание: наш Use Case <strong>НЕ знає</strong> про HTTP, Заголовки, Куки або Токены. Он просто просит ID користувача. Це робить код чистым і простым для тестирования.</p>
+                    <p class="mt-2 text-sm text-gray-800">Зверніть увагу: наш Use Case <strong>НЕ знає</strong> про HTTP, Заголовки, Куки або Токены. Он просто просит ID користувача. Це робить код чистым і простым для тестирования.</p>
                 </div>
             </div>
         </section>

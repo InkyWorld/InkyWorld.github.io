@@ -134,7 +134,7 @@
 
         <section class="mb-16">
             <div class="prose prose-slate max-w-none text-gray-700">
-        <p>Коли вы переходите від теорії к практике, вы сталкиваетесь з рутиной: бесконечные преобразования даних, складні фильтры і подводные камни асинхронности. В этой главе мы разберем продвинутые техники выживания.</p>
+        <p>Коли вы переходите від теорії к практике, вы сталкиваетесь з рутиной: бесконечные преобразования даних, складні фильтры і подводные камни асинхронности. В этой главе ми разберем продвинутые техники выживания.</p>
 
         <!-- 1. DTO EXPLOSION -->
         <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">1. Проблема "Взрыва DTO" (DTO Explosion)</h2>
@@ -148,7 +148,7 @@
         <p class="mt-4">Це утомляет і демотивирует. Рассмотрим прагматичный підхід.</p>
 
         <h3 class="font-bold text-lg mt-6 mb-2">Duck Typing & Protocols</h3>
-        <p>Якщо Application шар не повинен зависеть від Pydantic, це не значит, що мы не можем передавати Pydantic об'єкти, якщо вони ведут себя як потрібно. Використовуйте <strong>Protocols</strong>.</p>
+        <p>Якщо Application шар не повинен зависеть від Pydantic, це не значит, що ми не можемо передавати Pydantic об'єкти, якщо вони ведут себя як потрібно. Використовуйте <strong>Protocols</strong>.</p>
 
         <pre><code class="language-python"># application/protocols.py
 from typing import Protocol
@@ -172,7 +172,7 @@ register_user(CreateUserRequest(username="alex", email="a@b.com"))
 </code></pre>
 
         <h3 class="font-bold text-lg mt-6 mb-2">Automapping (Pragmatic)</h3>
-        <p>Для простых CRUD операцій можна використовувати <code>model_validate</code> або вспомогательные методи, щоб не писати маппинг каждой очереди полів вручную.</p>
+        <p>Для простых CRUD операцій можна використовувати <code>model_validate</code> або вспомогательные методи, щоб не писати маппинг каждой очереди полів вручну.</p>
         <pre><code class="language-python"># Якщо поля совпадают 1-в-1
 def to_domain(dto: CreateUserRequest) -> User:
     # Опасно для сложной логіки, но OK для простых CRUD
@@ -252,7 +252,7 @@ stmt = (
 </code></pre>
 
         <h3 class="font-bold text-lg mt-6 mb-2">Async Context Manager UoW</h3>
-        <p>Вот як правильно реализовать <code>async with uow:</code>. Обратите внимание на <code>rollback</code> у случае исключения.</p>
+        <p>Вот як правильно реализовать <code>async with uow:</code>. Зверніть увагу на <code>rollback</code> у случае исключения.</p>
         <pre><code class="language-python">class AsyncUoW:
     def __init__(self, session_factory):
         self.session_factory = session_factory

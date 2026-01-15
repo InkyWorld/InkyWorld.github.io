@@ -160,7 +160,7 @@ class SqlAlchemyRepository(AbstractRepository):
 </code></pre>
 
         <h2 class="text-2xl font-bold text-gray-800 mb-6 mt-8">Unit of Work (UoW)</h2>
-        <p>Паттерн Unit of Work отслеживает всі зміни, сделанные во время бізнес-транзакції, і зберігає їх разом (Atomic Commit). Це решает проблему частичного обновления даних.</p>
+        <p>Паттерн Unit of Work отслеживает всі зміни, сделанные во час бізнес-транзакції, і зберігає їх разом (Atomic Commit). Це решает проблему частичного обновления даних.</p>
 
         <pre><code class="language-python"># Використання у Application Layer
 def handle_order(cmd):

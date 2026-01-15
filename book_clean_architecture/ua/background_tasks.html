@@ -144,7 +144,7 @@
 
         <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">2. Рішення: Task Dispatcher</h2>
         
-        <p>1. <strong>Interface (Application Layer):</strong> Объявляем, що мы вообще умеем отправлять задачі.</p>
+        <p>1. <strong>Interface (Application Layer):</strong> Объявляем, що ми вообще умеем отправлять задачі.</p>
         <pre><code class="language-python"># application/interfaces/tasks.py
 from typing import Protocol, Any, Dict
 
@@ -175,7 +175,7 @@ class CeleryTaskDispatcher(ITaskDispatcher):
         user = User.create(dto)
         self.repo.save(user)
         
-        # Мы просто говорим "Отправь email", не зная КАК
+        # Ми просто кажемо "Отправь email", не знаючи КАК
         self.tasks.dispatch(
             "send_welcome_email", 
             {"email": user.email, "name": user.name}
@@ -189,7 +189,7 @@ class CeleryTaskDispatcher(ITaskDispatcher):
             <li><strong>Тот же репозиторій, окремий пакет:</strong> удобно, коли хочется переиспользовать бізнес-логіку і конфигурацию. Восстанавливайте Worker из shared library, но держите залежності Infrastructure (Celery, Redis) только у його пакете, щоб остальной сервіс оставался чистым.</li>
             <li><strong>Часть того же додатку:</strong> допустимо для маленьких проєктів. Worker стартует из того же коду і использует те же модули, но потрібно следить, щоб работающий сервіс не импортировал Celery у Application). Це можна робити через окремий entrypoint, который только конфигурирует і запускает задачі.</li>
         </ul>
-        <p>В любом случае не смешивайте worker і HTTP-обработчики у одном потоке: задачі повинні вызываться через dispatcher, а worker — только читати Application Interfaces. Це зберігає правила Clean Architecture.</p>
+        <p>В любом случае не смешивайте worker і HTTP-обработчики у одном потоці: задачі повинні вызываться через dispatcher, а worker — только читати Application Interfaces. Це зберігає правила Clean Architecture.</p>
 
         <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">4. Transactional Outbox</h2>
         <p>Що якщо транзакція БД откатится, а задача у Celery вже уйдет? Пользователь получит email "Вы зарегистрированы", но у базе його нет.</p>

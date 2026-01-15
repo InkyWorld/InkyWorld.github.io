@@ -214,7 +214,7 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
         try:
             # Выполняем запит
             response = await call_next(request)
-            # Возвращаем клиенту, щоб он мог сообщить цей ID у техподдержку
+            # Возвращаем клиенту, щоб він мог сообщить цей ID у техподдержку
             response.headers["X-Request-ID"] = req_id
             return response
         finally:

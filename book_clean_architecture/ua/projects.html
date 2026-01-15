@@ -347,7 +347,7 @@ class EventBus:
         self._handlers: dict[type, List[Callable]] = {}
     
     def subscribe(self, event_type: type, handler: Callable):
-        """Подписка на подія"""
+        """Подписка на подію"""
         if event_type not in self._handlers:
             self._handlers[event_type] = []
         self._handlers[event_type].append(handler)
@@ -1026,7 +1026,7 @@ welcome_rule = (
                     <ul class="list-disc pl-4 text-sm space-y-1">
                         <li><strong>Snapshots:</strong> Делайте снимок агрегата каждые 100 подій, щоб не читати все з нуля.</li>
                         <li><strong>Projections:</strong> Храните read-моделі у быстрой NoSQL базе (Redis/Elastic) для мгновенного поиска.</li>
-                        <li><strong>Upcasting:</strong> Замість миграции БД, преобразуйте старі події у нові "на лету" при чтении у коді.</li>
+                        <li><strong>Upcasting:</strong> Замість миграции БД, преобразуйте старі події у нові "на лету" при читанні у коді.</li>
                     </ul>
                 </div>
             </div>
@@ -1041,7 +1041,7 @@ class BankAccount(AggregateRoot):
     # Command Side (Write Model)
     def deposit(self, amount: Decimal):
         if amount <= 0: raise ValueError("Amount must be positive")
-        self.apply(FundsDeposited(self.id, amount)) # Створюємо і применяем подія
+        self.apply(FundsDeposited(self.id, amount)) # Створюємо і применяем подію
 
     def withdraw(self, amount: Decimal):
         if self.balance < amount: raise ValueError("Insufficient funds")
@@ -1099,7 +1099,7 @@ class UnitOfWork:
     def commit(self):
         # 1. Зберігаємо бізнес-зміни (Order)
         self.session.add(order)
-        # 2. Зберігаємо подія у таблицю OUTBOX у той же ACID транзакції!
+        # 2. Зберігаємо подію у таблицю OUTBOX у той самий ACID транзакції!
         self.session.add(OutboxMessage(
             topic="orders",
             payload=order.to_json(),

@@ -199,7 +199,7 @@
             </ul>
 
             <p class="text-sm text-gray-600">
-                В примере ниже `OrderModel` — це <em>«грязная» модель</em>, то есть конструкция, которую принимают і ждут библиотеки БД. Вона хранит простий `String`, `Float`, `JSON`, і потому що вона связана з инфраструктурой, мы можем змінювати структуру таблиц без риска разорвать бізнес-логіку у Domain Layer.
+                В примере ниже `OrderModel` — це <em>«грязная» модель</em>, то есть конструкция, которую принимают і ждут библиотеки БД. Вона хранит простий `String`, `Float`, `JSON`, і потому що вона связана з инфраструктурой, ми можемо змінювати структуру таблиц без риска разорвать бізнес-логіку у Domain Layer.
                 Domain Entity, напротив, хранит Value Objects, инварианты і поведение, і вона живёт независимо від SQL.
             </p>
 
@@ -264,9 +264,9 @@ Base = declarative_base()
             <details>
                 <summary>Вариант 2: С поддержкой Unit of Work (Рекомендуемый)</summary>
                 <div>
-                    <p class="text-sm mb-4">Тут мы робимо `flush()` замість `commit()`. Коммит будет робити клас UnitOfWork. Це дозволяє змінити замовлення і списать баланс користувача у <strong>однієї атомарной транзакції</strong>.</p>
+                    <p class="text-sm mb-4">Тут ми робимо `flush()` замість `commit()`. Коммит будет робити клас UnitOfWork. Це дозволяє змінити замовлення і списать баланс користувача у <strong>однієї атомарной транзакції</strong>.</p>
                     <p class="text-sm text-gray-600">
-                        UnitOfWork — це об'єкт, который открывает транзакцию, прокидывает одну сессию во всі репозиторії і у конце робить `commit()` або `rollback()` у залежності від результату. Вариант 2 показує, як репозиторій «кладёт» дані і дозволяє UoW решить, коли фиксировать їх целиком. Смотри реализацию `SqlAlchemyUnitOfWork` ниже — он створює `SqlAlchemyOrderRepository(self.session)` у `__enter__`, а Use Case пишет `with self.uow:` і вызывает `self.uow.orders.save(order)`; коммит происходит автоматом після выхода из блока.
+                        UnitOfWork — це об'єкт, который открывает транзакцию, прокидывает одну сессию во всі репозиторії і у конце робить `commit()` або `rollback()` у залежності від результату. Вариант 2 показує, як репозиторій «кладёт» дані і дозволяє UoW решить, коли фиксировать їх целиком. Смотри реализацию `SqlAlchemyUnitOfWork` ниже — він створює `SqlAlchemyOrderRepository(self.session)` у `__enter__`, а Use Case пишет `with self.uow:` і вызывает `self.uow.orders.save(order)`; коммит происходит автоматом після выхода из блока.
                     </p>
 <pre><code class="language-python"><span class="code-keyword">class</span> <span class="code-class">SqlAlchemyOrderRepository</span>(OrderRepository):
     <span class="code-keyword">def</span> <span class="code-func">__init__</span>(self, session):
@@ -302,12 +302,12 @@ Base = declarative_base()
             <details>
                 <summary>Вариант 3: С Кэшированием (Decorator Pattern)</summary>
                 <div>
-                    <p class="text-sm mb-4">Мы не меняем код SQL репозитория. Мы оборачиваем його у декоратор. Принцип Open/Closed.</p>
+                    <p class="text-sm mb-4">Ми не меняем код SQL репозитория. Ми оборачиваем його у декоратор. Принцип Open/Closed.</p>
                     <p class="text-sm text-gray-600">
-                        Декоратор — це об'єкт, реализующий тот же інтерфейс, що і декорируемый репозиторій. Он держит ссылку на оригинал (`decoratee`) і делегирует ему запити, добавляя свои шаги до або после. В примере ниже спочатку идёт збереження у БД, потім декоратор инвалидирует кэш.
+                        Декоратор — це об'єкт, реализующий той самий інтерфейс, що і декорируемый репозиторій. Он держит ссылку на оригинал (`decoratee`) і делегирует ему запити, добавляя свои шаги до або после. В примере ниже спочатку идёт збереження у БД, потім декоратор инвалидирует кэш.
                     </p>
                     <p class="text-sm text-gray-600">
-                        В реальном приложении `decoratee` — це наш Postgres-репозиторій (варіант 2), а `CachedOrderRepository` просто оборачивает його. Мы зберігаємо всі операції у основной репозиторій, а після цього сбрасываем і обновляем кеш, не переписывая базовые методи.
+                        В реальном приложении `decoratee` — це наш Postgres-репозиторій (варіант 2), а `CachedOrderRepository` просто оборачивает його. Ми зберігаємо всі операції у основной репозиторій, а після цього сбрасываем і обновляем кеш, не переписывая базовые методи.
                     </p>
 <pre><code class="language-python"><span class="code-keyword">import</span> json
 
@@ -401,7 +401,7 @@ Base = declarative_base()
         <!-- ADAPTERS -->
         <section id="adapters" class="mb-16">
             <h2 class="text-2xl font-bold mb-4">5. Adapters (Внешние сервисы)</h2>
-            <p>Тут мы реализуем інтерфейси типа `EmailService`. Используем реальные библиотеки.</p>
+            <p>Тут ми реализуем інтерфейси типа `EmailService`. Используем реальные библиотеки.</p>
 
 <pre><code class="language-python"><span class="code-comment"># infrastructure/adapters/email.py</span>
 <span class="code-keyword">import</span> smtplib

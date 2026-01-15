@@ -176,7 +176,7 @@ class CreateOrderUseCase:
         <!-- 2. COMPOSITION ROOT -->
         <section id="composition-root" class="mb-16">
             <h2 class="text-2xl font-bold mb-4">2. Composition Root (Корень Композиции)</h2>
-            <p>Це <strong>єдине место</strong> у приложении, де мы создаем всі об'єкти і связываем їх друг з другом. Обычно це происходит при старте додатку (наприклад, у файле `main.py` або отдельном модуле `dependencies.py`).</p>
+            <p>Це <strong>єдине место</strong> у приложении, де ми создаем всі об'єкти і связываем їх друг з другом. Обычно це происходит при старте додатку (наприклад, у файле `main.py` або отдельном модуле `dependencies.py`).</p>
             
             <div class="diagram">
                 <div class="diagram-block">
@@ -283,7 +283,7 @@ session_factory = sessionmaker(bind=engine)
     <span class="code-keyword">finally</span>:
         session.close()
 
-<span class="code-comment"># В эндпоинте / контейнере мы просто получаем UoW як залежність</span>
+<span class="code-comment"># В эндпоинте / контейнере ми просто получаем UoW як залежність</span>
 <span class="code-keyword">@router.post</span>(<span class="code-str">"/orders"</span>)
 <span class="code-keyword">def</span> <span class="code-func">create_order</span>(cmd: CreateOrderCommand, uow: UnitOfWork = Depends(get_uow)):
     use_case = CreateOrderWithUowUseCase(uow)
@@ -342,7 +342,7 @@ session_factory = sessionmaker(bind=engine)
                     <h4 class="font-bold text-md text-purple-700 mb-2">1. Provider (Провайдер)</h4>
                     <p class="text-sm text-gray-600 mb-2">Провайдер — це клас, группирующий фабрики залежностей. Основной инструмент — декоратор <code>@provide</code>.</p>
                     <pre class="my-2"><code class="language-python">class AppProvider(Provider):
-    # scope=Scope.APP — создает об'єкт один раз на время жизни додатку (Singleton)
+    # scope=Scope.APP — создает об'єкт один раз на час жизни додатку (Singleton)
     @provide(scope=Scope.APP)
     def get_config(self) -> Config:
         return load_config()
@@ -388,7 +388,7 @@ session_factory = sessionmaker(bind=engine)
                 <tbody>
                     <tr class="bg-white border-b">
                         <td class="px-4 py-3 font-bold text-gray-900">Scope.APP</td>
-                        <td class="px-4 py-3">Живет все время роботи додатку.</td>
+                        <td class="px-4 py-3">Живет все час роботи додатку.</td>
                         <td class="px-4 py-3">Пул соединений БД, HttpClient, Config.</td>
                     </tr>
                     <tr class="bg-gray-50 border-b">

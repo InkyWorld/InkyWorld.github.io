@@ -135,10 +135,10 @@
         <section class="mb-16">
             <div class="prose prose-slate max-w-none text-gray-700">
                 
-        <p>Доменное подія — це запис о чем-то важном, що <strong>случилось</strong> у бізнес-домене. Це главный инструмент для построения Event-Driven систем і развязывания (decoupling) логіки.</p>
+        <p>Доменное подію — це запис о чем-то важном, що <strong>случилось</strong> у бізнес-домене. Це главный инструмент для построения Event-Driven систем і развязывания (decoupling) логіки.</p>
 
         <h3 class="font-bold text-lg mt-4">Навіщо?</h3>
-        <p>Замість того, щоб метод <code>Order.pay()</code> вызывал <code>EmailService.send()</code>, он просто генерирует подія <code>OrderPaid</code>. Обработчик події отправит письмо. Домен остается чистым і не залежить від инфраструктуры.</p>
+        <p>Замість того, щоб метод <code>Order.pay()</code> вызывал <code>EmailService.send()</code>, він просто генерирует подію <code>OrderPaid</code>. Обработчик події отправит письмо. Домен остается чистым і не залежить від инфраструктуры.</p>
 
         <pre><code class="language-python"># 1. Событие
 @dataclass(frozen=True)

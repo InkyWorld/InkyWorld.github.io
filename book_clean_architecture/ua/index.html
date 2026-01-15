@@ -273,7 +273,7 @@ class Order:
                     <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">2</div>
                     <div class="ml-4">
                         <h3 class="text-xl font-bold text-gray-900">Application (Use Cases)</h3>
-                        <p class="text-gray-700 mb-2">Це шар «оркестрации»: он координирует вызовы к домену і адаптерам, выполняя конкретные сценарії использования (use cases) — наприклад, регистрация користувача або оплата замовлення.</p>
+                        <p class="text-gray-700 mb-2">Це шар «оркестрации»: він координирует вызовы к домену і адаптерам, выполняя конкретные сценарії использования (use cases) — наприклад, регистрация користувача або оплата замовлення.</p>
                         <p class="text-gray-700">Що у нём: прості сервисы/функції, которые: 1) принимают входные дані (DTO), 2) використовують репозиторії/порт для загрузки і сохранения сущностей, 3) вызывают методи домена. Тут определяются інтерфейси (порты), а не їх реалізації.</p>
                         <pre class="mt-3 code-wide"><code class="language-python">def register_user(repo: UserRepository, dto: RegisterDTO):
     """Use case: регистрация нового користувача з подтверждением email і обработкой реферального коду."""
@@ -290,7 +290,7 @@ class Order:
     # 4. Зберігаємо через порт (інтерфейс репозитория) — реалізація у infrastructure
     repo.save(user)
 
-    # 5. Генерируем доменное подія для асинхронных побочных эффехтов (письмо, метрика)
+    # 5. Генерируем доменное подію для асинхронных побочных эффехтов (письмо, метрика)
     user.record_event(UserRegistered(user.id, email=user.email))
 
     return user</code></pre>
@@ -302,7 +302,7 @@ class Order:
                                 <li><strong>User(...)</strong> — створюємо чисту доменну сутність; вона не знає про БД або мережеві клієнти.</li>
                                 <li><strong>if dto.referral_code: user.apply_referral(...)</strong> — приклад бізнес-правила, яке змінює стан сутності (наприклад, нараховує бонуси).</li>
                                 <li><strong>repo.save(user)</strong> — зберігаємо через інтерфейс репозитория; конкретная реалізація (ORM, HTTP-клиент) находится у Infrastructure.</li>
-                                <li><strong>user.record_event(...)</strong> — добавляем доменное подія; инфраструктура або UnitOfWork потім отправит email/уведомления асинхронно.</li>
+                                <li><strong>user.record_event(...)</strong> — добавляем доменное подію; инфраструктура або UnitOfWork потім отправит email/уведомления асинхронно.</li>
                                 <li><strong>return user</strong> — возвращаем результат use case; Presentation шар сформирует ответ для користувача.</li>
                             </ol>
 
@@ -333,7 +333,7 @@ class Order:
                     <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-500 flex items-center justify-center text-white font-bold">4</div>
                     <div class="ml-4">
                         <h3 class="text-xl font-bold text-gray-900">External Interfaces (Presentation)</h3>
-                        <p class="text-gray-700 mb-2">Внешняя оболочка: REST/GraphQL API, Web UI, CLI, задачі у очередях. Их задача — преобразовать запити у понятные для application дані і повернути ответ пользователю або системе.</p>
+                        <p class="text-gray-700 mb-2">Внешняя оболочка: REST/GraphQL API, Web UI, CLI, задачі у очередях. Их задача — преобразовать запити у понятные для application дані і повернути ответ користувачу або системе.</p>
                         <p class="text-gray-700">Важливо: presentation не містить бізнес-логіки — только преобразования, валидацию і вызов use cases.</p>
                         <pre class="mt-3 code-wide"><code class="language-python">@router.post('/users')
 def create_user(body: CreateUserDTO):
