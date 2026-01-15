@@ -65,48 +65,62 @@
             </div>
 
             <div class="nav-section">Основы</div>
-            <a href="index.html" class="nav-link ">📘 Введение</a>
-            
+            <a href="index.html" class="nav-link">📘 Введение</a>
+            <a href="solid.html" class="nav-link">📐 SOLID принципы</a>
+            <a href="project_structure.html" class="nav-link">🧭 Структура проекта (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
             <div class="nav-section">Слои архитектуры</div>
-            <a href="domain.html" class="nav-link ">🎯 Domain Layer</a>
-            <a href="application.html" class="nav-link ">⚙️ Application Layer</a>
-            <a href="infrastructure.html" class="nav-link ">🔧 Infrastructure Layer</a>
-            <a href="presentation.html" class="nav-link ">🌐 Presentation Layer</a>
-            <a href="middleware.html" class="nav-link ">🔌 Middleware</a>
+            <a href="domain.html" class="nav-link">🎯 Domain Layer</a>
+            <a href="application.html" class="nav-link">⚙️ Application Layer</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Infrastructure Layer</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
 
-            <div class="nav-section">Принципы и паттерны</div>
-            <a href="solid.html" class="nav-link ">📐 SOLID принципы</a>
-            <a href="invariants.html" class="nav-link ">🛡️ Инварианты</a>
-            <a href="dependency.html" class="nav-link ">💉 Dependency Injection</a>
-            <a href="cqrs_es.html" class="nav-link ">⚡ CQRS и ES</a>
-            
-            <div class="nav-section">Security & Production</div>
-            <a href="security.html" class="nav-link ">🔐 Auth & Permissions</a>
-            <a href="concurrency.html" class="nav-link ">🛑 Concurrency & Migrations</a>
-            <a href="background_tasks.html" class="nav-link ">⏳ Background Tasks</a>
-            <a href="error_handling.html" class="nav-link ">🚫 Error Handling</a>
-            <a href="config_logging.html" class="nav-link ">⚙️ Config & Observability</a>
-
-            <div class="nav-section">DDD Patterns</div>
-            <a href="bounded_context.html" class="nav-link ">🌍 Bounded Contexts</a>
-            <a href="modular_monolith.html" class="nav-link ">🏗️ Modular Monolith</a>
-            <a href="aggregates.html" class="nav-link ">📦 Aggregates</a>
-            <a href="value_objects.html" class="nav-link ">💎 Value Objects</a>
-            <a href="repository_uow.html" class="nav-link ">🗄️ Repository & UoW</a>
+            <div class="nav-section">Тактический DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
+            <a href="invariants.html" class="nav-link">🛡️ Инварианты</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
             <a href="specification.html" class="nav-link active">📋 Specification</a>
+            <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
+            <a href="policies.html" class="nav-link">📜 Policies</a>
+            <a href="versioning.html" class="nav-link">🔄 Versioning</a>
 
-            <div class="nav-section">EDA & Dist. Systems</div>
-            <a href="domain_events.html" class="nav-link ">📣 Domain Events</a>
-            <a href="saga.html" class="nav-link ">🔄 Saga Pattern</a>
-            <a href="outbox.html" class="nav-link ">📮 Outbox Pattern</a>
+            <div class="nav-section">Стратегический DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Bounded Contexts</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
 
-            <div class="nav-section">Frameworks & Практика</div>
-            <a href="frameworks_django.html" class="nav-link ">🐍 Django & Others</a>
-            <a href="advanced_techniques.html" class="nav-link ">🚀 Advanced Tech</a>
-            <a href="deployment.html" class="nav-link ">🚀 Deployment & Protection</a>
-            <a href="testing.html" class="nav-link ">🧪 Тестирование</a>
-            <a href="projects.html" class="nav-link ">🚀 Мини-проекты</a>
-            <a href="antipatterns.html" class="nav-link ">⚠️ Антипаттерны</a>
+            <div class="nav-section">CQRS и Распределенные системы</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS и ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Надежность и Безопасность</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
+            <a href="concurrency.html" class="nav-link">🛑 Concurrency & Migrations</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
+
+            <div class="nav-section">Качество и Практика</div>
+            <a href="testing.html" class="nav-link">🧪 Тестирование</a>
+            <a href="overengineering.html" class="nav-link">🛑 Избыточность</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
+            <a href="projects.html" class="nav-link">🚀 Мини-проекты</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Антипаттерны</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">О проекте</div>
+            <a href="afterword.html" class="nav-link">👋 Послесловие</a>
         </nav>
 
     </aside>
@@ -121,34 +135,85 @@
         <section class="mb-16">
             <div class="prose prose-slate max-w-none text-gray-700">
                 
-        <p>Паттерн Спецификация позволяет выделить правило проверки (верификации) объекта в отдельный класс. Это полезно, когда правило сложное и переиспользуется.</p>
+        <p>Паттерн <strong>Спецификация (Specification)</strong> — это способ превратить сложное условие <code>if</code> в отдельный именованный класс. Это как "фейс-контроль": у вас есть четкий список критериев, кого пускать.</p>
 
-        <h3 class="font-bold text-lg mt-4">Варианты использования:</h3>
-        <ul class="list-disc list-inside space-y-2 mb-4">
-            <li><strong>Валидация:</strong> Удовлетворяет ли объект критериям?</li>
-            <li><strong>Выборка (Query):</strong> Найти все объекты, удовлетворяющие критериям.</li>
-            <li><strong>Построение:</strong> Создание нового объекта по требованиям.</li>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8">Проблема и Решение</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-red-50 p-4 rounded-lg border border-red-100">
+                <h3 class="font-bold text-red-600 mb-2">❌ Без паттерна (Каша из IF)</h3>
+                <p class="text-sm text-gray-600 mb-2">Логика размазана, сложно читать.</p>
+                <pre class="!m-0 !p-3 text-xs"><code class="language-python"># В сервисе аренды
+if (user.age >= 21 and 
+    user.license_type == 'B' and 
+    not user.has_active_loans):
+    print("Можно арендовать")</code></pre>
+            </div>
+            <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+                <h3 class="font-bold text-green-600 mb-2">✅ С паттерном (Понятное имя)</h3>
+                <p class="text-sm text-gray-600 mb-2">Правило имеет имя и живет отдельно.</p>
+                <pre class="!m-0 !p-3 text-xs"><code class="language-python"># Читается как человеческий язык
+rule = CanRentCar()
+
+if rule.is_satisfied_by(user):
+    print("Можно арендовать")</code></pre>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8">1. Как это работает (Валидация)</h2>
+        <p>Мы создаем класс с одним методом <code>is_satisfied_by</code> (удовлетворяет ли?).</p>
+        <pre><code class="language-python">class CanRentCarSpecification:
+    def is_satisfied_by(self, user: User) -> bool:
+        # Вся сложная логика живет здесь
+        has_age = user.age >= 21
+        has_license = user.license_type == 'B'
+        return has_age and has_license</code></pre>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8">2. Конструктор правил (Композиция)</h2>
+        <p>Сила паттерна в том, что вы можете комбинировать маленькие правила, как кубики Lego, используя <code>И</code> (AND), <code>ИЛИ</code> (OR), <code>НЕ</code> (NOT).</p>
+        <pre><code class="language-python">is_adult = IsAdultSpec()
+has_money = HasMoneySpec()
+
+# Создаем новое правило из двух старых
+# "Взрослый И с деньгами"
+can_buy_beer = is_adult & has_money 
+
+if can_buy_beer.is_satisfied_by(bob):
+    sell_beer(bob)</code></pre>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8">3. Поиск (Фильтрация)</h2>
+        <p>Вместо того чтобы писать в Репозитории методы на все случаи жизни:</p>
+        <ul class="list-disc list-inside text-sm text-gray-600 mb-2 ml-4">
+            <li>find_users_by_age(21)</li>
+            <li>find_users_by_age_and_money(21, 100)</li>
+            <li>find_users_active_and_adult(...)</li>
         </ul>
-
-        <pre><code class="language-python">class OverdueInvoiceSpecification:
-    def is_satisfied_by(self, invoice: Invoice) -> bool:
-        return (
-            invoice.status == 'UNPAID' and 
-            invoice.due_date < datetime.now() and
-            invoice.amount > 1000
-        )
+        <p>Мы делаем один универсальный метод <code>find</code>, который принимает Спецификацию.</p>
+        
+        <pre><code class="language-python"># Application Layer
+# "Найди мне всех пользователей, которые могут арендовать машину"
+rule = CanRentCarSpecification()
+users = repository.find(rule)
 </code></pre>
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-4 text-sm">
+            <strong>На заметку:</strong> Чтобы это работало с базой данных (SQL), внутри репозитория нам нужно перевести Python-код <code>user.age >= 21</code> в SQL <code>WHERE age >= 21</code>. Это самая сложная часть, поэтому часто используют готовые библиотеки.
+        </div>
         
             </div>
         </section>
 
-    
         <!-- NAVIGATION FOOTER -->
-        
-        <!-- NAVIGATION FOOTER -->
-        
-        <!-- NAVIGATION FOOTER -->
-        <div class="mt-12 pt-8 border-t border-gray-200"><div class="flex flex-col md:flex-row justify-between items-center gap-4"><a href="repository_uow.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right"><span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1 flex justify-end">Назад</span><span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">&larr; Repository Uow</span></a><a href="domain_events.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left"><span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1">Далее</span><span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">Domain Events &rarr;</span></a></div></div>
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="repository_uow.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Назад</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🗄️ Repository & UoW</span>
+                </a>
+                <a href="domain_events.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Далее</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">📣 Domain Events &rarr;</span>
+                </a>
+            </div>
+        </div>
     </main>
 </body>
 </html>

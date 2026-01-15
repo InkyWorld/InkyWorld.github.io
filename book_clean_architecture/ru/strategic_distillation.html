@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deployment & Protection - Clean Architecture</title>
+    <title>Strategic Distillation - Clean Architecture</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
@@ -36,12 +36,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             margin: 1.5rem 0;
         }
-        .code-keyword { color: #c084fc; font-weight: bold; } 
-        .code-class { color: #fbbf24; font-weight: bold; }   
-        .code-func { color: #60a5fa; font-weight: bold; }    
-        .code-str { color: #a3e635; }                        
-        .hljs-comment, .hljs-quote { color: #475569 !important; font-weight: 700 !important; font-style: normal !important; }
-        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
+        .hljs-comment { color: #475569; font-weight: 700; }
     </style>
 </head>
 <body class="flex bg-slate-50">
@@ -56,11 +51,11 @@
         <nav class="py-4">
             <div class="px-4 mb-4">
                 <div class="flex gap-2 text-xs font-bold text-slate-400">
-                    <a href="deployment.html" class="text-blue-400 font-bold">RU</a>
+                    <a href="strategic_distillation.html" class="text-blue-400 font-bold">RU</a>
                     <span class="text-slate-600">|</span>
-                    <a href="../en/deployment.html" class="hover:text-white transition">EN</a>
+                    <a href="../en/strategic_distillation.html" class="hover:text-white transition">EN</a>
                     <span class="text-slate-600">|</span>
-                    <a href="../ua/deployment.html" class="hover:text-white transition">UA</a>
+                    <a href="../ua/strategic_distillation.html" class="hover:text-white transition">UA</a>
                 </div>
             </div>
 
@@ -113,7 +108,7 @@
             <div class="nav-section">Качество и Практика</div>
             <a href="testing.html" class="nav-link">🧪 Тестирование</a>
             <a href="overengineering.html" class="nav-link">🛑 Избыточность</a>
-            <a href="deployment.html" class="nav-link active">🚀 Deployment & Protection</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
             <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
             <a href="projects.html" class="nav-link">🚀 Мини-проекты</a>
             <a href="antipatterns.html" class="nav-link">⚠️ Антипаттерны</a>
@@ -126,91 +121,53 @@
     </aside>
 
     <!-- CONTENT -->
-    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-5xl mx-auto">
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-4xl mx-auto">
         <header class="mb-12 pb-8 border-b border-gray-200">
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Deployment & Protection</h1>
-            <p class="text-xl text-gray-600">Защита архитектуры тестами, Docker и Makefile.</p>
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Strategic Distillation</h1>
+            <p class="text-xl text-gray-600">Отделение зерен от плевел. Как сфокусироваться на главном.</p>
         </header>
 
         <section class="mb-16">
             <div class="prose prose-slate max-w-none text-gray-700">
+                <p>Ваши ресурсы ограничены. Вы не можете сделать идеально <strong>ВСЁ</strong>.</p>
+                <p><strong>Distillation (Дистилляция)</strong> — это процесс непрерывного выделения Core Domain (Ядра) из общей массы кода, чтобы сфокусировать на нем внимание.</p>
+                
+                <h3 class="font-bold text-lg mt-8 mb-4">Как понять, что в Core попал мусор?</h3>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>Вам сложно читать код ядра из-за обилия утилит?</li>
+                    <li>Вы видите код, который можно увидеть в любом другом проекте (отправка писем, логирование)?</li>
+                    <li>Бизнес-эксперты скучают, когда вы это обсуждаете?</li>
+                </ul>
 
-    <p>Как гарантировать, что архитектура не "сгниет" через полгода? Как упаковать это всё для продакшена?</p>
-
-    <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">1. Архитектурные Тесты</h2>
-    <p>Документацию не читают. Пайплайн в GitLab/GitHub читают все (когда он падает). Запретим неправильные импорты.</p>
-    <p>Используем <code>pytest-archon</code>.</p>
-    
-    <pre><code class="language-python"># tests/test_architecture.py
-from pytest_archon import archrule
-
-def test_domain_isolation():
-    (
-        archrule("domain_rule")
-        .match("my_project.domain*")
-        .should_not_import("my_project.infrastructure*")
-        .should_not_import("my_project.application*")
-        .should_not_import("sqlalchemy") 
-        .should_not_import("fastapi")
-        .check("my_project")
-    )
-</code></pre>
-
-    <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">2. Docker Multi-Stage Build</h2>
-    <p>Ваш образ должен весить 100MB, а не 1GB. Компилируем зависимости отдельно.</p>
-    
-    <pre><code class="language-dockerfile"># BUILDER STAGE
-FROM python:3.11-slim as builder
-WORKDIR /app
-RUN apt-get update && apt-get install -y build-essential
-COPY requirements.txt .
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
-
-# RUNNER STAGE
-FROM python:3.11-slim
-WORKDIR /app
-COPY --from=builder /app/wheels /wheels
-COPY --from=builder /app/requirements.txt .
-RUN pip install --no-cache /wheels/*
-
-COPY src/ src/
-RUN adduser --disabled-password appuser
-USER appuser
-
-CMD ["python", "-m", "src.main"]
-</code></pre>
-
-    <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">3. Makefile как Единая Точка Входа</h2>
-    <p>Никто не помнит команды запуска тестов или линтеров. Сделайте <code>Makefile</code>.</p>
-    <pre><code class="language-makefile">test:
-    pytest tests/
-
-lint:
-    ruff check src/
-    mypy src/
-
-run:
-    uvicorn src.main:app --reload
-
-up:
-    docker-compose up -d
-</code></pre>
+                <h3 class="font-bold text-lg mt-8 mb-4">Методы очистки (Refactoring)</h3>
+                <ol class="list-decimal pl-5 space-y-3">
+                    <li><strong>Выделите Generic Subdomains:</strong> Если пишете свой шаблонизатор — остановитесь. Возьмите Jinja2. Вынесите это за скобки Core.</li>
+                    <li><strong>Создайте Supporting Subdomains:</strong> Вынесите вспомогательную логику (импорт Excel) в отдельный модуль. Пусть ядро просто вызывает <code>ImportService.run()</code>.</li>
+                    <li><strong>Core Domain Manifesto:</strong> Напишите документ (1-2 страницы), описывающий суть. Что именно мы делаем уникального?</li>
+                </ol>
 
             </div>
         </section>
-    <div class="mt-12 pt-8 border-t border-gray-200"><div class="flex flex-col md:flex-row justify-between items-center gap-4"><a href="advanced_techniques.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right"><span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1 flex justify-end">Назад</span><span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">&larr; Advanced Techniques</span></a><a href="testing.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left"><span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1">Далее</span><span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">Testing &rarr;</span></a></div></div>
+
+        <!-- FOOTER -->
+        <div class="mt-12 pt-8 border-t border-gray-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="modular_monolith.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right">
+                    <span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1 flex justify-end">Назад</span>
+                    <span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">&larr; Modular Monolith</span>
+                </a>
+                <a href="cqrs_es.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left">
+                    <span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1">Далее</span>
+                    <span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">CQRS & ES &rarr;</span>
+                </a>
+            </div>
+        </div>
 
         <!-- NAVIGATION FOOTER -->
         <div class="mt-24 pt-10 border-t border-slate-200">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <a href="overengineering.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
-                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Назад</span>
-                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🛑 Избыточность</span>
-                </a>
-                <a href="frameworks_django.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
-                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Далее</span>
-                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🐍 Django & Others &rarr;</span>
-                </a>
+                <div class="hidden md:block w-1/2"></div>
+                <div class="hidden md:block w-1/2"></div>
             </div>
         </div>
     </main>

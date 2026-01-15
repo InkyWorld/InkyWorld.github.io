@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deployment & Protection - Clean Architecture</title>
+    <title>Subdomains - Clean Architecture</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
@@ -35,13 +35,8 @@
             border: 1px solid #334155;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             margin: 1.5rem 0;
-        }
-        .code-keyword { color: #c084fc; font-weight: bold; } 
-        .code-class { color: #fbbf24; font-weight: bold; }   
-        .code-func { color: #60a5fa; font-weight: bold; }    
-        .code-str { color: #a3e635; }                        
-        .hljs-comment, .hljs-quote { color: #475569 !important; font-weight: 700 !important; font-style: normal !important; }
-        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
+        } 
+        .hljs-comment { color: #475569; font-weight: 700; }
     </style>
 </head>
 <body class="flex bg-slate-50">
@@ -56,11 +51,11 @@
         <nav class="py-4">
             <div class="px-4 mb-4">
                 <div class="flex gap-2 text-xs font-bold text-slate-400">
-                    <a href="deployment.html" class="text-blue-400 font-bold">RU</a>
+                    <a href="subdomains.html" class="text-blue-400 font-bold">RU</a>
                     <span class="text-slate-600">|</span>
-                    <a href="../en/deployment.html" class="hover:text-white transition">EN</a>
+                    <a href="../en/subdomains.html" class="hover:text-white transition">EN</a>
                     <span class="text-slate-600">|</span>
-                    <a href="../ua/deployment.html" class="hover:text-white transition">UA</a>
+                    <a href="../ua/subdomains.html" class="hover:text-white transition">UA</a>
                 </div>
             </div>
 
@@ -91,7 +86,7 @@
             <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
             <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
             <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
-            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="subdomains.html" class="nav-link active">🧬 Subdomains</a>
             <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
             <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
             <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
@@ -113,7 +108,7 @@
             <div class="nav-section">Качество и Практика</div>
             <a href="testing.html" class="nav-link">🧪 Тестирование</a>
             <a href="overengineering.html" class="nav-link">🛑 Избыточность</a>
-            <a href="deployment.html" class="nav-link active">🚀 Deployment & Protection</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
             <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
             <a href="projects.html" class="nav-link">🚀 Мини-проекты</a>
             <a href="antipatterns.html" class="nav-link">⚠️ Антипаттерны</a>
@@ -126,90 +121,89 @@
     </aside>
 
     <!-- CONTENT -->
-    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-5xl mx-auto">
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-4xl mx-auto">
         <header class="mb-12 pb-8 border-b border-gray-200">
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Deployment & Protection</h1>
-            <p class="text-xl text-gray-600">Защита архитектуры тестами, Docker и Makefile.</p>
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Subdomains (Поддомены)</h1>
+            <p class="text-xl text-gray-600">Не все части вашей системы одинаково важны. Учитесь расставлять приоритеты.</p>
         </header>
 
         <section class="mb-16">
             <div class="prose prose-slate max-w-none text-gray-700">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Проблема пространства (Problem Space)</h2>
+                <p>Если Bounded Context — это то, <strong>КАК</strong> мы организуем код (Solution Space), то Subdomain — это то, <strong>КАКИЕ</strong> проблемы мы решаем (Problem Space).</p>
+                
+                <div class="grid md:grid-cols-3 gap-6 mt-8">
+                    <!-- CORE -->
+                    <div class="bg-yellow-50 border border-yellow-200 p-6 rounded-lg text-center">
+                        <div class="text-4xl mb-4">👑</div>
+                        <h3 class="font-bold text-yellow-900 text-lg mb-2">Core Domain</h3>
+                        <p class="text-sm font-bold uppercase tracking-wider text-yellow-600 mb-4">Разрабатываем сами</p>
+                        <ul class="text-sm text-left list-disc pl-4 space-y-2">
+                            <li>Конкурентное преимущество.</li>
+                            <li>То, ради чего существует бизнес.</li>
+                            <li>Самые сильные разработчики здесь.</li>
+                        </ul>
+                    </div>
 
-    <p>Как гарантировать, что архитектура не "сгниет" через полгода? Как упаковать это всё для продакшена?</p>
+                    <!-- SUPPORTING -->
+                    <div class="bg-gray-50 border border-gray-200 p-6 rounded-lg text-center">
+                        <div class="text-4xl mb-4">🏗️</div>
+                        <h3 class="font-bold text-gray-900 text-lg mb-2">Supporting</h3>
+                        <p class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">Аутсорсим или пишем просто</p>
+                        <ul class="text-sm text-left list-disc pl-4 space-y-2">
+                            <li>Необходимо для работы, но не "фишка".</li>
+                            <li>Нет готовых решений на рынке.</li>
+                            <li>CRUD-стиль, Juniors могут справиться.</li>
+                        </ul>
+                    </div>
 
-    <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">1. Архитектурные Тесты</h2>
-    <p>Документацию не читают. Пайплайн в GitLab/GitHub читают все (когда он падает). Запретим неправильные импорты.</p>
-    <p>Используем <code>pytest-archon</code>.</p>
-    
-    <pre><code class="language-python"># tests/test_architecture.py
-from pytest_archon import archrule
+                    <!-- GENERIC -->
+                    <div class="bg-blue-50 border border-blue-200 p-6 rounded-lg text-center">
+                        <div class="text-4xl mb-4">📦</div>
+                        <h3 class="font-bold text-blue-900 text-lg mb-2">Generic</h3>
+                        <p class="text-sm font-bold uppercase tracking-wider text-blue-500 mb-4">Покупаем / Библиотеки</p>
+                        <ul class="text-sm text-left list-disc pl-4 space-y-2">
+                            <li>Типовые задачи: Auth, Payments, Logging.</li>
+                            <li>Берем Auth0, Stripe, ELK Stack.</li>
+                            <li>Не пишем велосипеды.</li>
+                        </ul>
+                    </div>
+                </div>
 
-def test_domain_isolation():
-    (
-        archrule("domain_rule")
-        .match("my_project.domain*")
-        .should_not_import("my_project.infrastructure*")
-        .should_not_import("my_project.application*")
-        .should_not_import("sqlalchemy") 
-        .should_not_import("fastapi")
-        .check("my_project")
-    )
-</code></pre>
-
-    <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">2. Docker Multi-Stage Build</h2>
-    <p>Ваш образ должен весить 100MB, а не 1GB. Компилируем зависимости отдельно.</p>
-    
-    <pre><code class="language-dockerfile"># BUILDER STAGE
-FROM python:3.11-slim as builder
-WORKDIR /app
-RUN apt-get update && apt-get install -y build-essential
-COPY requirements.txt .
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
-
-# RUNNER STAGE
-FROM python:3.11-slim
-WORKDIR /app
-COPY --from=builder /app/wheels /wheels
-COPY --from=builder /app/requirements.txt .
-RUN pip install --no-cache /wheels/*
-
-COPY src/ src/
-RUN adduser --disabled-password appuser
-USER appuser
-
-CMD ["python", "-m", "src.main"]
-</code></pre>
-
-    <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">3. Makefile как Единая Точка Входа</h2>
-    <p>Никто не помнит команды запуска тестов или линтеров. Сделайте <code>Makefile</code>.</p>
-    <pre><code class="language-makefile">test:
-    pytest tests/
-
-lint:
-    ruff check src/
-    mypy src/
-
-run:
-    uvicorn src.main:app --reload
-
-up:
-    docker-compose up -d
-</code></pre>
+                <h3 class="font-bold text-lg mt-12 mb-4">Пример E-commerce</h3>
+                <ul class="space-y-3">
+                    <li><strong>Core:</strong> Алгоритм умных рекомендаций, оптимизация маршрутов доставки (если мы Uber).</li>
+                    <li><strong>Generic:</strong> Бухгалтерия (1C/SAP), Авторизация (Keycloak).</li>
+                    <li><strong>Supporting:</strong> ETL для загрузки каталога товаров (надо написать, но это скучно).</li>
+                </ul>
 
             </div>
         </section>
-    <div class="mt-12 pt-8 border-t border-gray-200"><div class="flex flex-col md:flex-row justify-between items-center gap-4"><a href="advanced_techniques.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right"><span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1 flex justify-end">Назад</span><span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">&larr; Advanced Techniques</span></a><a href="testing.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left"><span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1">Далее</span><span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">Testing &rarr;</span></a></div></div>
+
+        <!-- FOOTER -->
+        <div class="mt-12 pt-8 border-t border-gray-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="bounded_context.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right">
+                    <span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1 flex justify-end">Назад</span>
+                    <span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">&larr; Bounded Context</span>
+                </a>
+                <a href="modular_monolith.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left">
+                    <span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1">Далее</span>
+                    <span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">Modular Monolith &rarr;</span>
+                </a>
+            </div>
+        </div>
 
         <!-- NAVIGATION FOOTER -->
         <div class="mt-24 pt-10 border-t border-slate-200">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <a href="overengineering.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                <a href="acl.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
                     <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Назад</span>
-                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🛑 Избыточность</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🛡️ Anti-Corruption Layer</span>
                 </a>
-                <a href="frameworks_django.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                <a href="modular_monolith.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
                     <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Далее</span>
-                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🐍 Django & Others &rarr;</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🏗️ Modular Monolith &rarr;</span>
                 </a>
             </div>
         </div>
