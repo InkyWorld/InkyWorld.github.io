@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Глава 5: Presentation Layer - Clean Architecture</title>
+    <title>Chapter 5: Presentation Layer - Clean Architecture</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
     <style>
@@ -64,18 +64,18 @@
         <nav class="py-4">
             <div class="px-4 mb-4">
                 <div class="flex gap-2 text-xs font-bold text-slate-400">
-                    <a href="presentation.html" class="text-blue-400 font-bold">RU</a>
+                    <a href="../ru/presentation.html" class="hover:text-white transition">RU</a>
                     <span class="text-slate-600">|</span>
-                    <a href="../en/presentation.html" class="hover:text-white transition">EN</a>
+                    <a href="presentation.html" class="text-blue-400 font-bold">EN</a>
                     <span class="text-slate-600">|</span>
                     <a href="../ua/presentation.html" class="hover:text-white transition">UA</a>
                 </div>
             </div>
 
             <div class="nav-section">Fundamentals</div>
-            <a href="index.html" class="nav-link">📘 Введение</a>
-            <a href="solid.html" class="nav-link">📐 SOLID принципы</a>
-            <a href="project_structure.html" class="nav-link">🧭 Структура проекта (DDD)</a>
+            <a href="index.html" class="nav-link">📘 Introduction</a>
+            <a href="solid.html" class="nav-link">📐 SOLID Principles</a>
+            <a href="project_structure.html" class="nav-link">🧭 Project Structure (DDD)</a>
             <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
 
             <div class="nav-section">Architecture Layers</div>
@@ -87,7 +87,7 @@
 
             <div class="nav-section">Tactical DDD</div>
             <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
-            <a href="invariants.html" class="nav-link">🛡️ Инварианты</a>
+            <a href="invariants.html" class="nav-link">🛡️ Invariants</a>
             <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
             <a href="specification.html" class="nav-link">📋 Specification</a>
             <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
@@ -106,7 +106,7 @@
             <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
 
             <div class="nav-section">CQRS & Distributed Systems</div>
-            <a href="cqrs_es.html" class="nav-link">⚡ CQRS и ES</a>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS & ES</a>
             <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
             <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
             <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
@@ -119,16 +119,16 @@
             <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
 
             <div class="nav-section">Quality & Practice</div>
-            <a href="testing.html" class="nav-link">🧪 Тестирование</a>
-            <a href="overengineering.html" class="nav-link">🛑 Избыточность</a>
+            <a href="testing.html" class="nav-link">🧪 Testing</a>
+            <a href="overengineering.html" class="nav-link">🛑 Overengineering</a>
             <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
             <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
-            <a href="projects.html" class="nav-link">🚀 Мини-проекты</a>
-            <a href="antipatterns.html" class="nav-link">⚠️ Антипаттерны</a>
+            <a href="projects.html" class="nav-link">🚀 Mini-Projects</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Antipatterns</a>
             <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
 
             <div class="nav-section">About</div>
-            <a href="afterword.html" class="nav-link">👋 Послесловие</a>
+            <a href="afterword.html" class="nav-link">👋 Afterword</a>
         </nav>
     </aside>
 
@@ -140,9 +140,9 @@
                 <span class="bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Layer 4</span>
                 <span class="text-gray-400 text-sm font-mono">FastAPI / Django / Flask</span>
             </div>
-            <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Presentation Layer (Слой Представления)</h1>
+            <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Presentation Layer</h1>
             <p class="text-xl text-gray-500 mt-4 font-light">
-                Точка входа в приложение. Здесь мы принимаем HTTP-запросы, вызываем Use Cases и возвращаем красивые ответы.
+                The entry point to your application. This is where we accept HTTP requests, invoke Use Cases, and return beautiful responses.
             </p>
         </header>
 
@@ -153,48 +153,48 @@
 
         <!-- ANATOMY -->
         <section class="card">
-            <h2 class="text-2xl font-bold mb-6">Анатомия Слоя</h2>
+            <h2 class="text-2xl font-bold mb-6">Layer Anatomy</h2>
             <div class="grid md:grid-cols-2 gap-8">
                 <div>
                     <h3 class="flex items-center gap-2 font-bold text-green-800 mb-4 border-b border-green-200 pb-2 w-full">
-                        ✅ MUST HAVE (Должно быть)
+                        ✅ MUST HAVE
                     </h3>
                     <ul class="space-y-4 text-sm">
                         <li class="flex items-start">
                             <span class="badge badge-green mt-1">Route</span>
-                            <div><strong>Роутеры/Эндпоинты:</strong> Определение URL путей и HTTP методов (GET, POST, PUT, DELETE).</div>
+                            <div><strong>Routers/Endpoints:</strong> Define URL paths and HTTP methods (GET, POST, PUT, DELETE).</div>
                         </li>
                         <li class="flex items-start">
                             <span class="badge badge-green mt-1">Schema</span>
-                            <div><strong>Request/Response схемы:</strong> Pydantic модели для валидации входящих данных и форматирования ответов.</div>
+                            <div><strong>Request/Response Schemas:</strong> Pydantic models for validating incoming data and formatting responses.</div>
                         </li>
                         <li class="flex items-start">
                             <span class="badge badge-green mt-1">Error</span>
-                            <div><strong>Exception Handlers:</strong> Преобразование DomainError в HTTP-ответы (400, 404, 409).</div>
+                            <div><strong>Exception Handlers:</strong> Transform DomainError into HTTP responses (400, 404, 409).</div>
                         </li>
                         <li class="flex items-start">
                             <span class="badge badge-green mt-1">Auth</span>
-                            <div><strong>Middleware:</strong> Аутентификация, логирование запросов, CORS.</div>
+                            <div><strong>Middleware:</strong> Authentication, request logging, CORS.</div>
                         </li>
                     </ul>
                 </div>
                 
                 <div>
                     <h3 class="flex items-center gap-2 font-bold text-red-800 mb-4 border-b border-red-200 pb-2 w-full">
-                        ⛔ FORBIDDEN (Строго запрещено)
+                        ⛔ FORBIDDEN
                     </h3>
                     <ul class="space-y-4 text-sm">
                         <li class="flex items-start">
                             <span class="badge badge-red mt-1">Logic</span>
-                            <div><strong>Бизнес-логика:</strong> Никаких `if order.total > 1000: apply_discount()`. Это работа Use Case или Entity!</div>
+                            <div><strong>Business Logic:</strong> No `if order.total > 1000: apply_discount()`. That's the job of a Use Case or Entity!</div>
                         </li>
                         <li class="flex items-start">
                             <span class="badge badge-red mt-1">DB</span>
-                            <div><strong>SQL / ORM:</strong> Никаких `session.query()` в эндпоинтах. Всё через Use Case → Repository.</div>
+                            <div><strong>SQL / ORM:</strong> No `session.query()` in endpoints. Everything through Use Case → Repository.</div>
                         </li>
                         <li class="flex items-start">
                             <span class="badge badge-red mt-1">Domain</span>
-                            <div><strong>Возврат Entities:</strong> Не возвращайте `Order` напрямую. Сначала превратите в DTO/Schema.</div>
+                            <div><strong>Returning Entities:</strong> Don't return `Order` directly. Convert it to DTO/Schema first.</div>
                         </li>
                     </ul>
                 </div>
@@ -204,8 +204,8 @@
         <!-- SCHEMAS -->
         <section id="schemas" class="mb-16">
             <h2 class="text-2xl font-bold mb-4">1. Request/Response Schemas (Pydantic)</h2>
-            <p><strong>Pydantic</strong> — это библиотека для валидации данных. В FastAPI она встроена. Используем её для создания "контрактов" API.</p>
-            <p>Важно: Pydantic схемы — это <strong>не то же самое</strong>, что DTO из Application Layer. Схемы знают про JSON, сериализацию, HTTP. DTO — чистые данные.</p>
+            <p><strong>Pydantic</strong> is a library for data validation. In FastAPI it's built-in. We use it to create API "contracts".</p>
+            <p>Important: Pydantic schemas are <strong>not the same</strong> as DTOs from the Application Layer. Schemas know about JSON, serialization, HTTP. DTOs are pure data.</p>
 
 <pre><code class="language-python"><span class="code-comment"># presentation/schemas/order.py</span>
 <span class="code-keyword">from</span> pydantic <span class="code-keyword">import</span> BaseModel, EmailStr, Field, field_validator
@@ -213,29 +213,29 @@
 <span class="code-keyword">from</span> datetime <span class="code-keyword">import</span> datetime
 
 <span class="code-comment"># ═══════════════════════════════════════════════════</span>
-<span class="code-comment"># REQUEST SCHEMAS (Входящие данные)</span>
+<span class="code-comment"># REQUEST SCHEMAS (Incoming data)</span>
 <span class="code-comment"># ═══════════════════════════════════════════════════</span>
 
 <span class="code-keyword">class</span> <span class="code-class">OrderItemRequest</span>(BaseModel):
-    <span class="code-str">"""Один товар в заказе"""</span>
-    name: str = Field(..., min_length=1, max_length=200, description=<span class="code-str">"Название товара"</span>)
-    price: float = Field(..., gt=0, description=<span class="code-str">"Цена товара (больше 0)"</span>)
-    quantity: int = Field(default=1, ge=1, le=100, description=<span class="code-str">"Количество"</span>)
+    <span class="code-str">"""One item in an order"""</span>
+    name: str = Field(..., min_length=1, max_length=200, description=<span class="code-str">"Product name"</span>)
+    price: float = Field(..., gt=0, description=<span class="code-str">"Product price (greater than 0)"</span>)
+    quantity: int = Field(default=1, ge=1, le=100, description=<span class="code-str">"Quantity"</span>)
 
     <span class="code-dec">@field_validator</span>(<span class="code-str">'name'</span>)
     <span class="code-keyword">def</span> <span class="code-func">name_must_not_be_empty</span>(cls, v):
         <span class="code-keyword">if</span> <span class="code-keyword">not</span> v.strip():
-            <span class="code-keyword">raise</span> ValueError(<span class="code-str">'Название не может быть пустым'</span>)
+            <span class="code-keyword">raise</span> ValueError(<span class="code-str">'Name cannot be empty'</span>)
         <span class="code-keyword">return</span> v.strip()
 
 
 <span class="code-keyword">class</span> <span class="code-class">CreateOrderRequest</span>(BaseModel):
-    <span class="code-str">"""Запрос на создание заказа"""</span>
-    customer_email: EmailStr  <span class="code-comment"># Автоматическая валидация email</span>
+    <span class="code-str">"""Request to create an order"""</span>
+    customer_email: EmailStr  <span class="code-comment"># Automatic email validation</span>
     items: List[OrderItemRequest] = Field(..., min_length=1)
     
     <span class="code-keyword">class</span> <span class="code-class">Config</span>:
-        <span class="code-comment"># Пример данных для Swagger документации</span>
+        <span class="code-comment"># Example data for Swagger documentation</span>
         json_schema_extra = {
             <span class="code-str">"example"</span>: {
                 <span class="code-str">"customer_email"</span>: <span class="code-str">"user@example.com"</span>,
@@ -245,18 +245,18 @@
 
 
 <span class="code-comment"># ═══════════════════════════════════════════════════</span>
-<span class="code-comment"># RESPONSE SCHEMAS (Исходящие данные)</span>
+<span class="code-comment"># RESPONSE SCHEMAS (Outgoing data)</span>
 <span class="code-comment"># ═══════════════════════════════════════════════════</span>
 
 <span class="code-keyword">class</span> <span class="code-class">OrderItemResponse</span>(BaseModel):
     name: str
     price: float
     quantity: int
-    subtotal: float  <span class="code-comment"># Вычисляемое поле</span>
+    subtotal: float  <span class="code-comment"># Computed field</span>
 
 
 <span class="code-keyword">class</span> <span class="code-class">OrderResponse</span>(BaseModel):
-    <span class="code-str">"""Ответ с данными заказа"""</span>
+    <span class="code-str">"""Response with order data"""</span>
     id: str
     customer_email: str
     items: List[OrderItemResponse]
@@ -265,35 +265,35 @@
     created_at: datetime
     
     <span class="code-keyword">class</span> <span class="code-class">Config</span>:
-        from_attributes = <span class="code-keyword">True</span>  <span class="code-comment"># Позволяет создавать из ORM моделей</span>
+        from_attributes = <span class="code-keyword">True</span>  <span class="code-comment"># Allows creation from ORM models</span>
 
 
 <span class="code-keyword">class</span> <span class="code-class">ErrorResponse</span>(BaseModel):
-    <span class="code-str">"""Стандартный формат ошибки"""</span>
+    <span class="code-str">"""Standard error format"""</span>
     error: str
     detail: str
-    code: str <span class="code-comment"># Например: "ORDER_ALREADY_PAID"</span>
+    code: str <span class="code-comment"># For example: "ORDER_ALREADY_PAID"</span>
 </code></pre>
         </section>
 
         <!-- ROUTES -->
         <section id="routes" class="card">
-            <h2 class="text-2xl font-bold mb-6">2. Роутеры и Эндпоинты (FastAPI)</h2>
-            <p>Роутер — это "тонкий" слой. Его задача: принять данные, вызвать Use Case, вернуть результат. <strong>Никакой логики!</strong></p>
+            <h2 class="text-2xl font-bold mb-6">2. Routers and Endpoints (FastAPI)</h2>
+            <p>A router is a "thin" layer. Its job: accept data, call Use Case, return result. <strong>No logic!</strong></p>
 
 <pre><code class="language-python"><span class="code-comment"># presentation/routers/orders.py</span>
 <span class="code-keyword">from</span> fastapi <span class="code-keyword">import</span> APIRouter, Depends, HTTPException, status
 <span class="code-keyword">from</span> typing <span class="code-keyword">import</span> List
 <span class="code-keyword">import</span> uuid
 
-<span class="code-comment"># Импорт схем (Presentation Layer)</span>
+<span class="code-comment"># Import schemas (Presentation Layer)</span>
 <span class="code-keyword">from</span> ..schemas.order <span class="code-keyword">import</span> CreateOrderRequest, OrderResponse, ErrorResponse
 
-<span class="code-comment"># Импорт Use Cases и DTO (Application Layer)</span>
+<span class="code-comment"># Import Use Cases and DTOs (Application Layer)</span>
 <span class="code-keyword">from</span> application.use_cases <span class="code-keyword">import</span> CreateOrderUseCase, GetOrderUseCase
 <span class="code-keyword">from</span> application.dto <span class="code-keyword">import</span> CreateOrderCommand
 
-<span class="code-comment"># Импорт DI (контейнер зависимостей)</span>
+<span class="code-comment"># Import DI (dependency container)</span>
 <span class="code-keyword">from</span> ..dependencies <span class="code-keyword">import</span> get_create_order_use_case, get_order_use_case
 
 router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span class="code-str">"Orders"</span>])
@@ -303,10 +303,10 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
     <span class="code-str">"/"</span>,
     response_model=OrderResponse,
     status_code=status.HTTP_201_CREATED,
-    summary=<span class="code-str">"Создать новый заказ"</span>,
+    summary=<span class="code-str">"Create a new order"</span>,
     responses={
-        400: {<span class="code-str">"model"</span>: ErrorResponse, <span class="code-str">"description"</span>: <span class="code-str">"Невалидные данные"</span>},
-        409: {<span class="code-str">"model"</span>: ErrorResponse, <span class="code-str">"description"</span>: <span class="code-str">"Конфликт состояния"</span>}
+        400: {<span class="code-str">"model"</span>: ErrorResponse, <span class="code-str">"description"</span>: <span class="code-str">"Invalid data"</span>},
+        409: {<span class="code-str">"model"</span>: ErrorResponse, <span class="code-str">"description"</span>: <span class="code-str">"State conflict"</span>}
     }
 )
 <span class="code-keyword">async def</span> <span class="code-func">create_order</span>(
@@ -314,13 +314,13 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
     use_case: CreateOrderUseCase = Depends(get_create_order_use_case)
 ) -> OrderResponse:
     <span class="code-str">"""
-    Создает новый заказ.
+    Creates a new order.
     
-    - **customer_email**: Email покупателя
-    - **items**: Список товаров (минимум 1)
+    - **customer_email**: Customer's email
+    - **items**: List of items (minimum 1)
     """</span>
     
-    <span class="code-comment"># 1. Преобразуем Pydantic Schema → Application DTO</span>
+    <span class="code-comment"># 1. Convert Pydantic Schema → Application DTO</span>
     command = CreateOrderCommand(
         customer_email=request.customer_email,
         items=[
@@ -329,10 +329,10 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
         ]
     )
     
-    <span class="code-comment"># 2. Вызываем Use Case (вся логика ТАМ)</span>
+    <span class="code-comment"># 2. Call Use Case (all logic is THERE)</span>
     result = use_case.execute(command)
     
-    <span class="code-comment"># 3. Преобразуем результат в Response Schema</span>
+    <span class="code-comment"># 3. Convert result to Response Schema</span>
     <span class="code-keyword">return</span> OrderResponse(
         id=result.order_id,
         customer_email=result.customer_email,
@@ -355,13 +355,13 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
     order_id: uuid.UUID,
     use_case: GetOrderUseCase = Depends(get_order_use_case)
 ) -> OrderResponse:
-    <span class="code-str">"""Получить заказ по ID"""</span>
+    <span class="code-str">"""Get order by ID"""</span>
     result = use_case.execute(order_id)
     
     <span class="code-keyword">if</span> result <span class="code-keyword">is</span> <span class="code-keyword">None</span>:
         <span class="code-keyword">raise</span> HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=<span class="code-str">f"Заказ {order_id} не найден"</span>
+            detail=<span class="code-str">f"Order {order_id} not found"</span>
         )
     
     <span class="code-keyword">return</span> OrderResponse(**result.dict())
@@ -372,7 +372,7 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
     order_id: uuid.UUID,
     use_case: PayOrderUseCase = Depends(get_pay_order_use_case)
 ) -> OrderResponse:
-    <span class="code-str">"""Оплатить заказ"""</span>
+    <span class="code-str">"""Pay for order"""</span>
     result = use_case.execute(order_id)
     <span class="code-keyword">return</span> OrderResponse(**result.dict())
 </code></pre>
@@ -382,8 +382,8 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
 
         <!-- DEPENDENCIES -->
         <section id="deps" class="card bg-gray-50 border-gray-200">
-            <h2 class="text-2xl font-bold mb-4">4. Dependency Injection в FastAPI</h2>
-            <p>FastAPI использует систему `Depends()` для внедрения зависимостей. Это наш Composition Root.</p>
+            <h2 class="text-2xl font-bold mb-4">4. Dependency Injection in FastAPI</h2>
+            <p>FastAPI uses the `Depends()` system for dependency injection. This is our Composition Root.</p>
 
 <pre><code class="language-python"><span class="code-comment"># presentation/dependencies.py</span>
 <span class="code-keyword">from</span> functools <span class="code-keyword">import</span> lru_cache
@@ -399,13 +399,13 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
 <span class="code-comment"># Application</span>
 <span class="code-keyword">from</span> application.use_cases <span class="code-keyword">import</span> CreateOrderUseCase, GetOrderUseCase, PayOrderUseCase
 
-<span class="code-comment"># Конфигурация (можно вынести в отдельный файл)</span>
+<span class="code-comment"># Configuration (can be extracted to separate file)</span>
 <span class="code-keyword">from</span> config <span class="code-keyword">import</span> settings
 
 
 <span class="code-dec">@lru_cache</span>()
 <span class="code-keyword">def</span> <span class="code-func">get_email_service</span>():
-    <span class="code-str">"""Singleton: создается один раз за всё время работы приложения"""</span>
+    <span class="code-str">"""Singleton: created once for the entire application lifetime"""</span>
     <span class="code-keyword">return</span> SmtpEmailService(
         host=settings.SMTP_HOST,
         port=settings.SMTP_PORT,
@@ -415,7 +415,7 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
 
 
 <span class="code-keyword">def</span> <span class="code-func">get_unit_of_work</span>(session: Session = Depends(get_session)):
-    <span class="code-str">"""Создается для каждого запроса (Request Scope)"""</span>
+    <span class="code-str">"""Created for each request (Request Scope)"""</span>
     <span class="code-keyword">return</span> SqlAlchemyUnitOfWork(session)
 
 
@@ -423,7 +423,7 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
     uow = Depends(get_unit_of_work),
     email_service = Depends(get_email_service)
 ) -> CreateOrderUseCase:
-    <span class="code-str">"""Собираем Use Case со всеми зависимостями"""</span>
+    <span class="code-str">"""Assemble Use Case with all dependencies"""</span>
     <span class="code-keyword">return</span> CreateOrderUseCase(
         uow=uow,
         email_service=email_service
@@ -449,32 +449,32 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
 
         <!-- MAIN APP -->
         <section id="main" class="mb-16">
-            <h2 class="text-2xl font-bold mb-4">5. Сборка приложения (main.py)</h2>
+            <h2 class="text-2xl font-bold mb-4">5. Application Assembly (main.py)</h2>
 
 <pre><code class="language-python"><span class="code-comment"># main.py</span>
 <span class="code-keyword">from</span> fastapi <span class="code-keyword">import</span> FastAPI
 <span class="code-keyword">from</span> fastapi.middleware.cors <span class="code-keyword">import</span> CORSMiddleware
 
-<span class="code-comment"># Роутеры</span>
+<span class="code-comment"># Routers</span>
 <span class="code-keyword">from</span> presentation.routers <span class="code-keyword">import</span> orders, users, payments
 
-<span class="code-comment"># Обработчики ошибок</span>
+<span class="code-comment"># Error handlers</span>
 <span class="code-keyword">from</span> presentation.exception_handlers <span class="code-keyword">import</span> domain_error_handler
 <span class="code-keyword">from</span> domain.exceptions <span class="code-keyword">import</span> DomainError
 
 
 <span class="code-keyword">def</span> <span class="code-func">create_app</span>() -> FastAPI:
-    <span class="code-str">"""Фабрика приложения. Позволяет создавать разные конфигурации для тестов."""</span>
+    <span class="code-str">"""Application factory. Allows creating different configurations for tests."""</span>
     
     app = FastAPI(
         title=<span class="code-str">"Order Service API"</span>,
-        description=<span class="code-str">"Сервис управления заказами (Clean Architecture)"</span>,
+        description=<span class="code-str">"Order management service (Clean Architecture)"</span>,
         version=<span class="code-str">"1.0.0"</span>,
         docs_url=<span class="code-str">"/docs"</span>,
         redoc_url=<span class="code-str">"/redoc"</span>
     )
     
-    <span class="code-comment"># CORS для фронтенда</span>
+    <span class="code-comment"># CORS for frontend</span>
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[<span class="code-str">"http://localhost:3000"</span>],
@@ -482,10 +482,10 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
         allow_headers=[<span class="code-str">"*"</span>]
     )
     
-    <span class="code-comment"># Регистрация обработчиков ошибок</span>
+    <span class="code-comment"># Register error handlers</span>
     app.add_exception_handler(DomainError, domain_error_handler)
     
-    <span class="code-comment"># Подключение роутеров</span>
+    <span class="code-comment"># Connect routers</span>
     app.include_router(orders.router, prefix=<span class="code-str">"/api/v1"</span>)
     app.include_router(users.router, prefix=<span class="code-str">"/api/v1"</span>)
     app.include_router(payments.router, prefix=<span class="code-str">"/api/v1"</span>)
@@ -493,18 +493,18 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
     <span class="code-keyword">return</span> app
 
 
-<span class="code-comment"># Создаем экземпляр</span>
+<span class="code-comment"># Create instance</span>
 app = create_app()
 
 
-<span class="code-comment"># Запуск: uvicorn main:app --reload</span>
+<span class="code-comment"># Launch: uvicorn main:app --reload</span>
 </code></pre>
         </section>
 
         <!-- DJANGO EXAMPLE -->
         <section class="mb-16">
-            <h2 class="text-2xl font-bold mb-4">6. Альтернатива: Django Views</h2>
-            <p>Если вы используете Django, принципы те же. Только синтаксис другой.</p>
+            <h2 class="text-2xl font-bold mb-4">6. Alternative: Django Views</h2>
+            <p>If you're using Django, the principles are the same. Only the syntax is different.</p>
 
             <details>
                 <summary>Django Class-Based View (CBV)</summary>
@@ -518,7 +518,7 @@ app = create_app()
 <span class="code-keyword">from</span> application.dto <span class="code-keyword">import</span> CreateOrderCommand
 <span class="code-keyword">from</span> domain.exceptions <span class="code-keyword">import</span> DomainError
 
-<span class="code-comment"># DI вручную (или используйте django-injector)</span>
+<span class="code-comment"># DI manually (or use django-injector)</span>
 <span class="code-keyword">from</span> .dependencies <span class="code-keyword">import</span> get_create_order_use_case
 
 
@@ -526,20 +526,20 @@ app = create_app()
     
     <span class="code-keyword">def</span> <span class="code-func">post</span>(self, request):
         <span class="code-keyword">try</span>:
-            <span class="code-comment"># 1. Парсим JSON</span>
+            <span class="code-comment"># 1. Parse JSON</span>
             data = json.loads(request.body)
             
-            <span class="code-comment"># 2. Создаем Command</span>
+            <span class="code-comment"># 2. Create Command</span>
             command = CreateOrderCommand(
                 customer_email=data[<span class="code-str">'customer_email'</span>],
                 items=data[<span class="code-str">'items'</span>]
             )
             
-            <span class="code-comment"># 3. Вызываем Use Case</span>
+            <span class="code-comment"># 3. Call Use Case</span>
             use_case = get_create_order_use_case()
             result = use_case.execute(command)
             
-            <span class="code-comment"># 4. Возвращаем ответ</span>
+            <span class="code-comment"># 4. Return response</span>
             <span class="code-keyword">return</span> JsonResponse(result.dict(), status=201)
             
         <span class="code-keyword">except</span> DomainError <span class="code-keyword">as</span> e:
@@ -551,7 +551,7 @@ app = create_app()
         <span class="code-keyword">except</span> KeyError <span class="code-keyword">as</span> e:
             <span class="code-keyword">return</span> JsonResponse({
                 <span class="code-str">'error'</span>: <span class="code-str">'ValidationError'</span>,
-                <span class="code-str">'detail'</span>: <span class="code-str">f'Отсутствует поле: {e}'</span>
+                <span class="code-str">'detail'</span>: <span class="code-str">f'Missing field: {e}'</span>
             }, status=400)
 </code></pre>
                 </div>
@@ -560,27 +560,27 @@ app = create_app()
 
         <!-- ANTIPATTERNS -->
         <section id="antipatterns" class="mb-12">
-            <h2 class="text-2xl font-bold text-red-700 mb-6">⚠️ Антипаттерны Presentation Layer</h2>
+            <h2 class="text-2xl font-bold text-red-700 mb-6">⚠️ Presentation Layer Antipatterns</h2>
             
             <div class="space-y-6">
                 <details class="group bg-white border border-red-200 rounded-lg p-4">
-                    <summary class="font-bold text-red-800 group-hover:text-red-600">1. Fat Controller (Толстый контроллер)</summary>
+                    <summary class="font-bold text-red-800 group-hover:text-red-600">1. Fat Controller</summary>
                     <div class="mt-3 text-sm">
-                        <p class="mb-2">Когда вся логика находится в эндпоинте.</p>
-                        <pre><span class="code-comment"># ❌ ПЛОХО: Логика в контроллере</span>
+                        <p class="mb-2">When all logic is in the endpoint.</p>
+                        <pre><span class="code-comment"># ❌ BAD: Logic in controller</span>
 @router.post("/orders")
 async def create_order(data: dict, db: Session = Depends(get_db)):
-    <span class="code-comment"># Валидация</span>
+    <span class="code-comment"># Validation</span>
     if not data.get('email'):
         raise HTTPException(400, "Email required")
     
-    <span class="code-comment"># Бизнес-логика (ДОЛЖНА БЫТЬ В USE CASE!)</span>
+    <span class="code-comment"># Business logic (SHOULD BE IN USE CASE!)</span>
     if len(data['items']) > 10:
         raise HTTPException(400, "Too many items")
     
     total = sum(i['price'] for i in data['items'])
     
-    <span class="code-comment"># SQL в контроллере (ДОЛЖЕН БЫТЬ В REPOSITORY!)</span>
+    <span class="code-comment"># SQL in controller (SHOULD BE IN REPOSITORY!)</span>
     order = Order(email=data['email'], total=total)
     db.add(order)
     db.commit()
@@ -590,13 +590,13 @@ async def create_order(data: dict, db: Session = Depends(get_db)):
                 </details>
 
                 <details class="group bg-white border border-red-200 rounded-lg p-4">
-                    <summary class="font-bold text-red-800 group-hover:text-red-600">2. Возврат Entity напрямую</summary>
+                    <summary class="font-bold text-red-800 group-hover:text-red-600">2. Returning Entity Directly</summary>
                     <div class="mt-3 text-sm">
-                        <p class="mb-2">Entity имеет методы и приватные поля. JSON-сериализация может сломаться или раскрыть лишние данные.</p>
-                        <pre><span class="code-comment"># ❌ ПЛОХО</span>
-return order  <span class="code-comment"># Entity напрямую</span>
+                        <p class="mb-2">Entity has methods and private fields. JSON serialization can break or expose unnecessary data.</p>
+                        <pre><span class="code-comment"># ❌ BAD</span>
+return order  <span class="code-comment"># Entity directly</span>
 
-<span class="code-comment"># ✅ ХОРОШО</span>
+<span class="code-comment"># ✅ GOOD</span>
 return OrderResponse(
     id=str(order.id),
     email=order.customer.value,
@@ -606,14 +606,14 @@ return OrderResponse(
                 </details>
 
                 <details class="group bg-white border border-red-200 rounded-lg p-4">
-                    <summary class="font-bold text-red-800 group-hover:text-red-600">3. Бизнес-логика в Middleware</summary>
+                    <summary class="font-bold text-red-800 group-hover:text-red-600">3. Business Logic in Middleware</summary>
                     <div class="mt-3 text-sm">
-                        <p class="mb-2">Middleware предназначен для cross-cutting concerns: логирование, аутентификация, CORS. НЕ для бизнес-правил!</p>
-                        <pre><span class="code-comment"># ❌ ПЛОХО: Проверка лимитов в middleware</span>
+                        <p class="mb-2">Middleware is for cross-cutting concerns: logging, authentication, CORS. NOT for business rules!</p>
+                        <pre><span class="code-comment"># ❌ BAD: Checking limits in middleware</span>
 class OrderLimitMiddleware:
     async def __call__(self, request, call_next):
         user = get_user(request)
-        if user.order_count > 100:  <span class="code-comment"># Бизнес-правило!</span>
+        if user.order_count > 100:  <span class="code-comment"># Business rule!</span>
             return JSONResponse({"error": "Limit"}, 403)
         return await call_next(request)</pre>
                     </div>
