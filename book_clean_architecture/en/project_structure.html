@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Структура проекта — Clean Architecture + DDD</title>
+    <title>Project Structure — Clean Architecture + DDD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
@@ -64,18 +64,18 @@
         <nav class="py-4">
             <div class="px-4 mb-4">
                 <div class="flex gap-2 text-xs font-bold text-slate-400">
-                    <a href="project_structure.html" class="text-blue-400 font-bold">RU</a>
+                    <a href="../ru/project_structure.html" class="hover:text-white transition">RU</a>
                     <span class="text-slate-600">|</span>
-                    <a href="../en/project_structure.html" class="hover:text-white transition">EN</a>
+                    <a href="project_structure.html" class="text-blue-400 font-bold">EN</a>
                     <span class="text-slate-600">|</span>
                     <a href="../ua/project_structure.html" class="hover:text-white transition">UA</a>
                 </div>
             </div>
 
-            <div class="nav-section">Fundamentals</div>
-            <a href="index.html" class="nav-link">📘 Введение</a>
-            <a href="solid.html" class="nav-link">📐 SOLID принципы</a>
-            <a href="project_structure.html" class="nav-link active">🧭 Структура проекта (DDD)</a>
+            <div class="nav-section">Basics</div>
+            <a href="index.html" class="nav-link">📘 Introduction</a>
+            <a href="solid.html" class="nav-link">📐 SOLID Principles</a>
+            <a href="project_structure.html" class="nav-link active">🧭 Project Structure (DDD)</a>
             <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
 
             <div class="nav-section">Architecture Layers</div>
@@ -87,7 +87,7 @@
 
             <div class="nav-section">Tactical DDD</div>
             <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
-            <a href="invariants.html" class="nav-link">🛡️ Инварианты</a>
+            <a href="invariants.html" class="nav-link">🛡️ Invariants</a>
             <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
             <a href="specification.html" class="nav-link">📋 Specification</a>
             <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
@@ -105,107 +105,107 @@
             <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
             <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
 
-            <div class="nav-section">CQRS & Distributed Systems</div>
-            <a href="cqrs_es.html" class="nav-link">⚡ CQRS и ES</a>
+            <div class="nav-section">CQRS and Distributed Systems</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS & ES</a>
             <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
             <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
             <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
             <a href="observability.html" class="nav-link">🔍 Observability</a>
 
-            <div class="nav-section">Reliability & Security</div>
+            <div class="nav-section">Reliability and Security</div>
             <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
             <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
             <a href="concurrency.html" class="nav-link">🛑 Concurrency & Migrations</a>
             <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
 
-            <div class="nav-section">Quality & Practice</div>
-            <a href="testing.html" class="nav-link">🧪 Тестирование</a>
-            <a href="overengineering.html" class="nav-link">🛑 Избыточность</a>
+            <div class="nav-section">Quality and Practice</div>
+            <a href="testing.html" class="nav-link">🧪 Testing</a>
+            <a href="overengineering.html" class="nav-link">🛑 Overengineering</a>
             <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
             <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
-            <a href="projects.html" class="nav-link">🚀 Мини-проекты</a>
-            <a href="antipatterns.html" class="nav-link">⚠️ Антипаттерны</a>
+            <a href="projects.html" class="nav-link">🚀 Mini-Projects</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Antipatterns</a>
             <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
 
             <div class="nav-section">About</div>
-            <a href="afterword.html" class="nav-link">👋 Послесловие</a>
+            <a href="afterword.html" class="nav-link">👋 Afterword</a>
         </nav>
     </aside>
 
     <!-- CONTENT -->
     <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-4xl mx-auto">
         <header class="mb-12 pb-8 border-b border-gray-200">
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Структура проекта — Clean Architecture + DDD</h1>
-            <p class="text-xl text-gray-600">Примерная и рекомендуемая структура Python-проекта, следуя принципам Clean Architecture и DDD.</p>
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Project Structure — Clean Architecture + DDD</h1>
+            <p class="text-xl text-gray-600">Recommended Python project structure following Clean Architecture and DDD principles.</p>
         </header>
 
         <section class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Пример структуры каталогов</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Example Directory Structure</h2>
             <pre class="code-wide" style="white-space: pre; overflow-x: auto;"><code class="language-python">project_name/                       
-├─ pyproject.toml                   # Метаданные сборки и зависимости (PEP 621/Poetry/Flit)
-├─ README.md                        # Краткое описание проекта, запуcк и разработка
-├─ Dockerfile                       # Инструкции для сборки контейнера
-├─ .env.example                     # Пример переменных окружения (без секретов!)
-├─ alembic/                         # Миграции базы данных (если Alembic)
-├─ scripts/                         # Утилиты и скрипты (для разработки, деплоя, миграций)
-├─ src/                             # Исходный код (src layout для изоляции)
-│  └─ project_name/                 # Основной пакет приложения
+├─ pyproject.toml                   # Build metadata and dependencies (PEP 621/Poetry/Flit)
+├─ README.md                        # Brief project description, launch and development
+├─ Dockerfile                       # Container build instructions
+├─ .env.example                     # Example environment variables (no secrets!)
+├─ alembic/                         # Database migrations (if using Alembic)
+├─ scripts/                         # Utilities and scripts (for development, deployment, migrations)
+├─ src/                             # Source code (src layout for isolation)
+│  └─ project_name/                 # Main application package
 │     │
-│     ├─ domain/                    # 🟢 DOMAIN (Бизнес-логика). Зависимости: НЕТ
-│     │  ├─ entities.py             # Сущности (Order, User)
-│     │  ├─ value_objects.py        # Объекты-значения (Email, Money)
-│     │  ├─ services.py             # Доменные сервисы (чистая логика)
-│     │  └─ events.py               # Доменные события (OrderPaid)
+│     ├─ domain/                    # 🟢 DOMAIN (Business logic). Dependencies: NONE
+│     │  ├─ entities.py             # Entities (Order, User)
+│     │  ├─ value_objects.py        # Value objects (Email, Money)
+│     │  ├─ services.py             # Domain services (pure logic)
+│     │  └─ events.py               # Domain events (OrderPaid)
 │     │
-│     ├─ application/               # 🔵 APPLICATION (Use Cases). Зависимости: Domain
-│     │  ├─ use_cases/              # Сценарии (RegisterUser, PayOrder)
+│     ├─ application/               # 🔵 APPLICATION (Use Cases). Dependencies: Domain
+│     │  ├─ use_cases/              # Use cases (RegisterUser, PayOrder)
 │     │  ├─ dtos.py                 # DTO (Data Transfer Objects)
-│     │  └─ interfaces.py           # Порты/Интерфейсы репозиториев (Protocol)
+│     │  └─ interfaces.py           # Ports/Repository interfaces (Protocol)
 │     │
-│     ├─ infrastructure/            # 🔴 INFRASTRUCTURE (Адаптеры). Зависимости: App, Domain
-│     │  ├─ orm/                    # ORM модели и маппинг (SQLAlchemy)
-│     │  ├─ repositories.py         # Реализация репозиториев (SQLAlchemyRepo)
-│     │  └─ messaging/              # Брокеры сообщений (Kafka/RabbitMQ)
+│     ├─ infrastructure/            # 🔴 INFRASTRUCTURE (Adapters). Dependencies: App, Domain
+│     │  ├─ orm/                    # ORM models and mapping (SQLAlchemy)
+│     │  ├─ repositories.py         # Repository implementations (SQLAlchemyRepo)
+│     │  └─ messaging/              # Message brokers (Kafka/RabbitMQ)
 │     │
-│     ├─ presentation/              # 🟡 PRESENTATION (Входные точки). Зависимости: App
-│     │  ├─ api/                    # API ендпоинты (FastAPI routers)
-│     │  └─ cli.py                  # CLI команды
+│     ├─ presentation/              # 🟡 PRESENTATION (Entry points). Dependencies: App
+│     │  ├─ api/                    # API endpoints (FastAPI routers)
+│     │  └─ cli.py                  # CLI commands
 │     │
-│     ├─ config/                    # Конфигурация (Pydantic Settings)
-│     └─ tests/                     # Тесты (Unit, Integration, E2E)
+│     ├─ config/                    # Configuration (Pydantic Settings)
+│     └─ tests/                     # Tests (Unit, Integration, E2E)
 │
 └─ .github/                         # CI/CD workflows</code></pre>
         </section>
 
         <section class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Коротко о каждом компоненте</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Brief Overview of Each Component</h2>
             <ul class="list-disc list-inside space-y-2 text-gray-700">
-                <li><strong>domain/</strong> — бизнес-правила: сущности, value objects, domain services, domain events. Никаких внешних зависимостей.</li>
-                <li><strong>application/</strong> — use cases, порты (интерфейсы) и оркестровка. Здесь определяются интерфейсы репозиториев и UoW.</li>
-                <li><strong>infrastructure/</strong> — реализации адаптеров: ORM, брокеры, внешние API-клиенты. Зависит от application/domain.</li>
-                <li><strong>presentation/</strong> — API endpoints, CLI, background task entrypoints. Составляет приложение из адаптеров и сервисов.</li>
-                <li><strong>tests/</strong> — unit и integration тесты. Prefer testing domain & application in isolation using fakes/mocks for infrastructure.</li>
+                <li><strong>domain/</strong> — business rules: entities, value objects, domain services, domain events. No external dependencies.</li>
+                <li><strong>application/</strong> — use cases, ports (interfaces), and orchestration. Repository and UoW interfaces are defined here.</li>
+                <li><strong>infrastructure/</strong> — adapter implementations: ORM, message brokers, external API clients. Depends on application/domain.</li>
+                <li><strong>presentation/</strong> — API endpoints, CLI, background task entrypoints. Composes the application from adapters and services.</li>
+                <li><strong>tests/</strong> — unit and integration tests. Prefer testing domain & application in isolation using fakes/mocks for infrastructure.</li>
             </ul>
         </section>
 
         <section class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Практические советы</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Practical Tips</h2>
             <ul class="list-disc list-inside space-y-2 text-gray-700">
-                <li>Домен — чистый код без импортов внешних библиотек (кроме typing, dataclasses и stdlib).</li>
-                <li>Application хранит интерфейсы (порты); Infrastructure реализует их (адаптеры).</li>
-                <li>Используйте UoW для обеспечения атомарности операций (транзакций).</li>
-                <li>Пакеты должны быть небольшими и понятными; тесты рядом с кодом или в отдельном каталоге `tests/`.</li>
+                <li>Domain — pure code without external library imports (except typing, dataclasses, and stdlib).</li>
+                <li>Application stores interfaces (ports); Infrastructure implements them (adapters).</li>
+                <li>Use UoW to ensure atomicity of operations (transactions).</li>
+                <li>Packages should be small and clear; tests alongside code or in a separate `tests/` directory.</li>
             </ul>
         </section>
 
-        <div class="mt-12 pt-8 border-t border-gray-200"><div class="flex flex-col md:flex-row justify-between items-center gap-4"><a href="index.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right"><span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1 flex justify-end">Previous</span><span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">Введение &larr;</span></a><a href="domain.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left"><span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1">Next</span><span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">Domain &rarr;</span></a></div></div>
+        <div class="mt-12 pt-8 border-t border-gray-200"><div class="flex flex-col md:flex-row justify-between items-center gap-4"><a href="index.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right"><span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1 flex justify-end">Back</span><span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">Introduction &larr;</span></a><a href="domain.html" class="group border border-gray-300 rounded-lg p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left"><span class="block text-xs text-gray-500 font-bold uppercase tracking-wide mb-1">Next</span><span class="block text-lg font-bold text-gray-800 group-hover:text-blue-600">Domain &rarr;</span></a></div></div>
 
         <!-- NAVIGATION FOOTER -->
         <div class="mt-24 pt-10 border-t border-slate-200">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <a href="solid.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
-                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Previous</span>
-                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 📐 SOLID принципы</span>
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Back</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 📐 SOLID Principles</span>
                 </a>
                 <a href="dependency.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
                     <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Next</span>
