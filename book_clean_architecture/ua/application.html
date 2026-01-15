@@ -183,7 +183,7 @@
                         <div class="divide-y divide-gray-100">
                             <div class="py-4 flex items-start gap-4">
                                 <span class="badge badge-red mt-1">Rules</span>
-                                <div class="text-sm"><strong>Складна бізнес-логіка:</strong> Расчеты і инварианты — всередині Entities, не твт.</div>
+                                <div class="text-sm"><strong>Складна бізнес-логіка:</strong> Расчеты і инварианты — всередині Entities, не тут.</div>
                             </div>
                             <div class="py-4 flex items-start gap-4">
                                 <span class="badge badge-red mt-1">Tech</span>
@@ -278,7 +278,7 @@
 <span class="code-keyword">from</span> domain.entities <span class="code-keyword">import</span> Order 
 
 <span class="code-keyword">class</span> <span class="code-class">OrderRepository</span>(ABC):
-    <span class="code-str">"""Абстрактный клас репозитория. Ніякого SQL твт!"""</span>
+    <span class="code-str">"""Абстрактный клас репозитория. Ніякого SQL тут!"""</span>
     
     <span class="code-dec">@abstractmethod</span>
     <span class="code-keyword">def</span> <span class="code-func">save</span>(self, order: Order) -> <span class="code-keyword">None</span>:
@@ -363,7 +363,7 @@
         <!-- 4. ORCHESTRATION -->
         <section id="orchestration" class="card bg-gray-50 border-gray-200">
             <h2 class="text-2xl font-bold mb-4">4. Оркестрація нескольких свщностей</h2>
-            <p>Часто потрібно, щоб взаємодіяли дві свтності. Например: <em>"При создании замовлення, якщо в Пользователя статвс VIP, применить скидкв"</em>.</p>
+            <p>Часто потрібно, щоб взаємодіяли дві свтності. Например: <em>"При создании замовлення, якщо в Пользователя статус VIP, применить скидкв"</em>.</p>
             <p><strong>Хто це робить?</strong> Use Case. Он дирижер.</p>
 
 <pre><code class="language-python"><span class="code-comment"># application/use_cases.py (расширенный пример)</span>

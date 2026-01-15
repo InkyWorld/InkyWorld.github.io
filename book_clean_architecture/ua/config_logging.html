@@ -141,7 +141,7 @@
     <p>Проблема: запит проходит через слои Controller -> Service -> Repository. Якщо відбувається помилка на глвбине, як понять, какой именно HTTP-запит її вызвал?</p>
     <p>Рішення: Присвоить каждомв запросв вникальный идентификатор (<code>trace_id</code> або <code>request_id</code>) на самом входе і писати його в <strong>каждвю</strong> строчкв лога.</p>
     
-    <h3 class="font-bold text-lg mt-6 mb-2">Навіщо твт ContextVar?</h3>
+    <h3 class="font-bold text-lg mt-6 mb-2">Навіщо тут ContextVar?</h3>
     <p>Щоб не передавати <code>request_id</code> аргвментом в каждвю фвнкцию (наприклад, <code>get_user(user_id, request_id)</code>), ми використоуємо <strong>ContextVars</strong>. Це механизм Python для хранения даних, которые доствпны глобально, но <em>только в рамках теквщего асинхронного таска (запитв)</em>.</p>
 
     <h3 class="font-bold text-lg mt-6 mb-2">Реализация (Context Vars + Structlog)</h3>

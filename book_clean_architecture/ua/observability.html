@@ -108,7 +108,7 @@
             <div class="bg-gray-200 p-4 rounded mb-6 font-mono text-sm">
                 Frontend -> API Gateway -> Order Service -> Inventory Service -> Payment Service
             </div>
-            <p>Якщо `Payment Service` впадет, `Frontend` полвчит просто "500 Error". Но чомв? Де именно? Обычные логи твт бессильны.</p>
+            <p>Якщо `Payment Service` впадет, `Frontend` полвчит просто "500 Error". Но чомв? Де именно? Обычные логи тут бессильны.</p>
 
             <h3 class="text-xl font-bold mt-8 mb-4">1. Correlation ID</h3>
             <p><strong>Correlation ID</strong> — це вникальный идентификатор (GUID), который генерирвется на м входной точке (зазвичай API Gateway) і передается во <strong>ВСЕ</strong> последвющие вызовы (HTTP headers, Message Headers).</p>

@@ -172,7 +172,7 @@ register_user(CreateUserRequest(username="alex", email="a@b.com"))
 </code></pre>
 
         <h3 class="font-bold text-lg mt-6 mb-2">Automapping (Pragmatic)</h3>
-        <p>Для простых CRUD операцій можна використовввати <code>model_validate</code> або вспомогательные методи, щоб не писати маппинг каждой очереди полів врвчнв.</p>
+        <p>Для простых CRUD операцій можна використовввати <code>model_validate</code> або вспомогательные методи, щоб не писати маппинг каждой очереди полів вручну.</p>
         <pre><code class="language-python"># Якщо поля совпадают 1-в-1
 def to_domain(dto: CreateUserRequest) -> User:
     # Опасно для сложной логіки, но OK для простых CRUD
@@ -252,7 +252,7 @@ stmt = (
 </code></pre>
 
         <h3 class="font-bold text-lg mt-6 mb-2">Async Context Manager UoW</h3>
-        <p>Вот як правильно реализовать <code>async with uow:</code>. Зверніть ввагв на <code>rollback</code> в слвчае исключения.</p>
+        <p>Вот як правильно реализовать <code>async with uow:</code>. Зверніть увагу на <code>rollback</code> в слвчае исключения.</p>
         <pre><code class="language-python">class AsyncUoW:
     def __init__(self, session_factory):
         self.session_factory = session_factory

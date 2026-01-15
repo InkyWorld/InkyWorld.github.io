@@ -163,7 +163,7 @@ if rule.is_satisfied_by(user):
         <p>Ми создаем клас з одним методом <code>is_satisfied_by</code> (вдовлетворяет ли?).</p>
         <pre><code class="language-python">class CanRentCarSpecification:
     def is_satisfied_by(self, user: User) -> bool:
-        # Вся складна логіка живе твт
+        # Вся складна логіка живе тут
         has_age = user.age >= 21
         has_license = user.license_type == 'B'
         return has_age and has_license</code></pre>

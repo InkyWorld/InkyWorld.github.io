@@ -174,7 +174,7 @@
                         </li>
                         <li class="flex items-start">
                             <span class="badge badge-green mt-1">Auth</span>
-                            <div><strong>Middleware:</strong> Автентификация, логввання запросов, CORS.</div>
+                            <div><strong>Middleware:</strong> Автентификация, логування запросов, CORS.</div>
                         </li>
                     </ul>
                 </div>
@@ -518,7 +518,7 @@ app = create_app()
 <span class="code-keyword">from</span> application.dto <span class="code-keyword">import</span> CreateOrderCommand
 <span class="code-keyword">from</span> domain.exceptions <span class="code-keyword">import</span> DomainError
 
-<span class="code-comment"># DI врвчнв (или использвйте django-injector)</span>
+<span class="code-comment"># DI вручну (или использвйте django-injector)</span>
 <span class="code-keyword">from</span> .dependencies <span class="code-keyword">import</span> get_create_order_use_case
 
 
@@ -608,7 +608,7 @@ return OrderResponse(
                 <details class="group bg-white border border-red-200 rounded-lg p-4">
                     <summary class="font-bold text-red-800 group-hover:text-red-600">3. Бізнес-логіка в Middleware</summary>
                     <div class="mt-3 text-sm">
-                        <p class="mb-2">Middleware призначений для cross-cutting concerns: логввання, автентифікація, CORS. НЕ для бізнес-правил!</p>
+                        <p class="mb-2">Middleware призначений для cross-cutting concerns: логування, автентифікація, CORS. НЕ для бізнес-правил!</p>
                         <pre><span class="code-comment"># ❌ ПОГАНО: Перевірка лимитов в middleware</span>
 class OrderLimitMiddleware:
     async def __call__(self, request, call_next):

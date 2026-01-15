@@ -176,7 +176,7 @@
                     <ul class="space-y-4 text-sm">
                         <li class="flex items-start">
                             <span class="badge badge-red mt-1">Logic</span>
-                            <div><strong>Бізнес-правила:</strong> Не можна проверять инварианты твт ("не можна створити замовлення з ценой < 0"). Це ответственность Домена.</div>
+                            <div><strong>Бізнес-правила:</strong> Не можна проверять инварианты тут ("не можна створити замовлення з ценой < 0"). Це ответственность Домена.</div>
                         </li>
                         <li class="flex items-start">
                             <span class="badge badge-red mt-1">Flow</span>
@@ -285,7 +285,7 @@ Base = declarative_base()
             <span class="code-keyword">return</span> <span class="code-keyword">None</span>
         
         <span class="code-comment"># MAPPING: DB Model -> Domain Entity</span>
-        <span class="code-comment"># Воссоздаем об'єкти. Важливо не вызывать бізнес-логікв твт!</span>
+        <span class="code-comment"># Воссоздаем об'єкти. Важливо не вызывать бізнес-логікв тут!</span>
         <span class="code-comment"># Можно використовввати "грязный хак" або фабричный метод.</span>
         order = Order(uuid.UUID(model.id), Email(model.email))
         
@@ -394,7 +394,7 @@ Base = declarative_base()
 <span class="code-comment"># with self.uow:</span>
 <span class="code-comment">#     self.uow.orders.save(order1)</span>
 <span class="code-comment">#     self.uow.orders.save(order2)</span>
-<span class="code-comment">#     # commit произойдет автоматически твт</span>
+<span class="code-comment">#     # commit произойдет автоматически тут</span>
 </code></pre>
         </section>
 

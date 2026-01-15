@@ -244,7 +244,7 @@ SELECT pg_advisory_lock(hashtext('order-123'));
 SELECT pg_advisory_unlock(hashtext('order-123'));
 </code></pre>
 
-            <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">8. Testing Strategies (Тестування конквренции)</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">8. Testing Strategies (Тестування конкуренції)</h2>
             <ul class="list-disc list-inside space-y-2 mb-6">
                 <li>Пишите интеграционные тести, которые запвскают кілька воркеров параллельно (синтетические гонки).</li>
                 <li>Тестирвйте optimistic lock failures і транзакционные откаты.</li>

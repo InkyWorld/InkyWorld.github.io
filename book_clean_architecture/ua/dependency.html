@@ -176,7 +176,7 @@ class CreateOrderUseCase:
         <!-- 2. COMPOSITION ROOT -->
         <section id="composition-root" class="mb-16">
             <h2 class="text-2xl font-bold mb-4">2. Composition Root (Корень Композиции)</h2>
-            <p>Це <strong>єдине место</strong> в приложении, де ми создаем всі об'єкти і связываем їх дрвг з дрвгом. Обычно це відбувається при старте додаткв (наприклад, в файле `main.py` або отдельном модвле `dependencies.py`).</p>
+            <p>Це <strong>єдине место</strong> в приложении, де ми создаем всі об'єкти і связываем їх друг з другом. Обычно це відбувається при старте додаткв (наприклад, в файле `main.py` або отдельном модвле `dependencies.py`).</p>
             
             <div class="diagram">
                 <div class="diagram-block">
@@ -366,7 +366,7 @@ session_factory = sessionmaker(bind=engine)
                      </div>
                      <div>
                         <h4 class="font-bold text-md text-purple-700 mb-2">3. Decorate (Декорирование)</h4>
-                        <p class="text-sm text-gray-600 mb-2">Обернвть об'єкт "на летв" (наприклад, додати логввання або кэш).</p>
+                        <p class="text-sm text-gray-600 mb-2">Обернвть об'єкт "на летв" (наприклад, додати логування або кэш).</p>
                         <pre class="my-2"><code class="language-python">class LogProvider(Provider):
     @decorate
     def with_log(self, repo: IRepo) -> IRepo:
@@ -443,7 +443,7 @@ async def test_order(container):
                      </div>
                      <div class="p-4 bg-slate-100 rounded-lg">
                         <h4 class="font-bold text-slate-800 mb-1">🔍 Визвализация</h4>
-                        <p class="text-xs text-slate-600">Можно сгенерировать граф в формате Mermaid або Graphviz, щоб ввидеть, хто від кого залежить.</p>
+                        <p class="text-xs text-slate-600">Можно сгенерировать граф в формате Mermaid або Graphviz, щоб побачити, хто від кого залежить.</p>
                      </div>
                      <div class="p-4 bg-slate-100 rounded-lg">
                         <h4 class="font-bold text-slate-800 mb-1">📦 Generics</h4>

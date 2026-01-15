@@ -106,10 +106,10 @@
         </header>
 
         <section class="mb-12">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Проблема конквренции</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Проблема конкуренції</h2>
             <div class="prose max-w-none text-gray-700">
                 <p>
-                    Два менеджера, Alice і Bob, відкрили один і той самий Заказ одночасно. Alice перевела його в статвс "Paid", а Bob, не знаючи про це, додав товар. 
+                    Два менеджера, Alice і Bob, відкрили один і той самий Заказ одночасно. Alice перевела його в статус "Paid", а Bob, не знаючи про це, додав товар. 
                     Якщо Bob збереже замовлення після Alice, він затре її зміни (т.н. <em>Lost Update Problem</em>).
                 </p>
                 <div class="bg-red-50 border-l-4 border-red-500 p-4 my-4">
@@ -138,7 +138,7 @@ class Order(AggregateRoot):
 
     def add_item(self, item):
         self.items.append(item)
-        # Зверніть ввагв: ми НЕ інкрементвємо версію твт врвчнв.
+        # Зверніть увагу: ми НЕ інкрементвємо версію тут вручну.
         # Це обов'язок Репозиторію при збереженні.
 
 # В Repository (Infrastructure)

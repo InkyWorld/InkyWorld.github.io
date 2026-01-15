@@ -169,7 +169,7 @@ from domain.exceptions import (
 )
 
 
-# Маппинг: Помилка домена → HTTP статвс + код
+# Маппинг: Помилка домена → HTTP статус + код
 ERROR_MAPPING = {
     InvalidEmailError: (status.HTTP_400_BAD_REQUEST, "INVALID_EMAIL"),
     OrderNotFoundError: (status.HTTP_404_NOT_FOUND, "ORDER_NOT_FOUND"),

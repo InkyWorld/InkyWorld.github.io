@@ -1016,7 +1016,7 @@ welcome_rule = (
                 <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
                     <h4 class="font-bold text-yellow-800 mb-2">⚠️ Подводные камни</h4>
                     <ul class="list-disc pl-4 text-sm space-y-1">
-                        <li><strong>Эволюция схемы:</strong> Старые події сложно змінювати. Якщо поле переименовано, потрібна миграция або upcasting.</li>
+                        <li><strong>Еволюція схемы:</strong> Старые події сложно змінювати. Якщо поле переименовано, потрібна міграція або upcasting.</li>
                         <li><strong>Объем даних:</strong> Восстановление из 1 млн подій занимает вечность.</li>
                         <li><strong>Eventual Consistency:</strong> Пользователь не видит свои зміни сразв. Обычный SELECT не найдет только що созданнвю запис.</li>
                     </ul>
@@ -1107,7 +1107,7 @@ class UnitOfWork:
         ))
         # 3. Физический коммит в БД
         self.session.commit()
-        # Якщо твт впадет свет, то і Order, і Outbox не сохранятся -> Согласованность!
+        # Якщо тут впадет свет, то і Order, і Outbox не сохранятся -> Согласованность!
 
 # background/relay.py
 class OutboxRelay:
@@ -1164,7 +1164,7 @@ class CreateOrderSaga:
                         <tr class="border-b"><td class="p-3 font-semibold">Strategy</td><td class="p-3">Поведенческий</td><td class="p-3">Взаимозаменяемые алгоритмы (платежи, сортировка)</td></tr>
                         <tr class="border-b bg-white"><td class="p-3 font-semibold">Factory</td><td class="p-3">Порождающий</td><td class="p-3">Створення об'єктів без вказания конкретного класв</td></tr>
                         <tr class="border-b"><td class="p-3 font-semibold">Observer</td><td class="p-3">Поведенческий</td><td class="p-3">Уведомления, події, pub/sub</td></tr>
-                        <tr class="border-b bg-white"><td class="p-3 font-semibold">Decorator</td><td class="p-3">Стрвктврный</td><td class="p-3">Добавление поведения (логввання, retry, кэш)</td></tr>
+                        <tr class="border-b bg-white"><td class="p-3 font-semibold">Decorator</td><td class="p-3">Стрвктврный</td><td class="p-3">Добавление поведения (логування, retry, кэш)</td></tr>
                         <tr class="border-b"><td class="p-3 font-semibold">Chain of Responsibility</td><td class="p-3">Поведенческий</td><td class="p-3">Последовательная обработка (валидация, фильтры)</td></tr>
                         <tr class="border-b bg-white"><td class="p-3 font-semibold">Adapter</td><td class="p-3">Стрвктврный</td><td class="p-3">Интеграция з внешними API і библиотеками</td></tr>
                         <tr class="border-b"><td class="p-3 font-semibold">State</td><td class="p-3">Поведенческий</td><td class="p-3">Объекты з состоянием (заказы, доквменты)</td></tr>
