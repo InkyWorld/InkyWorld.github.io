@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overengineering - Clean Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
+        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
+        
+        .sidebar { 
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
+            border-right: 1px solid #334155; 
+            height: 100vh; 
+            position: fixed; 
+            width: 18rem; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            z-index: 50; 
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #1e293b;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .sidebar-title { 
+            color: #f8fafc; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.01em;
+        }
+        .sidebar-subtitle { 
+            color: #60a5fa; 
+            opacity: 0.9;
+        }
+        .nav-section { 
+            color: #94a3b8; 
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            padding: 1rem 1rem 0.5rem; 
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+        .nav-link { 
+            display: block; 
+            padding: 0.7rem 1rem; 
+            color: #cbd5e1; 
+            font-weight: 500; 
+            font-size: 0.875rem; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-left: 3px solid transparent; 
+            text-decoration: none; 
+            margin: 0.15rem 0;
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+        .nav-link:hover { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); 
+            color: #f1f5f9; 
+            border-left-color: #60a5fa; 
+            transform: translateX(2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-link.active { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); 
+            color: #60a5fa; 
+            border-left-color: #3b82f6; 
+            font-weight: 600;
+            box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+        .sidebar-title { color: #f8fafc; text-shadow: 0 2px 4px rgba(0,0,0,0.3); letter-spacing: -0.01em; }
+        .sidebar-subtitle { color: #60a5fa; opacity: 0.9; }
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; margin-top: 0.5rem; opacity: 0.8; }
+        .nav-link { display: block; padding: 0.7rem 1rem; color: #cbd5e1; font-weight: 500; font-size: 0.875rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-left: 3px solid transparent; text-decoration: none; margin: 0.15rem 0; border-radius: 0 0.375rem 0.375rem 0; }
+        .nav-link:hover { background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); color: #f1f5f9; border-left-color: #60a5fa; transform: translateX(2px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-link.active { background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); color: #60a5fa; border-left-color: #3b82f6; font-weight: 600; box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1); }
+
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            margin: 1.5rem 0;
+            box-sizing: border-box;
+            max-width: 100%;
+            position: relative;
+        }
+        pre::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+    
+        .hljs-comment, .hljs-quote { color: #475569 !important; font-weight: 700 !important; font-style: normal !important; }
+        </style>
+</head>
+<body class="flex bg-slate-50">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hidden md:block">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold sidebar-title">Clean Architecture</h1>
+            <span class="sidebar-subtitle text-sm">Author: Alex | InkyWorld</span>
+        </div>
+        
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400 bg-slate-800/50 rounded-lg p-2">                    <a href="../ru/overengineering.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">RU</a>                    <a href="overengineering.html" class="text-blue-400 font-bold px-2 py-1 rounded bg-blue-500/20">EN</a>                    <a href="../ua/overengineering.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">UA</a>                </div>
+            </div>
+
+            <div class="nav-section">Basics</div>
+            <a href="index.html" class="nav-link">📘 Introduction</a>
+            <a href="solid.html" class="nav-link">📐 SOLID Principles</a>
+            <a href="project_structure.html" class="nav-link">🧭 Project Structure (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Architecture Layers</div>
+            <a href="domain.html" class="nav-link">🎯 Domain Layer</a>
+            <a href="application.html" class="nav-link">⚙️ Application Layer</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Infrastructure Layer</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
+
+            <div class="nav-section">Tactical DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
+            <a href="invariants.html" class="nav-link">🛡️ Invariants</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
+            <a href="specification.html" class="nav-link">📋 Specification</a>
+            <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
+            <a href="policies.html" class="nav-link">📜 Policies</a>
+            <a href="versioning.html" class="nav-link">🔄 Versioning</a>
+
+            <div class="nav-section">Strategic DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Bounded Contexts</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS & Distributed Systems</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS & ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Reliability & Security</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
+            <a href="concurrency.html" class="nav-link">🛑 Concurrency & Migrations</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
+
+            <div class="nav-section">Quality & Practice</div>
+            <a href="testing.html" class="nav-link">🧪 Testing</a>
+            <a href="overengineering.html" class="nav-link active">🛑 Overengineering</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
+            <a href="projects.html" class="nav-link">🚀 Mini-projects</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Antipatterns</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">About</div>
+            <a href="afterword.html" class="nav-link">👋 Afterword</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 md:ml-72 min-h-screen p-6 md:p-12 lg:p-16 max-w-4xl pt-24 md:pt-16">
+        
+        <header class="mb-12">
+            <div class="text-sm font-bold text-red-600 uppercase tracking-wider mb-2">Pragmatism</div>
+            <h1 class="text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-6">When Patterns are Too Much: Overengineering</h1>
+            <p class="text-xl text-slate-600">Clean Architecture is a tool, not a religion. Learn when it's better to write simple spaghetti code.</p>
+        </header>
+
+        <article class="prose prose-slate prose-lg max-w-none">
+            
+            <section class="mb-12">
+                <h2 class="text-3xl font-bold text-slate-800 mb-6">"Resume Driven Development" Syndrome</h2>
+                <p>
+                    Often developers implement DDD, CQRS, Event Sourcing, and Clean Architecture not because the project needs it, but because they want to try new technologies or decorate their resume. This leads to the creation of monsters that are harder to maintain than a regular monolith.
+                </p>
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 my-6">
+                    <h3 class="font-bold text-yellow-800 text-lg mb-2">The Golden Rule:</h3>
+                    <p class="text-yellow-900 m-0">
+                        The complexity of the architecture should not exceed the complexity of the business problem being solved. If your task is a CRUD admin panel for 5 tables, you don't need Clean Architecture.
+                    </p>
+                </div>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-3xl font-bold text-slate-800 mb-6">Signs of Over-Engineering</h2>
+                <ul class="space-y-4 list-disc list-inside">
+                    <li><strong>DTOs for Everything:</strong> You have `User`, `UserDTO`, `CreateUserRequest`, `UserResponse`, and they are all identical.</li>
+                    <li><strong>Interfaces with Single Implementation:</strong> You have `IUserRepository` and `UserRepository`, and you know for sure you will never replace Postgres with Mongo.</li>
+                    <li><strong>Use Cases that Do Nothing:</strong> Classes that simply call a repository method and return the result.</li>
+                    <li><strong>Contrived Modularity:</strong> Microservices that communicate with each other synchronously over HTTP to perform a single operation.</li>
+                </ul>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-3xl font-bold text-slate-800 mb-6">When NOT to use Clean Architecture</h2>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-lg mb-3">🛠️ Prototypes and MVPs</h3>
+                        <p class="text-sm">When the goal is to test a hypothesis in 2 days. Speed is more important here. The Django/Rails way is your choice.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-lg mb-3">📊 CRUD Applications</h3>
+                        <p class="text-sm">Admin panels, simple CMSs, where logic is "read from DB -> show -> save".</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-lg mb-3">📜 Scripts and Utilities</h3>
+                        <p class="text-sm">Parsers, data migrators, one-off tasks. A 500-line class here is better than 10 files.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-lg mb-3">⚡ High Performance</h3>
+                        <p class="text-sm">If every CPU cycle counts (HFT, Real-time), abstraction layers can be too expensive.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-3xl font-bold text-slate-800 mb-6">YAGNI and KISS</h2>
+                <p>
+                    <strong>YAGNI (You Ain't Gonna Need It):</strong> Don't write code for problems that "might" arise in the future. The probability of guessing the future is extremely low.
+                </p>
+                <p>
+                    <strong>KISS (Keep It Simple, Stupid):</strong> The simplest code is the best code. If a solution can be explained to a junior in 5 minutes — it's good.
+                </p>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-3xl font-bold text-slate-800 mb-6">Hybrid Approach: Clean Architecture + CRUD</h2>
+                <p>
+                    Many think that you need to choose one thing in a project. This is a mistake. In a real DDD project, different parts of the system (Bounded Contexts) can and should have different architectural complexity.
+                </p>
+
+                <div class="my-8">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-6">
+                        <h4 class="font-bold text-blue-900 text-lg mb-2">Strategic Design in Action</h4>
+                        <ul class="space-y-3 text-blue-800">
+                            <li>
+                                <span class="font-bold">Core Domain:</span> This is where money, competitive advantage, and complex logic live. Use <strong>Clean Architecture</strong>, DDD, and tests. Isolate domain from database.
+                            </li>
+                            <li>
+                                <span class="font-bold">Generic Subdomain:</span> Admin panel, logging, settings management, simple reference data. Use <strong>CRUD</strong>, Django Admin, Active Record. Complex architecture is not needed here.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Modular Monolith Example</h3>
+                <p>
+                    Imagine an e-commerce store. You can have the following modules in one repository:
+                </p>
+                <div class="grid gap-4 mt-6">
+                    <div class="p-6 bg-white border border-slate-200 rounded-lg">
+                        <h4 class="font-bold text-slate-900">📦 "Orders" Module</h4>
+                        <div class="text-sm font-bold text-purple-600 uppercase tracking-wider mb-2">Core Domain</div>
+                        <p class="text-slate-600">Complex discount logic, reservation, statuses. <br><strong>Solution:</strong> Clean Architecture + Rich Domain Model.</p>
+                    </div>
+                    <div class="p-6 bg-white border border-slate-200 rounded-lg">
+                        <h4 class="font-bold text-slate-900">🔔 "Notifications" Module</h4>
+                        <div class="text-sm font-bold text-green-600 uppercase tracking-wider mb-2">Generic Subdomain</div>
+                        <p class="text-slate-600">Just sending email/sms. No complex logic. <br><strong>Solution:</strong> Simple Service Class + Infrastructure Adapter.</p>
+                    </div>
+                    <div class="p-6 bg-white border border-slate-200 rounded-lg">
+                        <h4 class="font-bold text-slate-900">📒 "CMS / Blog" Module</h4>
+                        <div class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Supporting Subdomain</div>
+                        <p class="text-slate-600">Editing articles and news. <br><strong>Solution:</strong> Django Models + Django Admin (Pure CRUD).</p>
+                    </div>
+                </div>
+
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-6">Mixing Styles in One Module (CQRS-lite)</h3>
+                    <p>
+                        Even within a complex Core Domain, you don't always need to run everything through Use Cases. 
+                        The <strong>CQRS (Command Query Responsibility Segregation)</strong> architecture teaches us to separate write operations (Commands) and read operations (Queries).
+                    </p>
+                    
+                    <div class="grid md:grid-cols-2 gap-8 mt-6">
+                        <div class="bg-red-50 p-6 rounded-xl border border-red-100">
+                            <h4 class="font-bold text-red-800 mb-2">Writing (Commands)</h4>
+                            <p class="text-sm text-red-900 mb-4">Changing state requires invariant validation. This is where Clean Architecture shines.</p>
+                            <ul class="text-sm space-y-1 list-disc list-inside text-red-800">
+                                <li><strong>Path:</strong> Controller → Use Case → Entity → Repository</li>
+                                <li><strong>Why:</strong> Data protection, business rules.</li>
+                                <li><strong>Example:</strong> <code>PlaceOrder</code>, <code>ChangePassword</code></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
+                            <h4 class="font-bold text-blue-800 mb-2">Reading (Queries)</h4>
+                            <p class="text-sm text-blue-900 mb-4">Reading often doesn't require invariants. We just need data for the UI.</p>
+                            <ul class="text-sm space-y-1 list-disc list-inside text-blue-800">
+                                <li><strong>Path:</strong> Controller → Read Service (Raw SQL/ORM) → DTO</li>
+                                <li><strong>Why:</strong> Performance, simplicity.</li>
+                                <li><strong>Example:</strong> <code>GetOrderById</code>, <code>ListProducts</code></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p class="mt-6 text-sm bg-slate-100 p-4 rounded-lg font-mono">
+                        💡 <strong>Insight:</strong> It's normal to have a Use Case import in a controller for a POST request and a direct ORM/Repository call for a GET request. Don't create <code>GetByIdUseCase</code> if it just proxies a call to the database.
+                    </p>
+                </div>
+
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-6">What Does This Look Like in Project Structure?</h3>
+                    <p>Here's an example of a real folder structure where Clean Architecture and CRUD coexist within a single Modular Monolith:</p>
+                    
+                    <pre><code class="language-bash">src/
+├── modules/
+│   ├── ordering/               # 💎 CORE DOMAIN
+│   │   ├── domain/             # Pure entities Order, OrderLine
+│   │   ├── application/        
+│   │   │   ├── commands/       # Complex Logic: PlaceOrder (Rich Domain Model)
+│   │   │   ├── queries/        # Fast Reads: GetOrderById (Raw SQL / DTO)
+│   │   │   └── crud/           # Simple Actions: UpdateAdminNote (Service Class)
+│   │   ├── infrastructure/     # Repositories impl, EmailSender impl
+│   │   └── presentation/       # API Routes
+│   │
+│   ├── catalog/                # 🛒 SUPPORTING (CQRS-lite / Transaction Script)
+│   │   ├── models.py           # Just ORM models (SQLAlchemy/Django)
+│   │   ├── services.py         # Logic: "find product -> check stock"
+│   │   └── views.py            # Controllers call services directly
+│   │
+│   └── audit_log/              # 📝 GENERIC (CRUD)
+│       ├── models.py           # One table LogEntry
+│       └── admin.py            # Only admin panel for viewing
+</code></pre>
+                    <div class="mt-6 bg-yellow-50 border-l-4 border-yellow-500 p-4">
+                        <h4 class="font-bold text-yellow-800 mb-2">Note the Application Layer:</h4>
+                        <p class="text-sm text-yellow-900">
+                             The <code>ordering</code> module shows that the <strong>Application Layer</strong> can be hybrid:
+                        </p>
+                        <ul class="text-sm list-disc list-inside mt-2 text-yellow-900">
+                            <li><strong>Commands (Use Cases):</strong> Only for critical operations with invariants (Debit money, Create order).</li>
+                            <li><strong>Queries:</strong> For optimized reading (lists, reports).</li>
+                            <li><strong>CRUD / Services:</strong> For simple fields that don't affect business rules (e.g., update manager note, change tag). For this, you don't need to create a separate Use Case and go through Domain, you can use a simple Service.</li>
+                        </ul>
+                    </div>
+                    <p class="text-sm mt-4 text-slate-600">
+                        In the <code>ordering</code> module, we pay the complexity tax only where it's critical. The same <code>UpdateAdminNote</code> can be just a CRUD method that directly updates a field in the database, bypassing loading the entire Aggregate.<br>
+                        Don't try to force the <code>commands</code> structure onto <code>audit_log</code>!
+                    </p>
+                </div>
+
+                <div class="mt-12 mb-12">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-6">3 More Hybrid Scenarios</h3>
+                    
+                    <div class="space-y-8">
+                        <!-- 1. ORM Hybrid -->
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm transition hover:shadow-md">
+                            <h4 class="font-bold text-lg text-indigo-700 flex items-center gap-2 mb-3">
+                                 1. ORM: Active Record (Read) vs Data Mapper (Write)
+                            </h4>
+                            <p class="text-slate-600 text-sm mb-4">
+                                <strong>Problem:</strong> Converting DB rows into rich entities (Entities) is expensive. For lists, this kills performance.<br>
+                                <strong>Hybrid:</strong> For reading, we use the power of ORM or SQL. For writing — we protect invariants through Repository.
+                            </p>
+                            
+                            <pre><code class="language-python"># 1. READ (Query): Fast, dirty, efficient
+# Use ORM/SQL capabilities directly in controller or QueryService
+def get_dashboard_stats(db: Session):
+    # Return dict or DTO, no Entities!
+    return db.execute(
+        text("SELECT status, count(*) FROM orders GROUP BY status")
+    ).all()
+
+# 2. WRITE (Command): Clean, safe
+# Here we have full Clean Architecture
+def cancel_order(order_id: UUID, uow: UnitOfWork):
+    with uow:
+        # Repository loads full Aggregate
+        order = uow.orders.get(order_id)
+        
+        # Execute business logic (rule checking)
+        order.cancel(reason="Customer request")
+        
+        # Save changes
+        uow.commit()</code></pre>
+                            
+                            <div class="mt-4 p-4 bg-indigo-50 rounded text-sm text-indigo-900">
+                                <strong class="block mb-2 text-indigo-800">🤔 Why? What's the difference?</strong>
+                                <ul class="list-disc list-inside space-y-2">
+                                    <li>
+                                        <strong>Reading (Read):</strong> Often requires "joining" 5 tables at once to display in a UI table. Assembling this through Aggregates is hell (N+1 queries, extra memory). SQL handles it better.
+                                    </li>
+                                    <li>
+                                        <strong>Writing (Write):</strong> Requires guarantees. "If order is cancelled, cannot add item". Aggregate loads the entire data tree to guarantee these rules.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 2. Framework Hybrid -->
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm transition hover:shadow-md">
+                            <h4 class="font-bold text-lg text-indigo-700 flex items-center gap-2 mb-3">
+                                 2. Validation: Presentation (Format) vs Domain (Rules)
+                            </h4>
+                            <p class="text-slate-600 text-sm mb-4">
+                                <strong>Problem:</strong> It's unclear where to check data. In Pydantic? In Use Case? In Entity?<br>
+                                <strong>Hybrid:</strong> Pydantic checks "form" (email, int > 0). Domain checks "essence" (contextual rules).
+                            </p>
+                            
+                            <pre><code class="language-python"># Presentation Layer (Pydantic)
+# Check what doesn't depend on DB state
+class ChangeEmailRequest(BaseModel):
+    new_email: EmailStr  # Email format
+    code: str = Field(min_length=6)  # Code length
+
+# Domain Layer (Entity)
+# Check business rules depending on state
+class User:
+    def change_email(self, new_email: str):
+        # Business rule: cannot change email more than once a month
+        if self.last_email_change < now() - timedelta(days=30):
+            raise DomainError("Email change too frequent")
+        
+        # Business rule: cannot change if account is banned
+        if self.is_banned:
+            raise DomainError("Account is banned")
+            
+        self.email = new_email</code></pre>
+                        </div>
+    
+                        <!-- 3. Sync/Async Hybrid -->
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm transition hover:shadow-md">
+                            <h4 class="font-bold text-lg text-indigo-700 flex items-center gap-2 mb-3">
+                                 3. Synchronous CRUD + Asynchronous Clean Architecture
+                            </h4>
+                            <p class="text-slate-600 text-sm mb-4">
+                                <strong>Problem:</strong> Heavy domain logic (PDF generation, complex calculations) slows down HTTP response.<br>
+                                <strong>Hybrid:</strong> HTTP endpoint works in CRUD mode (just creates a "Job" record). Clean Architecture lives inside worker (Celery).
+                            </p>
+                            
+                            <pre><code class="language-python"># HTTP Controller (FastAPI) - Pure CRUD
+# Maximum simple and fast endpoint
+@post("/reports")
+def create_report_request(db: Session):
+    # 1. Just save intention to DB
+    job = ReportJob(status="PENDING", type="SALES")
+    db.add(job)
+    db.commit()
+    
+    # 2. Send job ID to queue
+    generate_report_task.delay(job.id)
+    
+    # 3. Instantly respond to client
+    return {"job_id": job.id, "status": "PENDING"}
+
+# Background Worker (Celery/TaskIQ) - Pure Clean Architecture
+@task
+def generate_report_task(job_id: int):
+    # Worker acts as 'Entry Point' for Use Case
+    uow = UnitOfWork()
+    use_case = GenerateReportUseCase(uow, pdf_generator)
+    
+    # All complex logic, Entities and ports live here
+    use_case.execute(job_id)</code></pre>
+                             
+                            <div class="mt-4 p-4 bg-indigo-50 rounded text-sm text-indigo-900">
+                                <strong class="block mb-2 text-indigo-800">🤔 Why? What's the difference?</strong>
+                                <ul class="list-disc list-inside space-y-2">
+                                    <li>
+                                        <strong>Controller (CRUD):</strong> Its task is to respond to user in 100ms "I heard you". It doesn't need to spin up complex architecture, its goal is to reliably save "Request" (Job).
+                                    </li>
+                                    <li>
+                                        <strong>Worker (Clean Arch):</strong> This is where heavy magic happens. Here we need dependency inversion (DIP) to easily test report generation logic without real DB or PDF engine.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </article>
+
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="testing.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Back</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🧪 Testing</span>
+                </a>
+                <a href="deployment.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Next</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🚀 Deployment & Protection &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Save sidebar scroll position
+        (function() {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            
+            const storageKey = 'sidebar_scroll_position';
+            
+            // Restore position on load
+            const savedScroll = sessionStorage.getItem(storageKey);
+            if (savedScroll !== null) {
+                sidebar.scrollTop = parseInt(savedScroll, 10);
+            }
+            
+            // Save position on scroll
+            let scrollTimeout;
+            sidebar.addEventListener('scroll', function() {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+                }, 100);
+            });
+            
+            // Save position on page unload
+            window.addEventListener('beforeunload', function() {
+                sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+            });
+        })();
+    </script>
+</body>

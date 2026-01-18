@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Background Tasks - Clean Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
+        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
+        
+        .sidebar { 
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
+            border-right: 1px solid #334155; 
+            height: 100vh; 
+            position: fixed; 
+            width: 18rem; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            z-index: 50; 
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #1e293b;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .sidebar-title { 
+            color: #f8fafc; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.01em;
+        }
+        .sidebar-subtitle { 
+            color: #60a5fa; 
+            opacity: 0.9;
+        }
+        .nav-section { 
+            color: #94a3b8; 
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            padding: 1rem 1rem 0.5rem; 
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+        .nav-link { 
+            display: block; 
+            padding: 0.7rem 1rem; 
+            color: #cbd5e1; 
+            font-weight: 500; 
+            font-size: 0.875rem; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-left: 3px solid transparent; 
+            text-decoration: none; 
+            margin: 0.15rem 0;
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+        .nav-link:hover { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); 
+            color: #f1f5f9; 
+            border-left-color: #60a5fa; 
+            transform: translateX(2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-link.active { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); 
+            color: #60a5fa; 
+            border-left-color: #3b82f6; 
+            font-weight: 600;
+            box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+        .sidebar-title { color: #f8fafc; text-shadow: 0 2px 4px rgba(0,0,0,0.3); letter-spacing: -0.01em; }
+        .sidebar-subtitle { color: #60a5fa; opacity: 0.9; }
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; margin-top: 0.5rem; opacity: 0.8; }
+        .nav-link { display: block; padding: 0.7rem 1rem; color: #cbd5e1; font-weight: 500; font-size: 0.875rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-left: 3px solid transparent; text-decoration: none; margin: 0.15rem 0; border-radius: 0 0.375rem 0.375rem 0; }
+        .nav-link:hover { background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); color: #f1f5f9; border-left-color: #60a5fa; transform: translateX(2px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-link.active { background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); color: #60a5fa; border-left-color: #3b82f6; font-weight: 600; box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1); }
+
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            margin: 1.5rem 0;
+            box-sizing: border-box;
+            max-width: 100%;
+            position: relative;
+        }
+        pre::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+        .code-keyword { color: #c084fc; font-weight: bold; } 
+        .code-class { color: #fbbf24; font-weight: bold; }   
+        .code-func { color: #60a5fa; font-weight: bold; }    
+        .code-str { color: #a3e635; }                        
+        .hljs-comment, .hljs-quote { color: #475569 !important; font-weight: 700 !important; font-style: normal !important; }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
+    </style>
+</head>
+<body class="flex bg-slate-50">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hidden md:block">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold sidebar-title">Clean Architecture</h1>
+            <span class="sidebar-subtitle text-sm">Author: Alex | InkyWorld</span>
+        </div>
+        
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400 bg-slate-800/50 rounded-lg p-2">                    <a href="../ru/background_tasks.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">RU</a>                    <a href="../en/background_tasks.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">EN</a>                    <a href="background_tasks.html" class="text-blue-400 font-bold px-2 py-1 rounded bg-blue-500/20">UA</a>                </div>
+            </div>
+
+            <div class="nav-section">Основи</div>
+            <a href="index.html" class="nav-link">📘 Вступ</a>
+            <a href="solid.html" class="nav-link">📐 SOLID принципи</a>
+            <a href="project_structure.html" class="nav-link">🧭 Структура проєкту (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Шари архітектури</div>
+            <a href="domain.html" class="nav-link">🎯 Domain Layer</a>
+            <a href="application.html" class="nav-link">⚙️ Application Layer</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Infrastructure Layer</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
+
+            <div class="nav-section">Тактичний DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
+            <a href="invariants.html" class="nav-link">🛡️ Інваріанти</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
+            <a href="specification.html" class="nav-link">📋 Specification</a>
+            <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
+            <a href="policies.html" class="nav-link">📜 Policies</a>
+            <a href="versioning.html" class="nav-link">🔄 Versioning</a>
+
+            <div class="nav-section">Стратегічний DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Bounded Contexts</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS та Розподілені системи</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS та ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link active">⏳ Background Tasks</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Надійність та Безпека</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
+            <a href="concurrency.html" class="nav-link">🛑 Concurrency & Migrations</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
+
+            <div class="nav-section">Якість та Практика</div>
+            <a href="testing.html" class="nav-link">🧪 Тестування</a>
+            <a href="overengineering.html" class="nav-link">🛑 Надмірність</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
+            <a href="projects.html" class="nav-link">🚀 Міні-проєкти</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Антипатерни</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">Про проєкт</div>
+            <a href="afterword.html" class="nav-link">👋 Післямова</a>
+        </nav>
+
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-5xl mx-auto">
+        <header class="mb-12 pb-8 border-b border-gray-200">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Background Tasks</h1>
+            <p class="text-xl text-gray-600">Celery, Workers та асинхронні задачі в Чистій Архітектурі.</p>
+        </header>
+
+        <section class="mb-16">
+            <div class="prose prose-slate max-w-none text-gray-700">
+
+        <p>У Чистій Архітектурі Домен не повинен знати про Celery, Redis або RabbitMQ. Але як відправити email або обробити відео?</p>
+
+        <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">1. Проблема: Імпорт Celery в Use Case</h2>
+        <div class="bg-red-50 p-4 rounded border border-red-200 mb-4">
+             <code>from worker import celery_app</code> всередині Use Case — це порушення Dependency Rule. Ваш бізнес-код тепер залежить від черги задач.
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">2. Рішення: Task Dispatcher</h2>
+        
+        <p>1. <strong>Interface (Application Layer):</strong> Оголошуємо, що ми взагалі вміємо відправляти задачі.</p>
+        <pre><code class="language-python"># application/interfaces/tasks.py
+from typing import Protocol, Any, Dict
+
+class ITaskDispatcher(Protocol):
+    def dispatch(self, task_name: str, payload: Dict[str, Any]):
+        ...
+</code></pre>
+
+        <p>2. <strong>Implementation (Infrastructure Layer):</strong> Тут живе Celery.</p>
+        <pre><code class="language-python"># infrastructure/tasks/celery_adapter.py
+from celery import Celery
+from application.interfaces.tasks import ITaskDispatcher
+
+celery_app = Celery("app", broker="redis://localhost")
+
+class CeleryTaskDispatcher(ITaskDispatcher):
+    def dispatch(self, task_name: str, payload: Dict[str, Any]):
+        # Відправляємо задачу за ім'ям (loose coupling)
+        celery_app.send_task(task_name, kwargs=payload)
+</code></pre>
+
+        <p>3. <strong>Використання в Use Case:</strong></p>
+        <pre><code class="language-python">class RegisterUserUseCase:
+    def __init__(self, tasks: ITaskDispatcher):
+        self.tasks = tasks
+
+    def execute(self, dto):
+        user = User.create(dto)
+        self.repo.save(user)
+        
+        # Ми просто кажемо "Відправ email", не знаючи ЯК
+        self.tasks.dispatch(
+            "send_welcome_email", 
+            {"email": user.email, "name": user.name}
+        )
+</code></pre>
+
+        <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">3. Де живе worker?</h2>
+        <p>Воркер може бути окремим процесом в тому ж репозиторії або навіть в іншому проєкті. Головне — чітко визначити межі та dependency flow:</p>
+        <ul class="list-disc list-inside space-y-2 mb-6">
+            <li><strong>Окремий репозиторій/сервіс:</strong> ідеально, якщо воркер запускається на іншій інфраструктурі або вимагає іншого оточення (наприклад, великий Kubernetes job). Підтримуйте спільну бібліотеку інтерфейсів/DTO, щоб обидва проєкти знали, як обмінюватися задачами.</li>
+            <li><strong>Той самий репозиторій, окремий пакет:</strong> зручно, коли хочеться перевикористовувати бізнес-логіку і конфігурацію. Відновлюйте Worker з shared library, але тримайте залежності Infrastructure (Celery, Redis) тільки в його пакеті, щоб решта сервісу залишалася чистою.</li>
+            <li><strong>Частина того ж додатку:</strong> допустимо для маленьких проєктів. Worker стартує з того ж коду і використовує ті ж модулі, але потрібно стежити, щоб працюючий сервіс не імпортував Celery в Application). Це можна робити через окремий entrypoint, який тільки конфігурує і запускає задачі.</li>
+        </ul>
+        <p>У будь-якому випадку не змішуйте worker і HTTP-обробники в одному потоці: задачі повинні викликатися через dispatcher, а worker — тільки читати Application Interfaces. Це зберігає правила Clean Architecture.</p>
+
+        <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">4. Transactional Outbox</h2>
+        <p>Що якщо транзакція БД відкотиться, а задача в Celery вже піде? Користувач отримає email "Ви зареєстровані", але в базі його немає.</p>
+        <p>Дивіться розділ <a href="outbox.html" class="text-blue-600 underline">Outbox Pattern</a> для вирішення цієї проблеми (збереження задачі в ту ж БД в одній транзакції).</p>
+
+        <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">5. Retry Strategies (Повтори та Backoff)</h2>
+        <p>Задачі можуть падати через тимчасові проблеми (SMTP, мережа). Використовуйте експоненціальний backoff з jitter і максимальною кількістю спроб.</p>
+<pre><code class="language-python"># Celery example
+from celery import shared_task
+
+@shared_task(bind=True, max_retries=5)
+def send_email(self, to, subject, body):
+    try:
+        smtp.send(to, subject, body)
+    except Exception as exc:
+        # експоненціальний backoff
+        raise self.retry(exc=exc, countdown=min(60, 2 ** self.request.retries))
+</code></pre>
+
+        <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">6. Dead-letter Queues (DLQ) та спостережуваність</h2>
+        <p>Задачі, які падають постійно, повинні потрапляти в DLQ з причиною помилки і метаданими. Слідкуйте за метриками: failure rate, retry latency, task duration.</p>
+
+        <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">7. Idempotency & Deduplication</h2>
+        <p>Обробники повинні бути ідемпотентними. Використовуйте бізнес-ключі для dedup (наприклад, event_id або external_id).</p>
+<pre><code class="language-python"># Приклад ідемпотентної задачі
+def process_payment(event):
+    if payment_exists(event.id):
+        return
+    # обробка
+    save_payment(event)
+</code></pre>
+
+        <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">8. Task Timeouts & Resource Limits</h2>
+        <p>Кожна задача повинна мати таймаут і допустимий набір ресурсів. Для довгих процесів використовуйте оркестрацію через кроки (chaining) або Saga.</p>
+
+        <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">9. Batching & Rate Limiting</h2>
+        <p>Для масових операцій (відправка листів, webhooks) групуйте записи в батчі і ставте rate limits, щоб не отримати ban у зовнішнього провайдера.</p>
+
+        <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">10. Testing Background Tasks</h2>
+        <ul class="list-disc list-inside space-y-2 mb-6">
+            <li>Локально запускайте worker і broker (наприклад, redis) в docker-compose для інтеграційних тестів.</li>
+            <li>Покривайте обробники unit-тестами (без broker): тестуйте бізнес-логіку, mock-адаптери.</li>
+            <li>Перевіряйте retry-логіку і відмітки про оброблені event_ids.</li>
+        </ul>
+
+        <h3 class="font-bold text-lg mt-8 mb-4">Pitfalls & Lifehacks</h3>
+        <ul class="list-disc list-inside space-y-2 mb-6">
+            <li><strong>Не виконуйте довгу справу всередині HTTP-обробника:</strong> повертайте 202 і відправляйте задачу в фон.</li>
+            <li><strong>Idempotency Key:</strong> використовуйте ключі не тільки в HTTP, але і всередині задач (event_id), щоб уникнути подвійної обробки.</li>
+            <li><strong>Dead-letter monitoring:</strong> автоматизуйте сповіщення при зростанні DLQ.</li>
+            <li><strong>Local development:</strong> використовуйте sync-adapter (в development mode) який виконує задачі синхронно — це прискорює відладку.</li>
+        </ul>
+
+            </div>
+        </section>
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="outbox.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Назад</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 📮 Outbox Pattern</span>
+                </a>
+                <a href="observability.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Далі</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🔍 Observability &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Збереження позиції скролу sidebar
+        (function() {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            
+            const storageKey = 'sidebar_scroll_position';
+            
+            // Відновлення позиції при завантаженні
+            const savedScroll = sessionStorage.getItem(storageKey);
+            if (savedScroll !== null) {
+                sidebar.scrollTop = parseInt(savedScroll, 10);
+            }
+            
+            // Збереження позиції при скролі
+            let scrollTimeout;
+            sidebar.addEventListener('scroll', function() {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+                }, 100);
+            });
+            
+            // Збереження позиції при закритті сторінки
+            window.addEventListener('beforeunload', function() {
+                sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+            });
+        })();
+    </script>
+</body>

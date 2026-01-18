@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concurrency & Migrations - Clean Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
+        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
+        
+        .sidebar { 
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
+            border-right: 1px solid #334155; 
+            height: 100vh; 
+            position: fixed; 
+            width: 18rem; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            z-index: 50; 
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #1e293b;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .sidebar-title { 
+            color: #f8fafc; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.01em;
+        }
+        .sidebar-subtitle { 
+            color: #60a5fa; 
+            opacity: 0.9;
+        }
+        .nav-section { 
+            color: #94a3b8; 
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            padding: 1rem 1rem 0.5rem; 
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+        .nav-link { 
+            display: block; 
+            padding: 0.7rem 1rem; 
+            color: #cbd5e1; 
+            font-weight: 500; 
+            font-size: 0.875rem; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-left: 3px solid transparent; 
+            text-decoration: none; 
+            margin: 0.15rem 0;
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+        .nav-link:hover { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); 
+            color: #f1f5f9; 
+            border-left-color: #60a5fa; 
+            transform: translateX(2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-link.active { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); 
+            color: #60a5fa; 
+            border-left-color: #3b82f6; 
+            font-weight: 600;
+            box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+        .sidebar-title { color: #f8fafc; text-shadow: 0 2px 4px rgba(0,0,0,0.3); letter-spacing: -0.01em; }
+        .sidebar-subtitle { color: #60a5fa; opacity: 0.9; }
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; margin-top: 0.5rem; opacity: 0.8; }
+        .nav-link { display: block; padding: 0.7rem 1rem; color: #cbd5e1; font-weight: 500; font-size: 0.875rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-left: 3px solid transparent; text-decoration: none; margin: 0.15rem 0; border-radius: 0 0.375rem 0.375rem 0; }
+        .nav-link:hover { background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); color: #f1f5f9; border-left-color: #60a5fa; transform: translateX(2px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-link.active { background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); color: #60a5fa; border-left-color: #3b82f6; font-weight: 600; box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1); }
+
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            margin: 1.5rem 0;
+            box-sizing: border-box;
+            max-width: 100%;
+            position: relative;
+        }
+        pre::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+    
+        .hljs-comment, .hljs-quote { color: #475569 !important; font-weight: 700 !important; font-style: normal !important; }
+        </style>
+</head>
+<body class="flex bg-slate-50">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hidden md:block">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold sidebar-title">Clean Architecture</h1>
+            <span class="sidebar-subtitle text-sm">Author: Alex | InkyWorld</span>
+        </div>
+        
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400 bg-slate-800/50 rounded-lg p-2">                    <a href="../ru/concurrency.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">RU</a>                    <a href="concurrency.html" class="text-blue-400 font-bold px-2 py-1 rounded bg-blue-500/20">EN</a>                    <a href="../ua/concurrency.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">UA</a>                </div>
+            </div>
+
+            <div class="nav-section">Basics</div>
+            <a href="index.html" class="nav-link">📘 Introduction</a>
+            <a href="solid.html" class="nav-link">📐 SOLID Principles</a>
+            <a href="project_structure.html" class="nav-link">🧭 Project Structure (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Architecture Layers</div>
+            <a href="domain.html" class="nav-link">🎯 Domain Layer</a>
+            <a href="application.html" class="nav-link">⚙️ Application Layer</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Infrastructure Layer</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
+
+            <div class="nav-section">Tactical DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
+            <a href="invariants.html" class="nav-link">🛡️ Invariants</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
+            <a href="specification.html" class="nav-link">📋 Specification</a>
+            <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
+            <a href="policies.html" class="nav-link">📜 Policies</a>
+            <a href="versioning.html" class="nav-link">🔄 Versioning</a>
+
+            <div class="nav-section">Strategic DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Bounded Contexts</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS & Distributed Systems</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS & ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Reliability & Security</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
+            <a href="concurrency.html" class="nav-link active">🛑 Concurrency & Migrations</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
+
+            <div class="nav-section">Quality & Practice</div>
+            <a href="testing.html" class="nav-link">🧪 Testing</a>
+            <a href="overengineering.html" class="nav-link">🛑 Overengineering</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
+            <a href="projects.html" class="nav-link">🚀 Mini-projects</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Antipatterns</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">About</div>
+            <a href="afterword.html" class="nav-link">👋 Afterword</a>
+        </nav>
+
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-5xl mx-auto">
+        <header class="mb-12 pb-8 border-b border-gray-200">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Concurrency & Migrations</h1>
+            <p class="text-xl text-gray-600">Race conditions, Idempotency and Zero-Downtime migrations.</p>
+        </header>
+
+        <section class="mb-16">
+            <div class="prose prose-slate max-w-none text-gray-700">
+
+    <p>The real world is merciless. Users click buttons simultaneously, the internet disconnects, and business requires changing the database structure on the fly.</p>
+
+    <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">1. Race Conditions</h2>
+    <div class="bg-red-50 p-4 rounded border border-red-200 mb-4">
+        <h4 class="font-bold text-red-800">Rookie Mistake</h4>
+        <p class="text-sm">Get an item, check <code>quantity > 0</code>, subtract 1, save. <br>In parallel threads, two processes read "quantity=1" and both sell the item. Result: -1 in stock.</p>
+    </div>
+    
+    <h3 class="font-bold text-lg mt-6 mb-2">Solution: Pessimistic Locking</h3>
+    <p>Use <code>SELECT FOR UPDATE</code>. This locks the row in the database until the end of the transaction.</p>
+    <pre><code class="language-python"># infrastructure/repositories/product_repo.py
+async def decrease_quantity(self, product_id: str, amount: int):
+    # with_for_update blocks the row!
+    stmt = select(Product).where(Product.id == product_id).with_for_update()
+    result = await self.session.execute(stmt)
+    product = result.scalar_one()
+
+    if product.quantity < amount:
+        raise OutOfStockError()
+
+    product.quantity -= amount
+    # Commit releases the lock
+</code></pre>
+
+    <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">2. Idempotency</h2>
+    <p>What if the client clicked the button twice? Or the server replied 500 (timeout), but the transaction went through?</p>
+    <p><strong>Idempotency Key</strong> — a unique operation key (e.g., UUID) that the client generates and sends in the header.</p>
+    <p>Idempotency means that repeated calls with the same key lead to the same result, as if the operation was executed only once. The server uses the key to understand that the answer already exists and does not re-execute heavy work or dangerous mutations.</p>
+    
+    <pre><code class="language-python"># infrastructure/middlewares.py
+async def idempotency_middleware(request: Request, call_next):
+    idem_key = request.headers.get("X-Idempotency-Key")
+    if not idem_key:
+        return await call_next(request)
+        
+    # Check in Redis
+    cached_response = await redis.get(idem_key)
+    if cached_response:
+        return Response(content=cached_response, status_code=200)
+    
+    # Execute
+    response = await call_next(request)
+    
+    # Save result
+    if response.status_code == 200:
+        await redis.set(idem_key, response.body, ex=3600)
+    return response
+</code></pre>
+
+    <p>For deduplication, use a business key (e.g., <code>event_id</code> or external ID from the client). Before processing, check if a record with this key already exists. Example: if <code>process_payment</code> starts twice with the same <code>event.id</code>, the <code>payment_exists</code> check stops re-processing and new database writes, while the logic remains idempotent.</p>
+
+
+    <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">3. Zero-Downtime Migrations</h2>
+    <p>You can't just rename a column in the database. While the code is deploying, the old application instance will crash with a "Column not found" error.</p>
+    <p><strong>Expand-Contract Algorithm:</strong></p>
+    <ol class="list-decimal ml-6 space-y-2">
+        <li><strong>Expand:</strong> Create a new column <code>new_title</code>, keep the old <code>title</code>. Code writes to BOTH, reads from old.</li>
+        <li><strong>Migrate:</strong> Background script copies data from <code>title</code> to <code>new_title</code>.</li>
+        <li><strong>Switch:</strong> Deploy patch: code reads from <code>new_title</code>, writes to BOTH.</li>
+        <li><strong>Contract:</strong> Remove old column <code>title</code>.</li>
+    </ol>
+
+            <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">4. Optimistic Locking (Versioning)</h2>
+            <p>When locks are too expensive, use a version field (e.g., <code>version</code>). Before saving, check that the version hasn't changed.</p>
+            <p>The idea is that each object stores a version number. When you load data, you take the current version. Before writing, you compare: if the version hasn't changed, then no one else managed to change the row, and you can safely save. If the version is already increased, someone else updated the resource — then we cancel the operation and repeat (retry) or report an error.</p>
+<pre><code class="language-python"># models.py (SQLAlchemy)
+class ProductModel(Base):
+    __tablename__ = "product"
+    id = Column(String, primary_key=True)
+    quantity = Column(Integer)
+    version = Column(Integer, nullable=False, default=0)
+
+# repository
+def decrease_quantity(session, product_id, amount, expected_version):
+    q = session.query(ProductModel).filter_by(id=product_id, version=expected_version)
+    updated = q.update({"quantity": ProductModel.quantity - amount, "version": ProductModel.version + 1})
+    if updated == 0:
+        raise ConcurrencyError("Optimistic lock failed")
+</code></pre>
+
+            <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">5. Transaction Isolation Levels</h2>
+            <p>Isolation levels define what "snapshot" of data a transaction sees while it's running. They affect effects like <em>dirty reads</em>, non-repeatable reads, and phantoms. For example, in PostgreSQL, <strong>Read Committed</strong> with additional locks/versioning is often enough.</p>
+            <p>Let's break it down by situations:</p>
+            <ul class="list-disc list-inside space-y-2 mb-4">
+                <li><strong>Read Uncommitted:</strong> a transaction can read a row that another process has not yet committed. If approximate data is enough for analytics (e.g., building a "last 5 minutes" dashboard), you can take the risk of getting outdated/cancelled values.</li>
+                <li><strong>Read Committed:</strong> PostgreSQL uses this by default. Reads only committed records, so it won't see "dirty" changes. If you explicitly take <code>SELECT ... FOR UPDATE</code> or block a row before writing, then each transaction works with the current value, and repeated reads may show already committed updates (changes between queries are possible).</li>
+                <li><strong>Repeatable Read:</strong> the transaction "freezes" the snapshot at the start. Repeated SELECTs inside it always return the same thing. This is useful in reports where it is important that all queries see the same set of rows, even if other transactions update data.</li>
+                <li><strong>Serializable:</strong> the strictest model: the database guarantees that the result is as if transactions were executed sequentially. This is needed when even a single phantom or overlapping operation can break logic — for example, when debiting money from multiple accounts simultaneously. Serial transactions often throw an error if they detect a conflict, so you need to retry.</li>
+            </ul>
+            <p>If phantoms appear (new rows that were not there in the first selection), try increasing the level to <strong>Repeatable Read</strong> or <strong>Serializable</strong>, or move conflicting operations out of the transaction (e.g., put them in a queue and execute sequentially).</p>
+
+            <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">6. Deadlocks and Detection</h2>
+            <p>A deadlock occurs when two transactions wait for each other. Solution: </p>
+            <ul class="list-disc list-inside space-y-2 mb-6">
+                <li>Keep transactions short. Divide long operations into several steps to avoid holding locks for minutes.</li>
+                <li>Fix the order of access to resources: if all transactions take tables and rows in the same order, mutual waiting will not occur.</li>
+                <li>Catch the deadlock error in the database and retry with exponential backoff. Databases (Postgres, SQL Server) return a special error code.</li>
+            </ul>
+            <p>Additionally, you can use a <strong>timeout</strong> on locks: if a request could not get a lock in N seconds, it is cancelled, and you can handle the rollback.</p>
+            <p>Another technique is <strong>instrumental detection</strong>: log transactions at the moment of waiting for locks and improve the order of resource acquisition. In complex cases, move critical sections to a separate worker/message broker so that processing becomes sequential.</p>
+
+            <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">7. Advisory Locks (Postgres)</h2>
+            <p>Postgres provides lightweight user locks (advisory locks), convenient for coordination between processes without transaction tails.</p>
+<pre><code class="language-python"># example using asyncpg or psycopg2
+SELECT pg_advisory_lock(hashtext('order-123'));
+-- critical section
+SELECT pg_advisory_unlock(hashtext('order-123'));
+</code></pre>
+
+            <h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">8. Testing Strategies</h2>
+            <ul class="list-disc list-inside space-y-2 mb-6">
+                <li>Write integration tests that run multiple workers in parallel (synthetic races).</li>
+                <li>Test optimistic lock failures and transaction rollbacks.</li>
+                <li>Use chaos testing / fault injection to check stability.</li>
+            </ul>
+
+            <h3 class="font-bold text-lg mt-8 mb-4">Pitfalls & Lifehacks</h3>
+            <ul class="list-disc list-inside space-y-2 mb-6">
+                <li><strong>Don't keep transactions long:</strong> slow transactions are the main source of deadlocks.</li>
+                <li><strong>Write small atomic commands:</strong> divide large operations into steps that can be compensated (Saga).</li>
+                <li><strong>Log lock metrics:</strong> lock debts and retries are early indicators of problems.</li>
+            </ul>
+
+            </div>
+        </section>
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="error_handling.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Back</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🚫 Error Handling</span>
+                </a>
+                <a href="config_logging.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Next</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">⚙️ Config & Observability &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Save sidebar scroll position
+        (function() {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            
+            const storageKey = 'sidebar_scroll_position';
+            
+            // Restore position on load
+            const savedScroll = sessionStorage.getItem(storageKey);
+            if (savedScroll !== null) {
+                sidebar.scrollTop = parseInt(savedScroll, 10);
+            }
+            
+            // Save position on scroll
+            let scrollTimeout;
+            sidebar.addEventListener('scroll', function() {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+                }, 100);
+            });
+            
+            // Save position on page unload
+            window.addEventListener('beforeunload', function() {
+                sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+            });
+        })();
+    </script>
+</body>

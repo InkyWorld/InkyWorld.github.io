@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Розділ 5: Шар Презентації - Clean Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            color: #0f172a;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+
+        p,
+        li {
+            font-family: 'Merriweather', serif;
+            line-height: 1.8;
+            color: #334155;
+            margin-bottom: 1em;
+        }
+
+        .sidebar { 
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
+            border-right: 1px solid #334155; 
+            height: 100vh; 
+            position: fixed; 
+            width: 18rem; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            z-index: 50; 
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #1e293b;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .sidebar-title { 
+            color: #f8fafc; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.01em;
+        }
+        .sidebar-subtitle { 
+            color: #60a5fa; 
+            opacity: 0.9;
+        }
+        .nav-section { 
+            color: #94a3b8; 
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            padding: 1rem 1rem 0.5rem; 
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+        .nav-link { 
+            display: block; 
+            padding: 0.7rem 1rem; 
+            color: #cbd5e1; 
+            font-weight: 500; 
+            font-size: 0.875rem; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-left: 3px solid transparent; 
+            text-decoration: none; 
+            margin: 0.15rem 0;
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+        .nav-link:hover { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); 
+            color: #f1f5f9; 
+            border-left-color: #60a5fa; 
+            transform: translateX(2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-link.active { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); 
+            color: #60a5fa; 
+            border-left-color: #3b82f6; 
+            font-weight: 600;
+            box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+        .sidebar-title { color: #f8fafc; text-shadow: 0 2px 4px rgba(0,0,0,0.3); letter-spacing: -0.01em; }
+
+        .sidebar-subtitle { color: #60a5fa; opacity: 0.9; }
+
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; margin-top: 0.5rem; opacity: 0.8; }
+
+        .nav-link {
+            display: block;
+            padding: 0.7rem 1rem;
+            color: #cbd5e1;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 3px solid transparent;
+            text-decoration: none;
+            margin: 0.15rem 0;
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+
+        .nav-link:hover { background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); color: #f1f5f9; border-left-color: #60a5fa; transform: translateX(2px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        .nav-link.active { background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); color: #60a5fa; border-left-color: #3b82f6; font-weight: 600; box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1); }
+
+        /* Code Styling */
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            margin: 1.5rem 0;
+            box-sizing: border-box;
+            max-width: 100%;
+            position: relative;
+        }
+        pre::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+
+        .code-comment {
+            color: #475569;
+            font-style: normal;
+            font-weight: 700;
+        }
+
+        .code-keyword {
+            color: #c084fc;
+            font-weight: bold;
+        }
+
+        .code-class {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .code-func {
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .code-str {
+            color: #a3e635;
+        }
+
+        .code-dec {
+            color: #f472b6;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.125rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-right: 0.5rem;
+        }
+
+        .badge-blue {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-red {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .badge-yellow {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        details>summary {
+            list-style: none;
+            cursor: pointer;
+            font-weight: 700;
+            color: #2563eb;
+            outline: none;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        details[open]>summary {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            margin-bottom: 0;
+            background: #eff6ff;
+        }
+
+        details>div {
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            border-top: 0;
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+            background: #fff;
+        }
+    </style>
+</head>
+
+<body class="flex bg-slate-50">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hidden md:block">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold sidebar-title">Clean Architecture</h1>
+            <span class="sidebar-subtitle text-sm">Автор: Alex | InkyWorld</span>
+        </div>
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400 bg-slate-800/50 rounded-lg p-2">                    <a href="../ru/presentation.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">RU</a>                    <a href="../en/presentation.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">EN</a>                    <a href="presentation.html" class="text-blue-400 font-bold px-2 py-1 rounded bg-blue-500/20">UA</a>                </div>
+            </div>
+
+            <div class="nav-section">Основи</div>
+            <a href="index.html" class="nav-link">📘 Вступ</a>
+            <a href="solid.html" class="nav-link">📐 SOLID принципи</a>
+            <a href="project_structure.html" class="nav-link">🧭 Структура проєкту (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Шари архітектури</div>
+            <a href="domain.html" class="nav-link">🎯 Шар Домену</a>
+            <a href="application.html" class="nav-link">⚙️ Шар Застосунку</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Шар Інфраструктури</a>
+            <a href="presentation.html" class="nav-link active">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
+
+            <div class="nav-section">Тактичний DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Агрегати</a>
+            <a href="invariants.html" class="nav-link">🛡️ Інваріанти</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Репозиторій та UoW</a>
+            <a href="specification.html" class="nav-link">📋 Специфікація</a>
+            <a href="domain_events.html" class="nav-link">📣 Доменні події</a>
+            <a href="policies.html" class="nav-link">📜 Політики</a>
+            <a href="versioning.html" class="nav-link">🔄 Версіонування</a>
+
+            <div class="nav-section">Стратегічний DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Обмежені контексти</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Єдина мова</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Відносини контекстів</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Субдомени</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Модульний моноліт</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Стратегічна інтеграція</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS та розподілені системи</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS та ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Фонові задачі</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Надійність та Безпека</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Обробка помилок</a>
+            <a href="concurrency.html" class="nav-link">🛑 Конкурентність та міграції</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Конфігурація та логування</a>
+
+            <div class="nav-section">Якість та Практика</div>
+            <a href="testing.html" class="nav-link">🧪 Тестування</a>
+            <a href="overengineering.html" class="nav-link">🛑 Overengineering</a>
+            <a href="deployment.html" class="nav-link">🚀 Розгортання та захист</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django та інші</a>
+            <a href="projects.html" class="nav-link">🚀 Практичні проєкти</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Антипатерни</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">Інше</div>
+            <a href="afterword.html" class="nav-link">👋 Післямова</a>
+        </nav>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-5xl mx-auto">
+
+        <header id="intro" class="mb-12 pb-6 border-b border-gray-200">
+            <div class="flex items-center gap-3 mb-2">
+                <span
+                    class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Layer
+                    4</span>
+                <span class="text-gray-400 text-sm font-mono">FastAPI / CLI / GraphQL</span>
+            </div>
+            <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Шар Презентації</h1>
+            <p class="text-xl text-gray-500 mt-4 font-light">
+                Це "брудний світ". Тут живуть HTTP статус-коди, JSON парсери та CLI аргументи. Його задача — прийняти
+                брудні вхідні дані та викликати чистий сценарій використання (Use Case).
+            </p>
+        </header>
+
+        <!-- ANATOMY -->
+        <section class="card">
+            <h2 class="text-2xl font-bold mb-6">Анатомія шару</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3
+                        class="flex items-center gap-2 font-bold text-blue-800 mb-4 border-b border-blue-200 pb-2 w-full">
+                        ✅ ОБОВ'ЯЗКИ
+                    </h3>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-start">
+                            <span class="badge badge-blue mt-1">IO</span>
+                            <div><strong>Input/Output:</strong> Парсинг JSON, валідація Body, рендеринг HTML або JSON
+                                відповіді.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="badge badge-blue mt-1">Auth</span>
+                            <div><strong>Authentication:</strong> Отримання користувача з JWT токена або сесії.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="badge badge-blue mt-1">DI</span>
+                            <div><strong>Composition Root:</strong> Збірка всіх залежностей (Repo, Service) та їх
+                                ін'єкція.</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="flex items-center gap-2 font-bold text-red-800 mb-4 border-b border-red-200 pb-2 w-full">
+                        ⛔ ЗАБОРОНЕНО
+                    </h3>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-start">
+                            <span class="badge badge-red mt-1">Logic</span>
+                            <div><strong>Бізнес-логіка:</strong> Презентація не повинна знати про правила знижок або
+                                стани замовлення. Тільки виклик методу `service.create_order()`.</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="badge badge-red mt-1">SQL</span>
+                            <div><strong>Прямі запити до БД:</strong> Заборонено. Тільки через Application Service.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXAMPLE FASTAPI -->
+        <section id="api" class="mb-16">
+            <h2 class="text-2xl font-bold mb-4">1. Web API (FastAPI)</h2>
+            <p>У чистому Web API контролер (або "роут") робить три речі: парсить запит, запускає Use Case, повертає
+                відповідь.</p>
+
+            <pre><code class="language-python"><span class="code-keyword">from</span> fastapi <span class="code-keyword">import</span> APIRouter, Depends, HTTPException
+<span class="code-keyword">from</span> application.use_cases <span class="code-keyword">import</span> CreateOrderUseCase
+<span class="code-keyword">from</span> application.dto <span class="code-keyword">import</span> CreateOrderDTO
+<span class="code-keyword">from</span> infrastructure.di <span class="code-keyword">import</span> get_create_order_use_case <span class="code-comment"># DI Container (Composition Root)</span>
+
+router = APIRouter()
+
+<span class="code-comment"># Request Model (Pydantic) - це DTO Презентаційного шару</span>
+<span class="code-keyword">class</span> <span class="code-class">OrderRequest</span>(BaseModel):
+    user_id: <span class="code-class">int</span>
+    items: <span class="code-class">List</span>[ItemRequest]
+
+<span class="code-dec">@router.post</span>(<span class="code-str">"/orders/"</span>)
+<span class="code-keyword">async</span> <span class="code-keyword">def</span> <span class="code-func">create_order_endpoint</span>(
+    request: OrderRequest,
+    <span class="code-comment"># FastAPI дозволяє нам ін'єктувати уже зібраний Use Case</span>
+    use_case: CreateOrderUseCase = Depends(get_create_order_use_case)
+):
+    <span class="code-keyword">try</span>:
+        <span class="code-comment"># 1. Adapt Input: Перетворення Web-запиту в DTO Застосунку</span>
+        dto = CreateOrderDTO(
+            user_id=request.user_id,
+            items=[i.dict() <span class="code-keyword">for</span> i <span class="code-keyword">in</span> request.items]
+        )
+        
+        <span class="code-comment"># 2. Execute Business Logic</span>
+        result = use_case.execute(dto)
+        
+        <span class="code-comment"># 3. Adapt Output: Результат бізнесу -> Web-відповідь</span>
+        <span class="code-keyword">return</span> {<span class="code-str">"order_id"</span>: result.id, <span class="code-str">"status"</span>: <span class="code-str">"created"</span>}
+        
+    <span class="code-keyword">except</span> OrderLimitExceededError <span class="code-keyword">as</span> e:
+        <span class="code-comment"># Заборонено писати "if user.balance < 0" тут. Ми лише ловимо помилки.</span>
+        <span class="code-keyword">raise</span> HTTPException(status_code=400, detail=str(e))
+    <span class="code-keyword">except</span> Exception <span class="code-keyword">as</span> e:
+        <span class="code-comment"># Логування тут або в middleware</span>
+        <span class="code-keyword">raise</span> HTTPException(status_code=500, detail=<span class="code-str">"Server Error"</span>)
+</code></pre>
+        </section>
+
+        <!-- EXAMPLE CLI -->
+        <section id="cli" class="mb-16">
+            <h2 class="text-2xl font-bold mb-4">2. CLI (Command Line Interface)</h2>
+            <p>Краса чистої архітектури в тому, що CLI — це просто <strong>ще один спосіб запуску того самого Use
+                    Case</strong>.</p>
+            <p class="text-sm text-gray-600 mb-4">
+                Ми використовуємо той самий `CreateOrderUseCase`. Тобто бізнес-логіка не дублюється для сайту і для
+                терміналу адміністратора.
+            </p>
+
+            <pre><code class="language-python"><span class="code-keyword">import</span> click
+<span class="code-keyword">from</span> infrastructure.di <span class="code-keyword">import</span> container
+
+<span class="code-dec">@click.command</span>()
+<span class="code-dec">@click.option</span>(<span class="code-str">'--user_id'</span>, required=<span class="code-keyword">True</span>, type=int)
+<span class="code-dec">@click.option</span>(<span class="code-str">'--item'</span>, multiple=<span class="code-keyword">True</span>) <span class="code-comment"># format: name:price</span>
+<span class="code-keyword">def</span> <span class="code-func">create_order</span>(user_id, item):
+    <span class="code-comment"># Парсинг CLI аргументів</span>
+    items_parsed = []
+    <span class="code-keyword">for</span> i <span class="code-keyword">in</span> item:
+        name, price = i.split(<span class="code-str">':'</span>)
+        items_parsed.append({<span class="code-str">'name'</span>: name, <span class="code-str">'price'</span>: float(price)})
+
+    <span class="code-comment"># Отримання Use Case з контейнера</span>
+    use_case = container.resolve(CreateOrderUseCase)
+    
+    dto = CreateOrderDTO(user_id=user_id, items=items_parsed)
+    
+    <span class="code-keyword">try</span>:
+        result = use_case.execute(dto)
+        click.echo(f<span class="code-str">"Order {result.id} successfully created via CLI!"</span>)
+    <span class="code-keyword">except</span> Exception <span class="code-keyword">as</span> e:
+        click.echo(f<span class="code-str">"Error: {e}"</span>, err=<span class="code-keyword">True</span>)
+</code></pre>
+        </section>
+
+        <!-- SCHEMAS -->
+        <section id="schemas" class="mb-16">
+            <h2 class="text-2xl font-bold mb-4">1. Request/Response Schemas (Pydantic)</h2>
+            <p><strong>Pydantic</strong> — це бібліотека для валідації даних. Вона вбудована в FastAPI. Ми
+                використовуємо її для створення API "контрактів".</p>
+            <p>Важливо: Pydantic схеми <strong>не те саме</strong>, що DTO з Application Layer. Схеми знають про JSON,
+                серіалізацію, HTTP. DTO — це чисті дані.</p>
+
+            <pre><code class="language-python"><span class="code-comment"># presentation/schemas/order.py</span>
+<span class="code-keyword">from</span> pydantic <span class="code-keyword">import</span> BaseModel, EmailStr, Field, field_validator
+<span class="code-keyword">from</span> typing <span class="code-keyword">import</span> List
+<span class="code-keyword">from</span> datetime <span class="code-keyword">import</span> datetime
+
+<span class="code-comment"># ═══════════════════════════════════════════════</span>
+<span class="code-comment"># REQUEST SCHEMAS (Вхідні дані)</span>
+<span class="code-comment"># ═══════════════════════════════════════════════</span>
+
+<span class="code-keyword">class</span> <span class="code-class">OrderItemRequest</span>(BaseModel):
+    <span class="code-str">"""Один товар в замовленні"""</span>
+    name: str = Field(..., min_length=1, max_length=200, description=<span class="code-str">"Назва товару"</span>)
+    price: float = Field(..., gt=0, description=<span class="code-str">"Ціна товару (більше 0)"</span>)
+    quantity: int = Field(default=1, ge=1, le=100, description=<span class="code-str">"Кількість"</span>)
+
+    <span class="code-dec">@field_validator</span>(<span class="code-str">'name'</span>)
+    <span class="code-keyword">def</span> <span class="code-func">name_must_not_be_empty</span>(cls, v):
+        <span class="code-keyword">if</span> <span class="code-keyword">not</span> v.strip():
+            <span class="code-keyword">raise</span> ValueError(<span class="code-str">'Назва не може бути порожньою'</span>)
+        <span class="code-keyword">return</span> v.strip()
+
+
+<span class="code-keyword">class</span> <span class="code-class">CreateOrderRequest</span>(BaseModel):
+    <span class="code-str">"""Запит на створення замовлення"""</span>
+    customer_email: EmailStr  <span class="code-comment"># Автоматична валідація email</span>
+    items: List[OrderItemRequest] = Field(..., min_length=1)
+    
+    <span class="code-keyword">class</span> <span class="code-class">Config</span>:
+        <span class="code-comment"># Приклад даних для Swagger документації</span>
+        json_schema_extra = {
+            <span class="code-str">"example"</span>: {
+                <span class="code-str">"customer_email"</span>: <span class="code-str">"user@example.com"</span>,
+                <span class="code-str">"items"</span>: [{<span class="code-str">"name"</span>: <span class="code-str">"Python Book"</span>, <span class="code-str">"price"</span>: 29.99, <span class="code-str">"quantity"</span>: 1}]
+            }
+        }
+
+
+<span class="code-comment"># ═══════════════════════════════════════════════</span>
+<span class="code-comment"># RESPONSE SCHEMAS (Вихідні дані)</span>
+<span class="code-comment"># ═══════════════════════════════════════════════</span>
+
+<span class="code-keyword">class</span> <span class="code-class">OrderItemResponse</span>(BaseModel):
+    name: str
+    price: float
+    quantity: int
+    subtotal: float  <span class="code-comment"># Обчислене поле</span>
+
+
+<span class="code-keyword">class</span> <span class="code-class">OrderResponse</span>(BaseModel):
+    <span class="code-str">"""Відповідь з даними замовлення"""</span>
+    id: str
+    customer_email: str
+    items: List[OrderItemResponse]
+    total_amount: float
+    status: str
+    created_at: datetime
+    
+    <span class="code-keyword">class</span> <span class="code-class">Config</span>:
+        from_attributes = <span class="code-keyword">True</span>  <span class="code-comment"># Дозволяє створювати з ORM моделей</span>
+
+
+<span class="code-keyword">class</span> <span class="code-class">ErrorResponse</span>(BaseModel):
+    <span class="code-str">"""Стандартний формат помилки"""</span>
+    error: str
+    detail: str
+    code: str <span class="code-comment"># Наприклад: "ORDER_ALREADY_PAID"</span>
+</code></pre>
+        </section>
+
+        <!-- ROUTES -->
+        <section id="routes" class="card">
+            <h2 class="text-2xl font-bold mb-6">2. Роутери та Ендпоінти (FastAPI)</h2>
+            <p>Роутер — це "тонкий" шар. Його задача: прийняти дані, викликати Use Case, повернути результат.
+                <strong>Ніякої логіки!</strong></p>
+
+            <pre><code class="language-python"><span class="code-comment"># presentation/routers/orders.py</span>
+<span class="code-keyword">from</span> fastapi <span class="code-keyword">import</span> APIRouter, Depends, HTTPException, status
+<span class="code-keyword">from</span> typing <span class="code-keyword">import</span> List
+<span class="code-keyword">import</span> uuid
+
+<span class="code-comment"># Імпорт схем (Presentation Layer)</span>
+<span class="code-keyword">from</span> ..schemas.order <span class="code-keyword">import</span> CreateOrderRequest, OrderResponse, ErrorResponse
+
+<span class="code-comment"># Імпорт Use Cases та DTO (Application Layer)</span>
+<span class="code-keyword">from</span> application.use_cases <span class="code-keyword">import</span> CreateOrderUseCase, GetOrderUseCase
+<span class="code-keyword">from</span> application.dto <span class="code-keyword">import</span> CreateOrderCommand
+
+<span class="code-comment"># Імпорт DI (контейнер залежностей)</span>
+<span class="code-keyword">from</span> ..dependencies <span class="code-keyword">import</span> get_create_order_use_case, get_order_use_case
+
+router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span class="code-str">"Orders"</span>])
+
+
+<span class="code-dec">@router.post</span>(
+    <span class="code-str">"/"</span>,
+    response_model=OrderResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary=<span class="code-str">"Створити нове замовлення"</span>,
+    responses={
+        400: {<span class="code-str">"model"</span>: ErrorResponse, <span class="code-str">"description"</span>: <span class="code-str">"Невалідні дані"</span>},
+        409: {<span class="code-str">"model"</span>: ErrorResponse, <span class="code-str">"description"</span>: <span class="code-str">"Конфлікт стану"</span>}
+    }
+)
+<span class="code-keyword">async def</span> <span class="code-func">create_order</span>(
+    request: CreateOrderRequest,
+    use_case: CreateOrderUseCase = Depends(get_create_order_use_case)
+) -> OrderResponse:
+    <span class="code-str">"""
+    Створює нове замовлення.
+    
+    - **customer_email**: Email покупця
+    - **items**: Список товарів (мінімум 1)
+    """</span>
+    
+    <span class="code-comment"># 1. Перетворюємо Pydantic Schema → Application DTO</span>
+    command = CreateOrderCommand(
+        customer_email=request.customer_email,
+        items=[
+            {<span class="code-str">"name"</span>: item.name, <span class="code-str">"price"</span>: item.price, <span class="code-str">"quantity"</span>: item.quantity}
+            <span class="code-keyword">for</span> item <span class="code-keyword">in</span> request.items
+        ]
+    )
+    
+    <span class="code-comment"># 2. Викликаємо Use Case (вся логіка ТАМ)</span>
+    result = use_case.execute(command)
+    
+    <span class="code-comment"># 3. Перетворюємо результат в Response Schema</span>
+    <span class="code-keyword">return</span> OrderResponse(
+        id=result.order_id,
+        customer_email=result.customer_email,
+        items=[
+            OrderItemResponse(
+                name=i[<span class="code-str">'name'</span>],
+                price=i[<span class="code-str">'price'</span>],
+                quantity=i[<span class="code-str">'quantity'</span>],
+                subtotal=i[<span class="code-str">'price'</span>] * i[<span class="code-str">'quantity'</span>]
+            ) <span class="code-keyword">for</span> i <span class="code-keyword">in</span> result.items
+        ],
+        total_amount=result.total_amount,
+        status=result.status,
+        created_at=result.created_at
+    )
+
+
+<span class="code-dec">@router.get</span>(<span class="code-str">"/{order_id}"</span>, response_model=OrderResponse)
+<span class="code-keyword">async def</span> <span class="code-func">get_order</span>(
+    order_id: uuid.UUID,
+    use_case: GetOrderUseCase = Depends(get_order_use_case)
+) -> OrderResponse:
+    <span class="code-str">"""Отримати замовлення за ID"""</span>
+    result = use_case.execute(order_id)
+    
+    <span class="code-keyword">if</span> result <span class="code-keyword">is None</span>:
+        <span class="code-keyword">raise</span> HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=<span class="code-str">f"Замовлення {order_id} не знайдено"</span>
+        )
+    
+    <span class="code-keyword">return</span> OrderResponse(**result.dict())
+
+
+<span class="code-dec">@router.post</span>(<span class="code-str">"/{order_id}/pay"</span>, response_model=OrderResponse)
+<span class="code-keyword">async def</span> <span class="code-func">pay_order</span>(
+    order_id: uuid.UUID,
+    use_case: PayOrderUseCase = Depends(get_pay_order_use_case)
+) -> OrderResponse:
+    <span class="code-str">"""Оплатити замовлення"""</span>
+    result = use_case.execute(order_id)
+    <span class="code-keyword">return</span> OrderResponse(**result.dict())
+</code></pre>
+        </section>
+
+        <!-- DEPENDENCIES -->
+        <section id="deps" class="card bg-gray-50 border-gray-200">
+            <h2 class="text-2xl font-bold mb-4">3. Dependency Injection в FastAPI</h2>
+            <p>FastAPI використовує систему `Depends()` для dependency injection. Це наш Composition Root.</p>
+
+            <pre><code class="language-python"><span class="code-comment"># presentation/dependencies.py</span>
+<span class="code-keyword">from</span> functools <span class="code-keyword">import</span> lru_cache
+<span class="code-keyword">from</span> fastapi <span class="code-keyword">import</span> Depends
+<span class="code-keyword">from</span> sqlalchemy.orm <span class="code-keyword">import</span> Session
+
+<span class="code-comment"># Infrastructure</span>
+<span class="code-keyword">from</span> infrastructure.db.session <span class="code-keyword">import</span> get_session
+<span class="code-keyword">from</span> infrastructure.repositories <span class="code-keyword">import</span> SqlAlchemyOrderRepository
+<span class="code-keyword">from</span> infrastructure.adapters.email <span class="code-keyword">import</span> SmtpEmailService
+<span class="code-keyword">from</span> infrastructure.uow <span class="code-keyword">import</span> SqlAlchemyUnitOfWork
+
+<span class="code-comment"># Application</span>
+<span class="code-keyword">from</span> application.use_cases <span class="code-keyword">import</span> CreateOrderUseCase, GetOrderUseCase, PayOrderUseCase
+
+<span class="code-comment"># Configuration (можна винести в окремий файл)</span>
+<span class="code-keyword">from</span> config <span class="code-keyword">import</span> settings
+
+
+<span class="code-dec">@lru_cache</span>()
+<span class="code-keyword">def</span> <span class="code-func">get_email_service</span>():
+    <span class="code-str">"""Singleton: створюється один раз на весь час життя додатку"""</span>
+    <span class="code-keyword">return</span> SmtpEmailService(
+        host=settings.SMTP_HOST,
+        port=settings.SMTP_PORT,
+        user=settings.SMTP_USER,
+        password=settings.SMTP_PASSWORD
+    )
+
+
+<span class="code-keyword">def</span> <span class="code-func">get_unit_of_work</span>(session: Session = Depends(get_session)):
+    <span class="code-str">"""Створюється для кожного запиту (Request Scope)"""</span>
+    <span class="code-keyword">return</span> SqlAlchemyUnitOfWork(session)
+
+
+<span class="code-keyword">def</span> <span class="code-func">get_create_order_use_case</span>(
+    uow = Depends(get_unit_of_work),
+    email_service = Depends(get_email_service)
+) -> CreateOrderUseCase:
+    <span class="code-str">"""Збираємо Use Case з усіма залежностями"""</span>
+    <span class="code-keyword">return</span> CreateOrderUseCase(
+        uow=uow,
+        email_service=email_service
+    )
+
+
+<span class="code-keyword">def</span> <span class="code-func">get_order_use_case</span>(
+    uow = Depends(get_unit_of_work)
+) -> GetOrderUseCase:
+    <span class="code-keyword">return</span> GetOrderUseCase(uow=uow)
+
+
+<span class="code-keyword">def</span> <span class="code-func">get_pay_order_use_case</span>(
+    uow = Depends(get_unit_of_work),
+    email_service = Depends(get_email_service)
+) -> PayOrderUseCase:
+    <span class="code-keyword">return</span> PayOrderUseCase(
+        uow=uow,
+        email_service=email_service
+    )
+</code></pre>
+        </section>
+
+        <!-- MAIN APP -->
+        <section id="main" class="mb-16">
+            <h2 class="text-2xl font-bold mb-4">4. Application Assembly (main.py)</h2>
+
+            <pre><code class="language-python"><span class="code-comment"># main.py</span>
+<span class="code-keyword">from</span> fastapi <span class="code-keyword">import</span> FastAPI
+<span class="code-keyword">from</span> fastapi.middleware.cors <span class="code-keyword">import</span> CORSMiddleware
+
+<span class="code-comment"># Routers</span>
+<span class="code-keyword">from</span> presentation.routers <span class="code-keyword">import</span> orders, users, payments
+
+<span class="code-comment"># Error handlers</span>
+<span class="code-keyword">from</span> presentation.exception_handlers <span class="code-keyword">import</span> domain_error_handler
+<span class="code-keyword">from</span> domain.exceptions <span class="code-keyword">import</span> DomainError
+
+
+<span class="code-keyword">def</span> <span class="code-func">create_app</span>() -> FastAPI:
+    <span class="code-str">"""Application factory. Дозволяє створювати різні конфігурації для тестів."""</span>
+    
+    app = FastAPI(
+        title=<span class="code-str">"Order Service API"</span>,
+        description=<span class="code-str">"Сервіс управління замовленнями (Clean Architecture)"</span>,
+        version=<span class="code-str">"1.0.0"</span>,
+        docs_url=<span class="code-str">"/docs"</span>,
+        redoc_url=<span class="code-str">"/redoc"</span>
+    )
+    
+    <span class="code-comment"># CORS для frontend</span>
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[<span class="code-str">"http://localhost:3000"</span>],
+        allow_methods=[<span class="code-str">"*"</span>],
+        allow_headers=[<span class="code-str">"*"</span>]
+    )
+    
+    <span class="code-comment"># Реєструємо обробники помилок</span>
+    app.add_exception_handler(DomainError, domain_error_handler)
+    
+    <span class="code-comment"># Підключаємо роутери</span>
+    app.include_router(orders.router, prefix=<span class="code-str">"/api/v1"</span>)
+    app.include_router(users.router, prefix=<span class="code-str">"/api/v1"</span>)
+    app.include_router(payments.router, prefix=<span class="code-str">"/api/v1"</span>)
+    
+    <span class="code-keyword">return</span> app
+
+
+<span class="code-comment"># Створюємо екземпляр</span>
+app = create_app()
+
+
+<span class="code-comment"># Запуск: uvicorn main:app --reload</span>
+</code></pre>
+        </section>
+
+        <!-- DJANGO EXAMPLE -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-4">5. Альтернатива: Django Views</h2>
+            <p>Якщо ви використовуєте Django, принципи ті самі. Тільки синтаксис інший.</p>
+
+            <details>
+                <summary>Django Class-Based View (CBV)</summary>
+                <div>
+                    <pre><code class="language-python"><span class="code-comment"># orders/views.py</span>
+<span class="code-keyword">from</span> django.http <span class="code-keyword">import</span> JsonResponse
+<span class="code-keyword">from</span> django.views <span class="code-keyword">import</span> View
+<span class="code-keyword">import</span> json
+
+<span class="code-keyword">from</span> application.use_cases <span class="code-keyword">import</span> CreateOrderUseCase
+<span class="code-keyword">from</span> application.dto <span class="code-keyword">import</span> CreateOrderCommand
+<span class="code-keyword">from</span> domain.exceptions <span class="code-keyword">import</span> DomainError
+
+<span class="code-comment"># Ручний DI (або використовуйте django-injector)</span>
+<span class="code-keyword">from</span> .dependencies <span class="code-keyword">import</span> get_create_order_use_case
+
+
+<span class="code-keyword">class</span> <span class="code-class">OrderCreateView</span>(View):
+    
+    <span class="code-keyword">def</span> <span class="code-func">post</span>(self, request):
+        <span class="code-keyword">try</span>:
+            <span class="code-comment"># 1. Парсимо JSON</span>
+            data = json.loads(request.body)
+            
+            <span class="code-comment"># 2. Створюємо Command</span>
+            command = CreateOrderCommand(
+                customer_email=data[<span class="code-str">'customer_email'</span>],
+                items=data[<span class="code-str">'items'</span>]
+            )
+            
+            <span class="code-comment"># 3. Викликаємо Use Case</span>
+            use_case = get_create_order_use_case()
+            result = use_case.execute(command)
+            
+            <span class="code-comment"># 4. Повертаємо відповідь</span>
+            <span class="code-keyword">return</span> JsonResponse(result.dict(), status=201)
+            
+        <span class="code-keyword">except</span> DomainError <span class="code-keyword">as</span> e:
+            <span class="code-keyword">return</span> JsonResponse({
+                <span class="code-str">'error'</span>: type(e).__name__,
+                <span class="code-str">'detail'</span>: str(e)
+            }, status=400)
+        
+        <span class="code-keyword">except</span> KeyError <span class="code-keyword">as</span> e:
+            <span class="code-keyword">return</span> JsonResponse({
+                <span class="code-str">'error'</span>: <span class="code-str">'ValidationError'</span>,
+                <span class="code-str">'detail'</span>: <span class="code-str">f'Відсутнє поле: {e}'</span>
+            }, status=400)
+</code></pre>
+                </div>
+            </details>
+        </section>
+
+        <!-- ANTIPATTERNS -->
+        <section id="antipatterns" class="mb-12">
+            <h2 class="text-2xl font-bold text-red-700 mb-6">⚠️ Антипаттерни Presentation Layer</h2>
+
+            <div class="space-y-6">
+                <details class="group bg-white border border-red-200 rounded-lg p-4">
+                    <summary class="font-bold text-red-800 group-hover:text-red-600">1. Fat Controller</summary>
+                    <div class="mt-3 text-sm">
+                        <p class="mb-2">Коли вся логіка в ендпоінті.</p>
+                        <pre><span class="code-comment"># ❌ ПОГАНО: Логіка в контролері</span>
+@router.post("/orders")
+<span class="code-keyword">async def</span> <span class="code-func">create_order</span>(data: dict, db: Session = Depends(get_db)):
+    <span class="code-comment"># Валідація</span>
+    <span class="code-keyword">if</span> <span class="code-keyword">not</span> data.get(<span class="code-str">'email'</span>):
+        <span class="code-keyword">raise</span> HTTPException(400, <span class="code-str">"Email обов'язковий"</span>)
+    
+    <span class="code-comment"># Бізнес-логіка (МАЄ БУТИ В USE CASE!)</span>
+    <span class="code-keyword">if</span> len(data[<span class="code-str">'items'</span>]) > 10:
+        <span class="code-keyword">raise</span> HTTPException(400, <span class="code-str">"Забагато товарів"</span>)
+    
+    total = sum(i[<span class="code-str">'price'</span>] <span class="code-keyword">for</span> i <span class="code-keyword">in</span> data[<span class="code-str">'items'</span>])
+    
+    <span class="code-comment"># SQL в контролері (МАЄ БУТИ В REPOSITORY!)</span>
+    order = Order(email=data[<span class="code-str">'email'</span>], total=total)
+    db.add(order)
+    db.commit()
+    
+    <span class="code-keyword">return</span> {<span class="code-str">"id"</span>: order.id}</pre>
+                    </div>
+                </details>
+
+                <details class="group bg-white border border-red-200 rounded-lg p-4">
+                    <summary class="font-bold text-red-800 group-hover:text-red-600">2. Повернення Entity Напряму
+                    </summary>
+                    <div class="mt-3 text-sm">
+                        <p class="mb-2">Entity має методи та приватні поля. JSON серіалізація може зламатися або
+                            розкрити зайві дані.</p>
+                        <pre><span class="code-comment"># ❌ ПОГАНО</span>
+<span class="code-keyword">return</span> order  <span class="code-comment"># Entity напряму</span>
+
+<span class="code-comment"># ✅ ДОБРЕ</span>
+<span class="code-keyword">return</span> OrderResponse(
+    id=str(order.id),
+    email=order.customer.value,
+    total=order.total_price.amount
+)</pre>
+                    </div>
+                </details>
+
+                <details class="group bg-white border border-red-200 rounded-lg p-4">
+                    <summary class="font-bold text-red-800 group-hover:text-red-600">3. Бізнес-логіка в Middleware
+                    </summary>
+                    <div class="mt-3 text-sm">
+                        <p class="mb-2">Middleware для cross-cutting concerns: логування, аутентифікація, CORS. НЕ для
+                            бізнес-правил!</p>
+                        <pre><span class="code-comment"># ❌ ПОГАНО: Перевірка лімітів в middleware</span>
+<span class="code-keyword">class</span> <span class="code-class">OrderLimitMiddleware</span>:
+    <span class="code-keyword">async def</span> <span class="code-func">__call__</span>(self, request, call_next):
+        user = get_user(request)
+        <span class="code-keyword">if</span> user.order_count > 100:  <span class="code-comment"># Бізнес-правило!</span>
+            <span class="code-keyword">return</span> JSONResponse({<span class="code-str">"error"</span>: <span class="code-str">"Ліміт"</span>}, 403)
+        <span class="code-keyword">return</span> <span class="code-keyword">await</span> call_next(request)</pre>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- COMPOSITION ROOT -->
+        <section id="composition" class="mb-16">
+            <h2 class="text-2xl font-bold mb-4">Composition Root (Корінь Композиції)</h2>
+            <p>Це "найголовніше місце" у додатку (зазвичай у `main.py` або `di.py` в шарі інфраструктури, що
+                викликається з Presentation). Тут ми говоримо: "Для цього репозиторія візьми Postgres реалізацію".</p>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-4">
+                <p class="text-sm text-blue-900">
+                    <strong>Важливо:</strong> Тільки Composition Root знає про <em>всі</em> класи. Інші класи знають
+                    тільки про інтерфейси.
+                </p>
+            </div>
+        </section>
+
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="infrastructure.html"
+                    class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span
+                        class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Назад</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🔧
+                        Шар Інфраструктури</span>
+                </a>
+                <a href="middleware.html"
+                    class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Далі</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🔌
+                        Middleware &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Збереження позиції скролу sidebar
+        (function() {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            
+            const storageKey = 'sidebar_scroll_position';
+            
+            // Відновлення позиції при завантаженні
+            const savedScroll = sessionStorage.getItem(storageKey);
+            if (savedScroll !== null) {
+                sidebar.scrollTop = parseInt(savedScroll, 10);
+            }
+            
+            // Збереження позиції при скролі
+            let scrollTimeout;
+            sidebar.addEventListener('scroll', function() {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+                }, 100);
+            });
+            
+            // Збереження позиції при закритті сторінки
+            window.addEventListener('beforeunload', function() {
+                sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+            });
+        })();
+    </script>
+</body>

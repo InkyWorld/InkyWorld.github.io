@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CQRS and Event Sourcing - Clean Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
+        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
+        
+        .sidebar { 
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
+            border-right: 1px solid #334155; 
+            height: 100vh; 
+            position: fixed; 
+            width: 18rem; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            z-index: 50; 
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #1e293b;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .sidebar-title { 
+            color: #f8fafc; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.01em;
+        }
+        .sidebar-subtitle { 
+            color: #60a5fa; 
+            opacity: 0.9;
+        }
+        .nav-section { 
+            color: #94a3b8; 
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            padding: 1rem 1rem 0.5rem; 
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+        .nav-link { 
+            display: block; 
+            padding: 0.7rem 1rem; 
+            color: #cbd5e1; 
+            font-weight: 500; 
+            font-size: 0.875rem; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-left: 3px solid transparent; 
+            text-decoration: none; 
+            margin: 0.15rem 0;
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+        .nav-link:hover { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); 
+            color: #f1f5f9; 
+            border-left-color: #60a5fa; 
+            transform: translateX(2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-link.active { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); 
+            color: #60a5fa; 
+            border-left-color: #3b82f6; 
+            font-weight: 600;
+            box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+        .sidebar-title { color: #f8fafc; text-shadow: 0 2px 4px rgba(0,0,0,0.3); letter-spacing: -0.01em; }
+        .sidebar-subtitle { color: #60a5fa; opacity: 0.9; }
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; margin-top: 0.5rem; opacity: 0.8; }
+        .nav-link { display: block; padding: 0.7rem 1rem; color: #cbd5e1; font-weight: 500; font-size: 0.875rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-left: 3px solid transparent; text-decoration: none; margin: 0.15rem 0; border-radius: 0 0.375rem 0.375rem 0; }
+        .nav-link:hover { background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); color: #f1f5f9; border-left-color: #60a5fa; transform: translateX(2px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-link.active { background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); color: #60a5fa; border-left-color: #3b82f6; font-weight: 600; box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1); }
+
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            margin: 1.5rem 0;
+            box-sizing: border-box;
+            max-width: 100%;
+            position: relative;
+        }
+        pre::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+        .code-keyword { color: #c084fc; font-weight: bold; } 
+        .code-class { color: #fbbf24; font-weight: bold; }   
+        .code-func { color: #60a5fa; font-weight: bold; }    
+        .code-str { color: #a3e635; }                        
+        .hljs-comment, .hljs-quote { color: #475569 !important; font-weight: 700 !important; font-style: normal !important; }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
+    </style>
+</head>
+<body class="flex bg-slate-50">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hidden md:block">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold sidebar-title">Clean Architecture</h1>
+            <span class="sidebar-subtitle text-sm">Author: Alex | InkyWorld</span>
+        </div>
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400 bg-slate-800/50 rounded-lg p-2">                    <a href="../ru/cqrs_es.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">RU</a>                    <a href="cqrs_es.html" class="text-blue-400 font-bold px-2 py-1 rounded bg-blue-500/20">EN</a>                    <a href="../ua/cqrs_es.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">UA</a>                </div>
+            </div>
+
+            <div class="nav-section">Basics</div>
+            <a href="index.html" class="nav-link">📘 Introduction</a>
+            <a href="solid.html" class="nav-link">📐 SOLID Principles</a>
+            <a href="project_structure.html" class="nav-link">🧭 Project Structure (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Architecture Layers</div>
+            <a href="domain.html" class="nav-link">🎯 Domain Layer</a>
+            <a href="application.html" class="nav-link">⚙️ Application Layer</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Infrastructure Layer</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
+
+            <div class="nav-section">Tactical DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
+            <a href="invariants.html" class="nav-link">🛡️ Invariants</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
+            <a href="specification.html" class="nav-link">📋 Specification</a>
+            <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
+            <a href="policies.html" class="nav-link">📜 Policies</a>
+            <a href="versioning.html" class="nav-link">🔄 Versioning</a>
+
+            <div class="nav-section">Strategic DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Bounded Contexts</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS & Distributed Systems</div>
+            <a href="cqrs_es.html" class="nav-link active">⚡ CQRS & ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Reliability & Security</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
+            <a href="concurrency.html" class="nav-link">🛑 Concurrency & Migrations</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
+
+            <div class="nav-section">Quality & Practice</div>
+            <a href="testing.html" class="nav-link">🧪 Testing</a>
+            <a href="overengineering.html" class="nav-link">🛑 Overengineering</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
+            <a href="projects.html" class="nav-link">🚀 Mini-projects</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Antipatterns</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">About</div>
+            <a href="afterword.html" class="nav-link">👋 Afterword</a>
+        </nav>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-4xl mx-auto">
+        <header class="mb-12 pb-8 border-b border-gray-200">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">CQRS and Event Sourcing</h1>
+            <p class="text-xl text-gray-600">Divide and Conquer. Advanced patterns for scalable systems.</p>
+        </header>
+
+        <!-- Section 1: CQRS -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">1. CQRS (Command / Query Responsibility Segregation) — In Brief</h2>
+            <div class="prose prose-slate max-w-none text-gray-700">
+                <p class="mb-4"><strong>TL;DR:</strong> We separate the write path (Commands) from the read path (Queries). Writing focuses on consistency and transactions — making it more complex; reading focuses on speed and aggregated projections — making responses fast.</p>
+
+                <h3 class="font-bold text-lg mb-2">Why is this important</h3>
+                <p>In a real system, requirements for reading and writing often conflict: writing must preserve invariants and be atomic, while reading must return data in milliseconds and support complex aggregates/reports. CQRS allows optimizing each side separately.</p>
+
+                <h3 class="font-bold text-lg mb-2">How it looks — step by step</h3>
+                <ol class="list-decimal list-inside mb-4">
+                    <li><strong>Command (Write):</strong> The Use Case/Service handles the command, applies business rules, and saves changes (usually a normalized model + Outbox for emitting events).</li>
+                    <li><strong>Event:</strong> After a successful save, a Domain Event is created and placed in the Outbox / Event Store.</li>
+                    <li><strong>Projection (Read Model):</strong> A background worker reads events and updates denormalized projections (summary tables) that are optimized for reading.</li>
+                    <li><strong>Query:</strong> API/Query Handlers read from these projections, responding quickly and efficiently.</li>
+                </ol>
+
+                <h3 class="font-bold text-lg mb-2">When to use / When not to</h3>
+                <ul class="list-disc list-inside mb-4">
+                    <li><strong>Use when:</strong> high read load, complex views/reports, audit/history requirements, need for horizontal scaling of reads.</li>
+                    <li><strong>Don't use when:</strong> simple CRUD application with low traffic — the overhead of CQRS/ES is not worth it.</li>
+                </ul>
+
+                <h3 class="font-bold text-lg mb-2">Glossary</h3>
+                <ul class="list-disc list-inside mb-4 text-gray-700 space-y-2">
+                    <li>
+                        <strong>Domain Event</strong> — A fact that has already happened in the past (<i>"Order Paid"</i>). It is immutable.
+                    </li>
+                    <li>
+                        <strong>Outbox Pattern</strong> — A way to guarantee message delivery. Instead of sending directly to RabbitMQ (which might fail), we save the event in a local <code>outbox</code> database table within the same transaction as business data. Then a separate background process reads this table and sends messages. This guarantees <i>At-Least-Once Delivery</i>.
+                    </li>
+                    <li>
+                        <strong>Projection / Read Model</strong> — A denormalized table "tailored" for a specific UI screen. It is updated asynchronously upon receiving events. For example, instead of a complex JOIN query across 5 tables, we pre-calculate a flat <code>OrdersSummary</code> table, from which the API reads data instantly.
+                    </li>
+                    <li>
+                        <strong>Snapshot</strong> — Optimization for Event Sourcing. To avoid replaying 1,000,000 events from the beginning of time to get the current state of an aggregate, we periodically save a "slice" of it (e.g., every 100th version). When loading, we take the last Snapshot and apply only new events.
+                    </li>
+                </ul>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3">
+                    <p class="text-sm"><strong>💡 Tip:</strong> start simple — separate Read/Write (CQRS) without Event Sourcing, then introduce ES only when necessary.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Domain Events -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">2. Domain Events</h2>
+            <p class="mb-4 text-gray-700">
+                An event is a fact that <strong>already</strong> happened. "Order Paid", "User Registered".
+                Events allow reducing coupling between modules.
+            </p>
+            <pre><code class="language-python">from dataclasses import dataclass
+from datetime import datetime
+
+# Event is a DTO, it is immutable. Name is in past tense.
+@dataclass(frozen=True)
+class OrderPaid:
+    order_id: str
+    amount: float
+    paid_at: datetime
+
+# In Entity
+class Order:
+    def pay(self):
+        self.status = "PAID"
+        # We simply record the fact, not calling email_service directly
+        self.events.append(OrderPaid(self.id, self.amount, datetime.now()))
+
+# In Infrastructure (Unit of Work)
+# After transaction commit, we publish events
+for event in order.events:
+    event_bus.publish(event)
+</code></pre>
+        </section>
+        
+        <!-- Section 3: Event Sourcing -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">3. Event Sourcing (ES)</h2>
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                <p><strong>Core Idea:</strong> We don't store the current state of the object (a row in the DB). We store the <strong>history of all events</strong> that led the object to this state.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-6">
+                <div>
+                    <h3 class="font-bold text-lg mb-2">Traditional Approach (State-Oriented)</h3>
+                    <div class="bg-gray-100 p-3 rounded text-sm font-mono">
+                        User(id=1, balance=500)<br>
+                        ⬇ UPDATE balance=600<br>
+                        User(id=1, balance=600)<br>
+                        <span class="text-red-500">History lost. Where did 100 come from?</span>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-2">Event Sourcing</h3>
+                    <div class="bg-gray-100 p-3 rounded text-sm font-mono">
+                        Ev1: UserCreated(balance=0)<br>
+                        Ev2: MoneyDeposited(1000)<br>
+                        Ev3: ItemPurchased(500)<br>
+                        -------------------------<br>
+                        <span class="text-green-600">Current State = sum(events) = 500</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="font-bold text-lg mt-6 mb-2">How does it work?</h3>
+            <ol class="list-decimal list-inside space-y-3 mb-6">
+                <li><strong>Event Store:</strong> This is an Append-Only database. We never delete or modify events.</li>
+                <li><strong>Replay:</strong> To get the `Order` object, we take an empty order and "apply" all events from the database in order.</li>
+                <li><strong>Projections:</strong> Restoring an object from 1000 events every time is slow. Therefore, we listen to events in the background and update regular SQL tables ("Read Models") for fast searching.</li>
+            </ol>
+
+            <pre><code class="language-python">class Order(AggregateRoot):
+    # Restore state (Apply)
+    def apply(self, event: DomainEvent):
+        if isinstance(event, OrderCreated):
+            self.status = "NEW"
+            self.total = 0
+        elif isinstance(event, ItemAdded):
+            self.total += event.price
+
+    # Load from history
+    @classmethod
+    def load_from_history(cls, events: List[DomainEvent]):
+        order = cls()
+        for event in events:
+            order.apply(event)
+        return order
+</code></pre>
+            
+            <h3 class="font-bold text-lg mt-6 mb-2">Pros and Cons</h3>
+            <ul class="list-disc list-inside space-y-2">
+                <li><strong class="text-green-600">Audit Log:</strong> Solid audit out of the box. You cannot "quietly" fix the database.</li>
+                <li><strong class="text-green-600">Temporal Query:</strong> "What was the user's balance last Friday?" — Easy, just replay events up to that date.</li>
+                <li><strong class="text-red-600">Complexity:</strong> Event versioning (Data Migration for events is hell). Eventually Consistency (Projection lag).</li>
+            </ul>
+
+            <h3 class="font-bold text-lg mt-8 mb-4">4. Common Mistakes and Antipatterns</h3>
+            <ul class="list-disc list-inside space-y-2 mb-6">
+                <li><strong>Mixing Read/Write models:</strong> attempts to use the same data structure for high-load queries and transactional consistency lead to performance compromises.</li>
+                <li><strong>Ignoring idempotency:</strong> event handlers must be idempotent — delivery is usually <em>at-least-once</em>.</li>
+                <li><strong>Lack of metadata:</strong> without sequence/correlation/cause, it is difficult to debug and maintain order and causal relationships.</li>
+                <li><strong>Poor event migration strategy:</strong> changing event schema without clear versioning and migrations leads to inability to correctly replay history.</li>
+                <li><strong>Direct projection modification:</strong> manually editing the Read Model is a fast track to desynchronization; update projections via events.</li>
+            </ul>
+
+            <h3 class="font-bold text-lg mt-8 mb-4">5. Lifehacks and Best Practices</h3>
+            <ul class="list-disc list-inside space-y-2 mb-6">
+                <li><strong>Outbox Pattern:</strong> write the event to the Outbox within the same transaction as the state change — this guarantees atomicity and simplifies integration with brokers.</li>
+                <li><strong>Add metadata:</strong> store <code>aggregate_id</code>, <code>sequence</code>, <code>correlation_id</code>, <code>causation_id</code>, and <code>schema_version</code> in each event.</li>
+                <li><strong>Idempotent handlers:</strong> keep a set of processed event_ids or use transactions with a unique key to prevent duplicate processing.</li>
+                <li><strong>Snapshots:</strong> for aggregates with long history, make periodic snapshots of the state — speeds up loading.</li>
+                <li><strong>Start with CQRS without ES:</strong> often separating Read/Write paths is enough, and it gives most benefits without the complexity of Event Sourcing.</li>
+                <li><strong>Version events:</strong> when changing, create a new version of the event and migrate handlers gradually.</li>
+            </ul>
+
+            <h3 class="font-bold text-lg mt-8 mb-4">6. Code — Practical techniques (idempotent handler and Outbox)</h3>
+            <p class="text-sm text-gray-600 mb-2">Idempotent handler with processed ids check:</p>
+            <pre><code class="language-python"># handler.py
+def handle_order_paid(event, uow):
+    if uow.processed_event_exists(event.id):
+        return  # already processed
+
+    # business logic (create receipt, update balance...)
+    create_receipt(event.order_id, event.amount)
+
+    # mark as processed in the same transaction
+    uow.mark_event_processed(event.id)
+</code></pre>
+
+            <p class="text-sm text-gray-600 mb-2">Outbox — writing event to the same database:</p>
+            <pre><code class="language-python"># repository.py
+def save_order_and_outbox(session, order, event):
+    session.add(order_model_from_entity(order))
+    session.add(OutboxModel(event_type=type(event).__name__, payload=serialize(event)))
+    # commit — all together, then external task picks up Outbox records and sends to broker
+</code></pre>
+
+            <h3 class="font-bold text-lg mt-8 mb-4">7. Testing and Debugging</h3>
+            <ul class="list-disc list-inside space-y-2 mb-6">
+                <li><strong>Recovery tests:</strong> verify that replaying events leads to expected aggregate state.</li>
+                <li><strong>Projection tests:</strong> simulate event stream and check Read Models.</li>
+                <li><strong>In-memory E2E:</strong> run Event Store in memory for integration tests (more like component tests).</li>
+                <li><strong>Debugging tools:</strong> ability to "scroll" state to a specific event and see diffs is priceless.</li>
+            </ul>
+
+            <h3 class="font-bold text-lg mt-8 mb-4">8. Flow Diagram</h3>
+            <p class="mb-4">Below is a simple ASCII diagram showing how a command turns into an event and lands in projections:</p>
+<pre class="bg-gray-100 p-4 rounded text-sm"><code>
++-----------+       +------------+      +------------+      +-----------+
+|  Command  |  -->  |  Aggregate |  --> | Event Store|  --> | Projection|
+| (Create)  |       |  (Order)   |      |  (append)  |      |   (Read)  |
++-----------+       +------------+      +------------+      +-----------+
+       |                   |                   |                   |
+       v                   v                   v                   v
+   Validation           Apply Event         Append to DB       Update Read Model
+   Invariants          (OrderPaid etc.)     (Outbox/Store)     (Projection Worker)
+</code></pre>
+
+            <h3 class="font-bold text-lg mt-8 mb-4">9. Exercises</h3>
+            <ol class="list-decimal list-inside space-y-4 mb-6">
+                <li>
+                    <strong>Exercise 1 (Medium): Implement Outbox</strong>
+                    <ul class="list-disc list-inside ml-6 mt-2">
+                        <li>Add an Outbox table and modify aggregate saving code to also save serialized events to Outbox in one transaction.</li>
+                        <li>Implement a background worker that reads Outbox and publishes events to RabbitMQ/Kafka, marking records as sent.</li>
+                        <li>Acceptance: events are not lost on rollback; upon worker restart, events are sent exactly once (can use sent_at flag).</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <strong>Exercise 2 (Medium): Projection and Test</strong>
+                    <ul class="list-disc list-inside ml-6 mt-2">
+                        <li>Create an <code>orders_summary</code> projection that stores total_amount and status for fast reading.</li>
+                        <li>Write a unit test that feeds a series of events (OrderCreated, ItemAdded, OrderPaid) and checks projection state.</li>
+                        <li>Acceptance: projection matches the expected state after the sequence of events.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <strong>Exercise 3 (Hard): Idempotent Handler and DLQ</strong>
+                    <ul class="list-disc list-inside ml-6 mt-2">
+                        <li>Make a handler that writes payment_id to processed_events table, preventing re-processing.</li>
+                        <li>Add a mechanism for sending "failed" messages to DLQ after N attempts; write a test simulating permanent failure.</li>
+                        <li>Acceptance: re-delivery does not lead to duplicates; DLQ contains record after limit exceeded.</li>
+                    </ul>
+                </li>
+
+                <li>
+                    <strong>Exercise 4 (Hard): Snapshotting</strong>
+                    <ul class="list-disc list-inside ml-6 mt-2">
+                        <li>Implement snapshot approach to speed up loading of aggregate with very long history (save state snapshot every N events).</li>
+                        <li>Add a test checking that recovery from snapshot + subsequent events yields correct state.</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3 class="font-bold text-lg mt-8 mb-4">10. Hints and Solutions</h3>
+            <ul class="list-disc list-inside space-y-2 mb-6">
+                <li><strong>Outbox:</strong> move message sending out of the main thread to a separate process; do not do send inside commit code.</li>
+                <li><strong>Idempotency:</strong> use unique indexes on <code>event_id</code> or <code>message_id</code> to protect against duplicates.</li>
+                <li><strong>Testing:</strong> for integration tests, use docker-compose with in-memory broker and database to speed up scenario verification.</li>
+            </ul>
+
+            <h3 class="font-bold text-lg mt-8 mb-4">11. Further reading</h3>
+            <ul class="list-disc list-inside space-y-2 mb-8">
+                <li><a href="https://martinfowler.com/eaaDev/EventSourcing.html" class="text-blue-600 underline">Martin Fowler — Event Sourcing</a></li>
+                <li><a href="https://cqrs.github.io/" class="text-blue-600 underline">CQRS community resources</a></li>
+                <li><a href="https://cqrs.wordpress.com/" class="text-blue-600 underline">Greg Young — CQRS/ES articles</a></li>
+                <li><a href="https://microservices.io/patterns/data/event-sourcing.html" class="text-blue-600 underline">Microservices.io — Event Sourcing patterns</a></li>
+            </ul>
+
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="boundaries_first.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Previous</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🧠 Boundaries First</span>
+                </a>
+                <a href="saga.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Next</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🔄 Saga Pattern &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Save sidebar scroll position
+        (function() {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            
+            const storageKey = 'sidebar_scroll_position';
+            
+            // Restore position on load
+            const savedScroll = sessionStorage.getItem(storageKey);
+            if (savedScroll !== null) {
+                sidebar.scrollTop = parseInt(savedScroll, 10);
+            }
+            
+            // Save position on scroll
+            let scrollTimeout;
+            sidebar.addEventListener('scroll', function() {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+                }, 100);
+            });
+            
+            // Save position on page unload
+            window.addEventListener('beforeunload', function() {
+                sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+            });
+        })();
+    </script>
+</body>

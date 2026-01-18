@@ -14,31 +14,132 @@
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
         h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
         p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
-        
-        .sidebar { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-right: 1px solid #334155; height: 100vh; position: fixed; width: 18rem; overflow-y: auto; z-index: 50; }
-        .sidebar-title { color: #f8fafc; }
-        .sidebar-subtitle { color: #60a5fa; }
-        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; }
-        .nav-link { display: block; padding: 0.6rem 1rem; color: #94a3b8; font-weight: 500; font-size: 0.875rem; transition: all 0.2s; border-left: 3px solid transparent; text-decoration: none; }
-        .nav-link:hover { background: rgba(255,255,255,0.05); color: #f1f5f9; border-left-color: #475569; }
-        .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border-left-color: #3b82f6; }
+        .sidebar { 
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
+            border-right: 1px solid #334155; 
+            height: 100vh; 
+            position: fixed; 
+            width: 18rem; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            z-index: 50; 
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #1e293b;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .sidebar-title { 
+            color: #f8fafc; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.01em;
+        }
+        .sidebar-subtitle { 
+            color: #60a5fa; 
+            opacity: 0.9;
+        }
+        .nav-section { 
+            color: #94a3b8; 
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            padding: 1rem 1rem 0.5rem; 
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+        .nav-link { 
+            display: block; 
+            padding: 0.7rem 1rem; 
+            color: #cbd5e1; 
+            font-weight: 500; 
+            font-size: 0.875rem; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-left: 3px solid transparent; 
+            text-decoration: none; 
+            margin: 0.15rem 0;
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+        .nav-link:hover { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); 
+            color: #f1f5f9; 
+            border-left-color: #60a5fa; 
+            transform: translateX(2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-link.active { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); 
+            color: #60a5fa; 
+            border-left-color: #3b82f6; 
+            font-weight: 600;
+            box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+        .sidebar-title { 
+            color: #f8fafc; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.01em;
+        }
+        .sidebar-subtitle { 
+            color: #60a5fa; 
+            opacity: 0.9;
+        }
+        .nav-section { 
+            color: #94a3b8; 
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            padding: 1rem 1rem 0.5rem; 
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+        .nav-link { display: block; padding: 0.7rem 1rem; color: #cbd5e1; font-weight: 500; font-size: 0.875rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-left: 3px solid transparent; text-decoration: none; margin: 0.15rem 0; border-radius: 0 0.375rem 0.375rem 0; }
+        .nav-link:hover { background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); color: #f1f5f9; border-left-color: #60a5fa; transform: translateX(2px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-link.active { background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); color: #60a5fa; border-left-color: #3b82f6; font-weight: 600; box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1); }
 
         pre {
             font-family: 'JetBrains Mono', monospace;
-            background-color: #1e293b;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             color: #e2e8f0;
             padding: 1.5rem;
             border-radius: 0.75rem;
             overflow-x: auto;
             font-size: 0.85rem;
-            line-height: 1.6;
+            line-height: 1.7;
             border: 1px solid #334155;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
             margin: 1.5rem 0;
+            box-sizing: border-box;
+            max-width: 100%;
         }
-    </style>
+
+        /* Fireworks canvas */
+        #fireworks-canvas {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* don't block interactions */
+            z-index: 60;
+            /* Normal blending + glowing particles ensure visibility on light backgrounds */
+            mix-blend-mode: normal;
+        }
+        .hljs-comment, .hljs-quote { color: #475569 !important; font-weight: 700 !important; font-style: normal !important; }
+        </style>
 </head>
 <body class="flex bg-slate-50">
+    <canvas id="fireworks-canvas" aria-hidden="true"></canvas>
 
     <!-- SIDEBAR (Placeholder, will be updated globally) -->
     <aside class="sidebar hidden md:block">
@@ -50,13 +151,7 @@
         </div>
         <nav class="py-4">
             <div class="px-4 mb-4">
-                <div class="flex gap-2 text-xs font-bold text-slate-400">
-                    <a href="afterword.html" class="text-blue-400 font-bold">RU</a>
-                    <span class="text-slate-600">|</span>
-                    <a href="../en/afterword.html" class="hover:text-white transition">EN</a>
-                    <span class="text-slate-600">|</span>
-                    <a href="../ua/afterword.html" class="hover:text-white transition">UA</a>
-                </div>
+                <div class="flex gap-2 text-xs font-bold text-slate-400 bg-slate-800/50 rounded-lg p-2">                    <a href="afterword.html" class="text-blue-400 font-bold px-2 py-1 rounded bg-blue-500/20">RU</a>                    <a href="../en/afterword.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">EN</a>                    <a href="../ua/afterword.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">UA</a>                </div>
             </div>
 
             <div class="nav-section">Основы</div>
@@ -198,6 +293,136 @@
                 sidebar.removeAttribute('style');
             }
         });
+
+        // Fireworks animation (canvas)
+        (function() {
+            const canvas = document.getElementById('fireworks-canvas');
+            const ctx = canvas.getContext('2d');
+            let w, h;
+            function resize() { w = canvas.width = innerWidth; h = canvas.height = innerHeight; }
+            addEventListener('resize', resize); resize();
+
+            const particles = [];
+            function rand(min, max) { return Math.random() * (max - min) + min; }
+
+            class Particle {
+                constructor(x, y, color, vx, vy, size) {
+                    this.x = x; this.y = y; this.vx = vx; this.vy = vy; this.alpha = 1; this.color = color; this.size = size;
+                }
+                update() { this.vy += 0.02; this.vx *= 0.998; this.x += this.vx; this.y += this.vy; this.alpha *= 0.985; }
+                draw() {
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'lighter';
+                    ctx.globalAlpha = this.alpha;
+                    ctx.fillStyle = this.color;
+                    ctx.shadowBlur = Math.max(8, this.size * 2);
+                    ctx.shadowColor = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            function explode(x, y, color) {
+                const count = 110 + Math.floor(rand(-20, 40));
+                for (let i = 0; i < count; i++) {
+                    const ang = rand(0, Math.PI * 2);
+                    const speed = rand(1.2, 6.2);
+                    const size = rand(1.4, 3.8);
+                    particles.push(new Particle(x, y, color, Math.cos(ang) * speed, Math.sin(ang) * speed, size));
+                }
+            }
+
+            function render() {
+                // Clear canvas each frame to avoid overlaying a white veil over the page
+                ctx.clearRect(0, 0, w, h);
+                // If you want subtle trails on light backgrounds, uncomment these two lines:
+                // ctx.fillStyle = 'rgba(255,255,255,0.02)';
+                // ctx.fillRect(0, 0, w, h);
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.update();
+                    p.draw();
+                    if (p.alpha < 0.02) particles.splice(i, 1);
+                }
+                // keep particle count in check for performance
+                if (particles.length > 2000) particles.splice(0, particles.length - 2000);
+                requestAnimationFrame(render);
+            }
+
+            // a sequence of bursts on load (more than before)
+            setTimeout(() => {
+                for (let i = 0; i < 6; i++) {
+                    const pos = { x: rand(w * 0.15, w * 0.85), y: rand(h * 0.15, h * 0.55), color: `hsl(${Math.floor(rand(0, 360))} 95% 55%)` };
+                    setTimeout(() => explode(pos.x, pos.y, pos.color), i * 250);
+                }
+            }, 250);
+
+            // periodic multi-bursts to make several fireworks appear over time
+            const RUN_DURATION = 5000; // ms
+            const startTime = Date.now();
+            let running = true;
+
+            const periodic = setInterval(() => {
+                if (!running) return;
+                const cx = rand(w * 0.1, w * 0.9);
+                const cy = rand(h * 0.15, h * 0.6);
+                const baseColor = `hsl(${Math.floor(rand(0, 360))} 95% 55%)`;
+                explode(cx, cy, baseColor);
+                // spawn a couple of nearby bursts for 'several'
+                setTimeout(() => { if (running) explode(cx + rand(-80, 80), cy + rand(-60, 60), `hsl(${Math.floor(rand(0, 360))} 95% 55%)`); }, 120);
+                setTimeout(() => { if (running) explode(cx + rand(-120, 120), cy + rand(-90, 90), `hsl(${Math.floor(rand(0, 360))} 95% 55%)`); }, 260);
+            }, 800);
+
+            // click/tap to trigger a multi-burst
+            function clickHandler(e) {
+                if (!running) return;
+                const baseColor = `hsl(${Math.floor(rand(0, 360))} 95% 55%)`;
+                explode(e.clientX, e.clientY, baseColor);
+                setTimeout(() => { if (running) explode(e.clientX + rand(-30, 30), e.clientY + rand(-30, 30), baseColor); }, 70);
+                setTimeout(() => { if (running) explode(e.clientX + rand(-50, 50), e.clientY + rand(-50, 50), baseColor); }, 140);
+            }
+            document.addEventListener('click', clickHandler);
+
+            // stop new fireworks after RUN_DURATION
+            setTimeout(() => {
+                running = false;
+                clearInterval(periodic);
+                document.removeEventListener('click', clickHandler);
+            }, RUN_DURATION);
+
+            render();
+        })();
+    </script>
+
+    <script>
+        // Сохранение позиции скролла sidebar
+        (function() {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            
+            const storageKey = 'sidebar_scroll_position';
+            
+            // Восстановление позиции при загрузке
+            const savedScroll = sessionStorage.getItem(storageKey);
+            if (savedScroll !== null) {
+                sidebar.scrollTop = parseInt(savedScroll, 10);
+            }
+            
+            // Сохранение позиции при скролле
+            let scrollTimeout;
+            sidebar.addEventListener('scroll', function() {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+                }, 100);
+            });
+            
+            // Сохранение позиции при уходе со страницы
+            window.addEventListener('beforeunload', function() {
+                sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+            });
+        })();
     </script>
 </body>
-</html>

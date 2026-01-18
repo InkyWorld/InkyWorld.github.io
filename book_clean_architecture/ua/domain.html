@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Глава 8: Шар Домену (Domain Layer) - Clean Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
+        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
+        
+        .sidebar { 
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
+            border-right: 1px solid #334155; 
+            height: 100vh; 
+            position: fixed; 
+            width: 18rem; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            z-index: 50; 
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #1e293b;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .sidebar-title { 
+            color: #f8fafc; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.01em;
+        }
+        .sidebar-subtitle { 
+            color: #60a5fa; 
+            opacity: 0.9;
+        }
+        .nav-section { 
+            color: #94a3b8; 
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            padding: 1rem 1rem 0.5rem; 
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+        .nav-link { 
+            display: block; 
+            padding: 0.7rem 1rem; 
+            color: #cbd5e1; 
+            font-weight: 500; 
+            font-size: 0.875rem; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-left: 3px solid transparent; 
+            text-decoration: none; 
+            margin: 0.15rem 0;
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+        .nav-link:hover { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); 
+            color: #f1f5f9; 
+            border-left-color: #60a5fa; 
+            transform: translateX(2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-link.active { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); 
+            color: #60a5fa; 
+            border-left-color: #3b82f6; 
+            font-weight: 600;
+            box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+        .sidebar-title { color: #f8fafc; text-shadow: 0 2px 4px rgba(0,0,0,0.3); letter-spacing: -0.01em; }
+        .sidebar-subtitle { color: #60a5fa; opacity: 0.9; }
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; margin-top: 0.5rem; opacity: 0.8; }
+        .nav-link { display: block; padding: 0.7rem 1rem; color: #cbd5e1; font-weight: 500; font-size: 0.875rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-left: 3px solid transparent; text-decoration: none; margin: 0.15rem 0; border-radius: 0 0.375rem 0.375rem 0; }
+        .nav-link:hover { background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); color: #f1f5f9; border-left-color: #60a5fa; transform: translateX(2px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-link.active { background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); color: #60a5fa; border-left-color: #3b82f6; font-weight: 600; box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1); }
+
+        /* Code Styling */
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            margin: 1.5rem 0;
+            box-sizing: border-box;
+            max-width: 100%;
+            position: relative;
+        }
+        pre::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
+        .code-keyword { color: #c084fc; font-weight: bold; } 
+        .code-class { color: #fbbf24; font-weight: bold; }   
+        .code-func { color: #60a5fa; font-weight: bold; }    
+        .code-str { color: #a3e635; }                        
+
+        .card { background: white; border-radius: 1rem; padding: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; border: 1px solid #e2e8f0; }
+        
+        .anemic-box { background: #fff5f5; border-left: 5px solid #ef4444; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .rich-box { background: #f0fdf4; border-left: 5px solid #22c55e; padding: 1.5rem; margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body class="flex bg-slate-50">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hidden md:block">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold sidebar-title">Clean Architecture</h1>
+            <span class="sidebar-subtitle text-sm">Автор: Alex | InkyWorld</span>
+        </div>
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400 bg-slate-800/50 rounded-lg p-2">                    <a href="../ru/domain.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">RU</a>                    <a href="../en/domain.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">EN</a>                    <a href="domain.html" class="text-blue-400 font-bold px-2 py-1 rounded bg-blue-500/20">UA</a>                </div>
+            </div>
+
+            <div class="nav-section">Основи</div>
+            <a href="index.html" class="nav-link">📘 Вступ</a>
+            <a href="solid.html" class="nav-link">📐 SOLID Принципи</a>
+            <a href="project_structure.html" class="nav-link">🧭 Структура Проєкту</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Шари Архітектури</div>
+            <a href="domain.html" class="nav-link active">🎯 Шар Домену</a>
+            <a href="application.html" class="nav-link">⚙️ Шар Застосунку</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Шар Інфраструктури</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
+
+            <div class="nav-section">Tactical DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Агрегати</a>
+            <a href="invariants.html" class="nav-link">🛡️ Інваріанти</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Репозиторій та UoW</a>
+            <a href="specification.html" class="nav-link">📋 Специфікація</a>
+            <a href="domain_events.html" class="nav-link">📣 Доменні Події</a>
+            <a href="policies.html" class="nav-link">📜 Політики</a>
+            <a href="versioning.html" class="nav-link">🔄 Версіонування</a>
+
+            <div class="nav-section">Strategic DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Обмежені Контексти</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Єдина Мова</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Взаємодія Контекстів</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Субдомени</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Модульний Моноліт</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Стратегічна Інтеграція</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS & Розподілені Системи</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS та ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Фонові Задачі</a>
+            <a href="observability.html" class="nav-link">🔍 Спостережуваність</a>
+
+            <div class="nav-section">Надійність та Безпека</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Обробка Помилок</a>
+            <a href="concurrency.html" class="nav-link">🛑 Конкурентність та Міграції</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Конфігурація та Логування</a>
+
+            <div class="nav-section">Якість та Практика</div>
+            <a href="testing.html" class="nav-link">🧪 Тестування</a>
+            <a href="overengineering.html" class="nav-link">🛑 Оверінжиніринг</a>
+            <a href="deployment.html" class="nav-link">🚀 Розгортання та Захист</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django та Інші</a>
+            <a href="projects.html" class="nav-link">🚀 Практичні Проєкти</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Антипатерни</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">Про Інше</div>
+            <a href="afterword.html" class="nav-link">👋 Післямова</a>
+        </nav>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-5xl mx-auto">
+        
+        <header id="intro" class="mb-12 pb-6 border-b border-gray-200">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Business Logic</span>
+            </div>
+            <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">1. Шар Домену (Domain Layer)</h1>
+            <p class="text-xl text-gray-500 mt-4 font-light">
+                Серце вашого застосунку. Тут мешкає чиста бізнес-логіка, незалежна від бази даних, інтернету чи фреймворків.
+            </p>
+        </header>
+
+        <!-- ANEMIC VS RICH -->
+        <section class="card">
+            <h2 class="text-2xl font-bold mb-6">Анемічна vs Багата Модель</h2>
+            <p>У багатьох фреймворках (наприклад, Django або старі підходи в Java) прийнято розділяти дані та поведінку. Це часто призводить до того, що модель стає просто "мішком для даних", а вся логіка перетікає в сервіси.</p>
+
+            <div class="grid md:grid-cols-2 gap-8 mt-6">
+                <!-- ANEMIC -->
+                <div class="anemic-box rounded-xl">
+                    <h3 class="font-bold text-red-800 mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        Анемічна Модель (Anemic)
+                    </h3>
+                    <p class="text-sm text-red-900 mb-4">Модель — це просто структури даних. Логіка розмазана по зовнішніх сервісах.</p>
+                    <pre class="text-xs bg-red-900 text-red-100 border-none">
+class Order:
+    id: int
+    items: list
+    total: float
+    status: str
+
+# Логіка живе десь у Service
+class OrderService:
+    def add_item(self, order, item):
+        if order.status != 'DRAFT':
+            raise Error()
+        order.items.append(item)
+        order.total += item.price</pre>
+                </div>
+
+                <!-- RICH -->
+                <div class="rich-box rounded-xl">
+                    <h3 class="font-bold text-green-800 mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Багата Модель (Rich)
+                    </h3>
+                    <p class="text-sm text-green-900 mb-4">Модель інкапсулює дані ТА правила їх зміни. Вона захищає себе сама.</p>
+                    <pre class="text-xs bg-green-900 text-green-100 border-none">
+class Order:
+    def add_item(self, item):
+        if self.status != 'DRAFT':
+            raise DomainError("Order is not editable")
+        self._items.append(item)
+        self._recalculate_total()
+        
+    def _recalculate_total(self):
+        self.total = sum(i.price for i in self._items)</pre>
+                </div>
+            </div>
+            
+            <p class="mt-4 font-bold text-gray-700">Чому Багата Модель краще?</p>
+            <ul class="list-disc list-inside text-gray-600 mt-2 space-y-2">
+                <li><strong>Інваріанти завжди захищені.</strong> Ви не можете створити об'єкт у некоректному стані або перевести його в такий стан.</li>
+                <li><strong>Локальність знань.</strong> Правила зміни знаходяться поруч із даними.</li>
+                <li><strong>Читабельність.</strong> Код читається як опис бізнес-процесу, а не як набір маніпуляцій з даними.</li>
+            </ul>
+        </section>
+
+        <!-- ENTITIES & VOS -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">2. Основні будівельні блоки</h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-purple-600 font-black text-xs uppercase tracking-wider mb-2">Entity</div>
+                    <h3 class="text-xl font-bold mb-3">Сутність (Entity)</h3>
+                    <p class="text-sm text-slate-600 mb-4">Об'єкт, що має унікальну <strong>ідентичність</strong> (ID), яка проходить через весь його життєвий цикл, навіть якщо його атрибути змінюються.</p>
+                    <div class="bg-slate-50 p-3 rounded text-xs font-mono text-slate-500 border border-slate-200">
+                        User(id=42, name="Alex") == User(id=42, name="Alexander")
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-indigo-600 font-black text-xs uppercase tracking-wider mb-2">Value Object</div>
+                    <h3 class="text-xl font-bold mb-3">Об'єкт-значення (Value Object)</h3>
+                    <p class="text-sm text-slate-600 mb-4">Об'єкт, що визначається своїми <strong>атрибутами</strong>. Не має ID. Незмінний (Immutable). Якщо змінити атрибут — це новий об'єкт.</p>
+                    <div class="bg-slate-50 p-3 rounded text-xs font-mono text-slate-500 border border-slate-200">
+                        Money(100, "USD") != Money(100, "EUR")
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CODE EXAMPLE (DOMAIN SERVICE) -->
+        <section class="card">
+            <h2 class="text-2xl font-bold mb-6">3. Доменні Сервіси</h2>
+            <p class="mb-4">Іноді логіка зачіпає декілька сутностей і не належить жодній з них. Тоді ми створюємо <strong>Domain Service</strong>.</p>
+            <p class="italic text-slate-500 text-sm mb-4">Приклад: Переказ грошей з одного рахунку на інший.</p>
+
+<pre><code class="language-python"><span class="code-comment"># Ця функція є чистою бізнес-логікою.
+# Вона не знає про БД, транзакції, HTTP.</span>
+
+<span class="code-keyword">def</span> <span class="code-func">transfer_money</span>(from_acc: Account, to_acc: Account, amount: Money):
+    <span class="code-keyword">if</span> from_acc.currency != to_acc.currency:
+        <span class="code-keyword">raise</span> DomainError(<span class="code-str">"Currencies must match"</span>)
+    
+    from_acc.withdraw(amount)
+    to_acc.deposit(amount)
+
+    <span class="code-comment"># Зверніть увагу: тут ми не робимо save() в базу.
+    # Домен тільки змінює стан об'єктів у пам'яті.
+    # Збереженням займається Application Layer.</span>
+</code></pre>
+        </section>
+
+        <!-- Section 4: Domain Events -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">4. Domain Events (Події Домену)</h2>
+            <p class="mb-4 text-gray-700">
+                Це побічні ефекти бізнес-логіки. Entity не повинна сама відправляти email або писати в лог. Вона повинна сказати: "Це сталося".
+                Події — це прості DTO.
+            </p>
+            <p class="mb-4 text-gray-700">
+                Доменні події живуть в черзі фактів агрегату. Навіть якщо, наприклад, `OrderPaid` може статися лише один раз, агрегат додає його в список подій, бо за одну транзакцію може спрацювати кілька інваріантів, і інфраструктурний шар має послідовно обробити кожен факт до збереження.
+            </p>
+            <p class="mb-4 text-gray-700">
+                Entities взагалі не займаються відправкою листів або логів, вони просто накопичують події. Після транзакції Application-шар або UnitOfWork перебирає цей список, диспатчить сповіщення, пише логи та очищає чергу. Так бізнес-логіка залишається чистою, а всі побічні ефекти послідовно потрапляють в обробку.
+            </p>
+            <pre><code class="language-python"><span class="code-dec">@dataclass</span>(frozen=<span class="code-keyword">True</span>)
+<span class="code-keyword">class</span> <span class="code-class">OrderPaid</span>:  <span class="code-comment"># Ім'я в минулому часі</span>
+    order_id: str
+    paid_at: datetime
+
+<span class="code-dec">@dataclass</span>(frozen=<span class="code-keyword">True</span>)
+<span class="code-keyword">class</span> <span class="code-class">InventoryReserved</span>:
+    order_id: str
+    items: List[tuple]  <span class="code-comment"># [(sku, qty), ...]</span>
+
+<span class="code-dec">@dataclass</span>(frozen=<span class="code-keyword">True</span>)
+<span class="code-keyword">class</span> <span class="code-class">LoyaltyPointsAwarded</span>:
+    user_id: str
+    points: int
+
+<span class="code-dec">@dataclass</span>
+<span class="code-keyword">class</span> <span class="code-class">Order</span>:
+    id: str
+    user_id: str
+    items: List[object]
+    status: str = <span class="code-str">"NEW"</span>
+    events: List[object] = field(default_factory=list, init=<span class="code-keyword">False</span>)
+
+    <span class="code-keyword">def</span> <span class="code-func">pay</span>(self):
+        <span class="code-comment"># 1) змінюємо внутрішній стан</span>
+        self.status = <span class="code-str">"PAID"</span>
+
+        <span class="code-comment"># 2) записуємо кілька фактів, які описують результат операції</span>
+        self.events.append(OrderPaid(
+            order_id=self.id,
+            paid_at=datetime.utcnow()
+        ))
+        self.events.append(LoyaltyPointsAwarded(
+            user_id=self.user_id,
+            points=self.calculate_points()
+        ))
+
+    <span class="code-keyword">def</span> <span class="code-func">collect_events</span>(self) -> List[DomainEvent]:
+        <span class="code-str">"""Повертає події та очищає чергу"""</span>
+        events = self.events[:]
+        self.events.clear()
+        <span class="code-keyword">return</span> events
+
+<span class="code-comment"># В Application Layer або UoW:</span>
+events = order.collect_events()
+<span class="code-keyword">for</span> event <span class="code-keyword">in</span> events:
+    event_bus.publish(event)  <span class="code-comment"># Відправляємо в обробники</span>
+</code></pre>
+        </section>
+        
+        <!-- RULES -->
+        <section class="bg-indigo-900 text-indigo-50 p-8 rounded-2xl">
+            <h2 class="text-2xl font-bold mb-6 text-white">Золоті правила Домену</h2>
+            <ul class="space-y-4">
+                <li class="flex items-start gap-3">
+                    <span class="text-green-400 font-bold">✓</span>
+                    <div>
+                        <strong class="text-white block">Жодних залежностей від зовнішнього світу</strong>
+                        <span class="text-indigo-200 text-sm">Ніяких імпортів з `django.models`, `sqlalchemy`, `flask`, `http`.</span>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="text-green-400 font-bold">✓</span>
+                    <div>
+                        <strong class="text-white block">Тільки мова бізнесу</strong>
+                        <span class="text-indigo-200 text-sm">Класи називаються `Order`, `Customer`, а не `OrderModel`, `CustomerTable`.</span>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="text-green-400 font-bold">✓</span>
+                    <div>
+                        <strong class="text-white block">Тестується без моків</strong>
+                        <span class="text-indigo-200 text-sm">Оскільки немає зовнішніх залежностей, юніт-тести надшвидкі і прості.</span>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="dependency.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Назад</span>
+                     <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 💉 Dependency Injection</span>
+                </a>
+                <a href="application.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Далі</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">⚙️ Шар Застосунку &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Збереження позиції скролу sidebar
+        (function() {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            
+            const storageKey = 'sidebar_scroll_position';
+            
+            // Відновлення позиції при завантаженні
+            const savedScroll = sessionStorage.getItem(storageKey);
+            if (savedScroll !== null) {
+                sidebar.scrollTop = parseInt(savedScroll, 10);
+            }
+            
+            // Збереження позиції при скролі
+            let scrollTimeout;
+            sidebar.addEventListener('scroll', function() {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+                }, 100);
+            });
+            
+            // Збереження позиції при закритті сторінки
+            window.addEventListener('beforeunload', function() {
+                sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+            });
+        })();
+    </script>
+</body>

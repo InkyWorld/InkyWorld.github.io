@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 9: Application Layer - Clean Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
+        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
+        
+        .sidebar { 
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
+            border-right: 1px solid #334155; 
+            height: 100vh; 
+            position: fixed; 
+            width: 18rem; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            z-index: 50; 
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #1e293b;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .sidebar-title { 
+            color: #f8fafc; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.01em;
+        }
+        .sidebar-subtitle { 
+            color: #60a5fa; 
+            opacity: 0.9;
+        }
+        .nav-section { 
+            color: #94a3b8; 
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            padding: 1rem 1rem 0.5rem; 
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+        .nav-link { 
+            display: block; 
+            padding: 0.7rem 1rem; 
+            color: #cbd5e1; 
+            font-weight: 500; 
+            font-size: 0.875rem; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-left: 3px solid transparent; 
+            text-decoration: none; 
+            margin: 0.15rem 0;
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+        .nav-link:hover { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); 
+            color: #f1f5f9; 
+            border-left-color: #60a5fa; 
+            transform: translateX(2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-link.active { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); 
+            color: #60a5fa; 
+            border-left-color: #3b82f6; 
+            font-weight: 600;
+            box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+        .sidebar-title { color: #f8fafc; text-shadow: 0 2px 4px rgba(0,0,0,0.3); letter-spacing: -0.01em; }
+        .sidebar-subtitle { color: #60a5fa; opacity: 0.9; }
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; margin-top: 0.5rem; opacity: 0.8; }
+        .nav-link { display: block; padding: 0.7rem 1rem; color: #cbd5e1; font-weight: 500; font-size: 0.875rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-left: 3px solid transparent; text-decoration: none; margin: 0.15rem 0; border-radius: 0 0.375rem 0.375rem 0; }
+        .nav-link:hover { background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); color: #f1f5f9; border-left-color: #60a5fa; transform: translateX(2px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-link.active { background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); color: #60a5fa; border-left-color: #3b82f6; font-weight: 600; box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1); }
+
+        /* Code Styling */
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            margin: 1.5rem 0;
+            box-sizing: border-box;
+            max-width: 100%;
+            position: relative;
+        }
+        pre::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
+        .code-keyword { color: #c084fc; font-weight: bold; } 
+        .code-class { color: #fbbf24; font-weight: bold; }   
+        .code-func { color: #60a5fa; font-weight: bold; }    
+        .code-str { color: #a3e635; }                        
+
+        .card { background: white; border-radius: 1rem; padding: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; border: 1px solid #e2e8f0; }
+        
+        .role-badge { background: #e0f2fe; color: #0369a1; padding: 0.2rem 0.6rem; border-radius: 0.3rem; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; }
+    </style>
+</head>
+<body class="flex bg-slate-50">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hidden md:block">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold sidebar-title">Clean Architecture</h1>
+            <span class="sidebar-subtitle text-sm">Author: Alex | InkyWorld</span>
+        </div>
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400 bg-slate-800/50 rounded-lg p-2">                    <a href="../ru/application.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">RU</a>                    <a href="application.html" class="text-blue-400 font-bold px-2 py-1 rounded bg-blue-500/20">EN</a>                    <a href="../ua/application.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">UA</a>                </div>
+            </div>
+
+            <div class="nav-section">Basics</div>
+            <a href="index.html" class="nav-link">📘 Introduction</a>
+            <a href="solid.html" class="nav-link">📐 SOLID Principles</a>
+            <a href="project_structure.html" class="nav-link">🧭 Project Structure (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Architecture Layers</div>
+            <a href="domain.html" class="nav-link">🎯 Domain Layer</a>
+            <a href="application.html" class="nav-link active">⚙️ Application Layer</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Infrastructure Layer</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
+
+            <div class="nav-section">Tactical DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
+            <a href="invariants.html" class="nav-link">🛡️ Invariants</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
+            <a href="specification.html" class="nav-link">📋 Specification</a>
+            <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
+            <a href="policies.html" class="nav-link">📜 Policies</a>
+            <a href="versioning.html" class="nav-link">🔄 Versioning</a>
+
+            <div class="nav-section">Strategic DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Bounded Contexts</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS & Distributed Systems</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS & ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Reliability & Security</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
+            <a href="concurrency.html" class="nav-link">🛑 Concurrency & Migrations</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
+
+            <div class="nav-section">Quality & Practice</div>
+            <a href="testing.html" class="nav-link">🧪 Testing</a>
+            <a href="overengineering.html" class="nav-link">🛑 Overengineering</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
+            <a href="projects.html" class="nav-link">🚀 Practice Projects</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Anti-patterns</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">About</div>
+            <a href="afterword.html" class="nav-link">👋 Afterword</a>
+        </nav>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-5xl mx-auto">
+        
+        <header id="intro" class="mb-12 pb-6 border-b border-gray-200">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Orchestration</span>
+            </div>
+            <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">1. Application Layer</h1>
+            <p class="text-xl text-gray-500 mt-4 font-light">
+                This is the conductor of your orchestra. It doesn't play the instruments (business logic), but it instructs who should play and when.
+            </p>
+        </header>
+
+        <!-- WHAT IS IT -->
+        <section class="card">
+            <h2 class="text-2xl font-bold mb-6">What is the Application Layer?</h2>
+            <p>This layer implements the system's <strong>Use Cases</strong>. It answers the question "What does this application do?", rather than "How is it implemented?".</p>
+            
+            <div class="my-6 border-l-4 border-indigo-500 pl-4 bg-indigo-50 p-4 rounded-r">
+                <p class="font-bold text-indigo-900 text-sm uppercase mb-1">Primary Responsibility</p>
+                <p class="text-indigo-800">Take data from UI &rarr; Load aggregate from DB &rarr; Call method on aggregate &rarr; Save changes &rarr; Send email.</p>
+            </div>
+
+            <p>The Application Layer <strong>knows</strong> about the Domain and Infrastructure interfaces (abstractions), but <strong>does not know</strong> about HTTP, JSON, SQL, or other implementation details.</p>
+        </section>
+
+        <!-- USE CASE EXAMPLE -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">2. Use Case Example</h2>
+            <p class="mb-4">Let's look at a "Create Order" scenario.</p>
+
+<pre><code class="language-python"><span class="code-keyword">from</span> dataclasses <span class="code-keyword">import</span> dataclass
+
+<span class="code-comment"># DTO (Input): Simple data structure.
+# No logic, only what came from the user.</span>
+<span class="code-dec">@dataclass</span>
+<span class="code-keyword">class</span> <span class="code-class">CreateOrderDTO</span>:
+    user_id: int
+    item_ids: list[int]
+
+<span class="code-keyword">class</span> <span class="code-class">CreateOrderUseCase</span>:
+    <span class="code-comment"># Dependencies are injected (DI) via constructor.
+    # We work ONLY with interfaces (abstractions).</span>
+    <span class="code-keyword">def</span> <span class="code-func">__init__</span>(
+        self, 
+        repo: OrderRepository,        <span class="code-comment"># Interface to DB</span>
+        warehouse: WarehouseService,  <span class="code-comment"># Interface to another service</span>
+        uow: UnitOfWork               <span class="code-comment"># Transactional consistency</span>
+    ):
+        self.repo = repo
+        self.warehouse = warehouse
+        self.uow = uow
+
+    <span class="code-keyword">def</span> <span class="code-func">execute</span>(self, data: CreateOrderDTO) -> int:
+        <span class="code-comment"># 1. Orchestration: Get data (Infrastructure)</span>
+        <span class="code-keyword">if</span> <span class="code-keyword">not</span> self.warehouse.has_stock(data.item_ids):
+             <span class="code-keyword">raise</span> OutOfStockError()
+
+        <span class="code-comment"># 2. Execute business rules (Domain)</span>
+        <span class="code-comment"># We ask the Domain to create the order. The logic "how" is there.</span>
+        order = Order.create(
+            user_id=data.user_id, 
+            items=data.item_ids
+        )
+
+        <span class="code-comment"># 3. Save state (Infrastructure)</span>
+        self.repo.add(order)
+        
+        <span class="code-comment"># 4. Commit transaction</span>
+        self.uow.commit()
+
+        <span class="code-comment"># 5. Return result</span>
+        <span class="code-keyword">return</span> order.id
+</code></pre>
+        </section>
+
+        <!-- COMMANDS AND QUERIES -->
+        <section class="card bg-slate-50 border-slate-200">
+            <h2 class="text-2xl font-bold mb-6">3. Commands and Queries (CQS)</h2>
+            <p>Use cases are often divided into two categories:</p>
+            
+            <div class="grid md:grid-cols-2 gap-8 mt-6">
+                <div>
+                    <span class="role-badge bg-red-100 text-red-700">Command</span>
+                    <h3 class="font-bold text-gray-900 mt-2">Changes State</h3>
+                    <p class="text-sm text-gray-600 mt-2">CreateOrder, UpdateUser, PayInvoice.</p>
+                    <ul class="list-disc list-inside text-sm text-gray-500 mt-2">
+                        <li>Has side effects (modifies DB).</li>
+                        <li>Operates on Domain Models.</li>
+                        <li>Usually returns nothing or an ID.</li>
+                    </ul>
+                </div>
+                <div>
+                     <span class="role-badge bg-blue-100 text-blue-700">Query</span>
+                    <h3 class="font-bold text-gray-900 mt-2">Returns Data</h3>
+                    <p class="text-sm text-gray-600 mt-2">GetOrderById, ListRecentUsers.</p>
+                    <ul class="list-disc list-inside text-sm text-gray-500 mt-2">
+                        <li>No side effects (read-only).</li>
+                        <li>Can return DTOs directly from DB (bypassing domain!) for speed.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- DTO -->
+        <section id="dto" class="mb-16">
+            <h2 class="text-2xl font-bold mb-4">4. DTO & Commands</h2>
+            <p><strong>DTO (Data Transfer Object)</strong> is a box for transferring data. It has no behavior.</p>
+            <p>The external world (Web API) sends us JSON (primitives: strings, numbers). The Domain works with complex objects (Money, Email). The Application Layer must accept primitives via DTO and convert them to Domain objects.</p>
+            
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-4 text-sm">
+                <strong>Command vs Query:</strong>
+                <ul class="list-disc pl-5 mt-1">
+                    <li><strong>Command:</strong> DTO that changes something (`CreateOrderDTO`).</li>
+                    <li><strong>Query:</strong> DTO for retrieving data (`GetOrderDTO`).</li>
+                </ul>
+            </div>
+
+<pre><code class="language-python"><span class="code-comment"># application/dto.py</span>
+<span class="code-keyword">from</span> dataclasses <span class="code-keyword">import</span> dataclass
+<span class="code-keyword">from</span> typing <span class="code-keyword">import</span> List
+
+<span class="code-comment"># Input DTO (Command)</span>
+<span class="code-dec">@dataclass(frozen=True)</span>
+<span class="code-keyword">class</span> <span class="code-class">CreateOrderCommand</span>:
+    customer_email: str
+    items: List[dict] <span class="code-comment"># [{'name': 'Book', 'price': 10.5}]</span>
+
+    <span class="code-keyword">def</span> <span class="code-func">__post_init__</span>(self):
+        <span class="code-comment"># Simple input validation (not business rules!)</span>
+        <span class="code-keyword">if</span> <span class="code-keyword">not</span> self.customer_email:
+            <span class="code-keyword">raise</span> ValueError(<span class="code-str">"Email is required"</span>)
+        <span class="code-keyword">if</span> <span class="code-keyword">not</span> self.items:
+            <span class="code-keyword">raise</span> ValueError(<span class="code-str">"Items list cannot be empty"</span>)
+
+<span class="code-comment"># Output DTO (Result)</span>
+<span class="code-dec">@dataclass(frozen=True)</span>
+<span class="code-keyword">class</span> <span class="code-class">OrderResultDTO</span>:
+    order_id: str
+    total_amount: float
+    status: str
+</code></pre>
+
+        <div class="bg-indigo-50 border-l-4 border-indigo-400 p-4 my-6 text-sm rounded">
+            <strong>Query DTO in practice:</strong>
+            <p>Query changes nothing — it just reads data and returns it in a convenient format.</p>
+        </div>
+        <pre><code class="language-python"><span class="code-comment"># application/dto.py (Query part)</span>
+<span class="code-dec">@dataclass(frozen=True)</span>
+<span class="code-keyword">class</span> <span class="code-class">GetOrderQuery</span>:
+    order_id: str
+
+<span class="code-comment"># Output DTO for Query response</span>
+<span class="code-dec">@dataclass(frozen=True)</span>
+<span class="code-keyword">class</span> <span class="code-class">OrderDetailsDTO</span>:
+    order_id: str
+    customer_email: str
+    items: List[dict]
+    total_amount: float
+</code></pre>
+
+        <p class="text-sm text-gray-600">Query Use Case receives `GetOrderQuery`, reads entity through port and returns `OrderDetailsDTO`, without changing state.</p>
+        </section>
+
+        <!-- PORTS -->
+        <section id="ports" class="card">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">5. Ports (Interfaces)</h2>
+                <span class="badge badge-purple">Dependency Inversion</span>
+            </div>
+            <p>Use Case wants to save an order. But it cannot call `SQLAlchemy`. So it declares a <strong>Port</strong> (Interface): <em>"I need someone who can save orders"</em>.</p>
+            <p>Later, in the Infrastructure layer, we implement this interface. This allows Use Case to depend on abstraction, not on details.</p>
+
+<pre><code class="language-python"><span class="code-comment"># application/interfaces.py</span>
+<span class="code-keyword">from</span> abc <span class="code-keyword">import</span> ABC, abstractmethod
+<span class="code-keyword">from</span> typing <span class="code-keyword">import</span> Optional
+<span class="code-keyword">import</span> uuid
+
+<span class="code-comment"># We import Entity because Port works with Domain</span>
+<span class="code-keyword">from</span> domain.entities <span class="code-keyword">import</span> Order 
+
+<span class="code-keyword">class</span> <span class="code-class">OrderRepository</span>(ABC):
+    <span class="code-str">"""Abstract repository class. No SQL here!"""</span>
+    
+    <span class="code-dec">@abstractmethod</span>
+    <span class="code-keyword">def</span> <span class="code-func">save</span>(self, order: Order) -> <span class="code-keyword">None</span>:
+        <span class="code-keyword">pass</span>
+
+    <span class="code-dec">@abstractmethod</span>
+    <span class="code-keyword">def</span> <span class="code-func">get_by_id</span>(self, oid: uuid.UUID) -> Optional[Order]:
+        <span class="code-keyword">pass</span>
+
+<span class="code-keyword">class</span> <span class="code-class">EmailService</span>(ABC):
+    <span class="code-dec">@abstractmethod</span>
+    <span class="code-keyword">def</span> <span class="code-func">send_order_confirmation</span>(self, email: str, order_id: str):
+        <span class="code-keyword">pass</span>
+</code></pre>
+        </section>
+
+        <!-- USE CASES DETAILED -->
+        <section id="usecases" class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">6. Use Cases (Scenario Implementation)</h2>
+            <p>This is the most important code in this layer. It ties everything together.</p>
+            <h3 class="text-lg font-bold mb-2 text-gray-700">Use Case Algorithm:</h3>
+            <ol class="list-decimal pl-6 mb-6 space-y-1 text-sm font-mono bg-gray-50 p-4 rounded border">
+                <li>Accept DTO (Command).</li>
+                <li>Convert primitives to Value Objects (str -> Email).</li>
+                <li>Load/Create Entity (or several).</li>
+                <li>Call Entity methods (all business logic executes THERE).</li>
+                <li>Save Entity through Repository.</li>
+                <li>Return result (Output DTO).</li>
+            </ol>
+
+<pre><code class="language-python"><span class="code-comment"># application/use_cases.py</span>
+<span class="code-keyword">import</span> uuid
+<span class="code-keyword">from</span> domain.entities <span class="code-keyword">import</span> Order
+<span class="code-keyword">from</span> domain.value_objects <span class="code-keyword">import</span> Money, Email
+<span class="code-keyword">from</span> .interfaces <span class="code-keyword">import</span> OrderRepository, EmailService
+<span class="code-keyword">from</span> .dto <span class="code-keyword">import</span> CreateOrderCommand, OrderResultDTO
+
+<span class="code-keyword">class</span> <span class="code-class">CreateOrderUseCase</span>:
+    <span class="code-comment"># DEPENDENCY INJECTION:</span>
+    <span class="code-comment"># We ask for any implementations of these interfaces.</span>
+    <span class="code-keyword">def</span> <span class="code-func">__init__</span>(
+        self, 
+        repo: OrderRepository, 
+        email_service: EmailService
+    ):
+        self.repo = repo
+        self.email_service = email_service
+
+    <span class="code-keyword">def</span> <span class="code-func">execute</span>(self, command: CreateOrderCommand) -> OrderResultDTO:
+        <span class="code-comment"># 1. Prepare Value Objects</span>
+        <span class="code-comment"># If email is incorrect, error will be raised HERE (invariant protection)</span>
+        email_vo = Email(command.customer_email)
+        order_id = uuid.uuid4()
+
+        <span class="code-comment"># 2. Create Entity</span>
+        order = Order(order_id, email_vo)
+
+        <span class="code-comment"># 3. Execute business actions</span>
+        <span class="code-keyword">for</span> item <span class="code-keyword">in</span> command.items:
+            price_vo = Money(item[<span class="code-str">'price'</span>])
+            <span class="code-comment"># All logic "can item be added" is inside order.add_item()</span>
+            order.add_item(item[<span class="code-str">'name'</span>], price_vo)
+
+        <span class="code-comment"># 4. Save through Port</span>
+        self.repo.save(order)
+
+        <span class="code-comment"># 5. Side effects (notifications)</span>
+        self.email_service.send_order_confirmation(
+            email=email_vo.value, 
+            order_id=str(order.id)
+        )
+
+        <span class="code-comment"># 6. Return result (Primitives only!)</span>
+        <span class="code-keyword">return</span> OrderResultDTO(
+            order_id=str(order.id),
+            total_amount=order.total_price.amount,
+            status=<span class="code-str">"created"</span>
+        )
+</code></pre>
+        </section>
+
+        <!-- ORCHESTRATION -->
+        <section id="orchestration" class="card bg-gray-50 border-gray-200">
+            <h2 class="text-2xl font-bold mb-4">7. Orchestrating Multiple Entities</h2>
+            <p>Often you need two entities to interact. For example: <em>"When creating an order, if User has VIP status, apply discount"</em>.</p>
+            <p><strong>Who does this?</strong> Use Case. It's the conductor.</p>
+
+<pre><code class="language-python"><span class="code-comment"># application/use_cases.py (extended example)</span>
+
+<span class="code-keyword">def</span> <span class="code-func">execute</span>(self, command: CreateOrderCommand):
+    <span class="code-comment"># 1. Load user through repository</span>
+    user = self.user_repo.get_by_email(command.email)
+    
+    <span class="code-comment"># 2. Create order</span>
+    order = Order(...)
+    
+    <span class="code-comment"># 3. Orchestration: interaction logic</span>
+    <span class="code-comment"># We take data from one entity and pass it to another</span>
+    <span class="code-keyword">if</span> user.is_vip():
+        order.apply_discount(percent=10)
+    
+    <span class="code-comment"># 4. Save</span>
+    self.order_repo.save(order)
+</code></pre>
+            <div class="mt-4 p-3 bg-yellow-100 border border-yellow-300 rounded text-sm text-yellow-800">
+                <strong>Important:</strong> Use Case should not calculate discount itself (`total * 0.9`). It should call method `order.apply_discount()`. Logic must remain in entities!
+            </div>
+        </section>
+
+        <!-- ANTIPATTERNS -->
+        <section id="antipatterns" class="mb-12">
+            <h2 class="text-2xl font-bold text-red-700 mb-6">⚠️ Application Layer Antipatterns</h2>
+            
+            <div class="space-y-6">
+                <details class="group bg-white border border-red-200 rounded-lg p-4 open:ring-2 open:ring-red-100">
+                    <summary class="font-bold text-red-800 group-hover:text-red-600">1. Fat Use Case</summary>
+                    <div class="mt-3 text-sm">
+                        <p class="mb-2">This is when Use Case starts doing calculations instead of entities.</p>
+                        <pre class="bg-slate-800 text-slate-200 p-4 rounded-lg text-xs border border-slate-700"><span class="code-comment"># ❌ BAD</span>
+total = 0
+for item in items:
+    total += item.price <span class="code-comment"># Logic calculation leaked from Domain!</span>
+order.total = total
+
+<span class="code-comment"># ✅ GOOD</span>
+order.calculate_total() <span class="code-comment"># Use Case just delegates</span></pre>
+                    </div>
+                </details>
+
+                <details class="group bg-white border border-red-200 rounded-lg p-4 open:ring-2 open:ring-red-100">
+                    <summary class="font-bold text-red-800 group-hover:text-red-600">2. Leaking Infrastructure</summary>
+                    <div class="mt-3 text-sm">
+                        <p class="mb-2">Passing framework or DB objects into Use Case.</p>
+                        <pre class="bg-slate-800 text-slate-200 p-4 rounded-lg text-xs border border-slate-700"><span class="code-comment"># ❌ BAD</span>
+def execute(self, request: starlette.requests.Request): <span class="code-comment"># Web binding!</span>
+    pass
+
+<span class="code-comment"># ❌ BAD</span>
+def execute(self, session: sqlalchemy.Session): <span class="code-comment"># DB binding!</span>
+    pass</pre>
+                    </div>
+                </details>
+
+                <details class="group bg-white border border-red-200 rounded-lg p-4 open:ring-2 open:ring-red-100">
+                    <summary class="font-bold text-red-800 group-hover:text-red-600">3. Returning Entities</summary>
+                    <div class="mt-3 text-sm">
+                        <p class="mb-2">Use Case should not return `Order` objects to the outside (to Web). It should return `OrderResultDTO`.</p>
+                        <p>Why? Because Entity has behavior, and API just needs to return JSON. Plus, if you change Entity, you'll break the API contract.</p>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="domain.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Back</span>
+                     <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🎯 Domain Layer</span>
+                </a>
+                <a href="infrastructure.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Next</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🔧 Infrastructure Layer &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Save sidebar scroll position
+        (function() {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            
+            const storageKey = 'sidebar_scroll_position';
+            
+            // Restore position on load
+            const savedScroll = sessionStorage.getItem(storageKey);
+            if (savedScroll !== null) {
+                sidebar.scrollTop = parseInt(savedScroll, 10);
+            }
+            
+            // Save position on scroll
+            let scrollTimeout;
+            sidebar.addEventListener('scroll', function() {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+                }, 100);
+            });
+            
+            // Save position on page unload
+            window.addEventListener('beforeunload', function() {
+                sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+            });
+        })();
+    </script>
+</body>

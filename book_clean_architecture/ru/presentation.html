@@ -1,58 +1,256 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Глава 5: Presentation Layer - Clean Architecture</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap"
+        rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; }
-        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
-        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
-        
-        .sidebar { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-right: 1px solid #334155; height: 100vh; position: fixed; width: 18rem; overflow-y: auto; z-index: 50; }
-        .sidebar-title { color: #f8fafc; }
-        .sidebar-subtitle { color: #60a5fa; }
-        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; }
-        .nav-link { display: block; padding: 0.6rem 1rem; color: #94a3b8; font-weight: 500; font-size: 0.875rem; transition: all 0.2s; border-left: 3px solid transparent; text-decoration: none; }
-        .nav-link:hover { background: rgba(255,255,255,0.05); color: #f1f5f9; border-left-color: #475569; }
-        .nav-link.active { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border-left-color: #3b82f6; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            color: #0f172a;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+
+        p,
+        li {
+            font-family: 'Merriweather', serif;
+            line-height: 1.8;
+            color: #334155;
+            margin-bottom: 1em;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border-right: 1px solid #334155;
+            height: 100vh;
+            position: fixed;
+            width: 18rem;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 50;
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #1e293b;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        .sidebar-title {
+            color: #f8fafc;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.01em;
+        }
+
+        .sidebar-subtitle {
+            color: #60a5fa;
+            opacity: 0.9;
+        }
+
+        .nav-section {
+            color: #94a3b8;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 1rem 1rem 0.5rem;
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.7rem 1rem;
+            color: #cbd5e1;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 3px solid transparent;
+            text-decoration: none;
+            margin: 0.15rem 0;
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+
+        .nav-link:hover {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%);
+            color: #f1f5f9;
+            border-left-color: #60a5fa;
+            transform: translateX(2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%);
+            color: #60a5fa;
+            border-left-color: #3b82f6;
+            font-weight: 600;
+            box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
 
         pre {
             font-family: 'JetBrains Mono', monospace;
-            background-color: #1e293b;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             color: #e2e8f0;
             padding: 1.5rem;
             border-radius: 0.75rem;
             overflow-x: auto;
             font-size: 0.85rem;
-            line-height: 1.6;
+            line-height: 1.7;
             border: 1px solid #334155;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
             margin: 1.5rem 0;
+            box-sizing: border-box;
+            max-width: 100%;
+            position: relative;
         }
-        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
-        .code-keyword { color: #c084fc; font-weight: bold; } 
-        .code-class { color: #fbbf24; font-weight: bold; }   
-        .code-func { color: #60a5fa; font-weight: bold; }    
-        .code-str { color: #a3e635; }                        
-        .code-dec { color: #f472b6; } 
 
-        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 0.5rem; }
-        .badge-green { background-color: #dcfce7; color: #15803d; }
-        .badge-red { background-color: #fee2e2; color: #b91c1c; }
-        .badge-cyan { background-color: #cffafe; color: #0e7490; }
-        
-        .card { background: white; border-radius: 1rem; padding: 2.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; border: 1px solid #e2e8f0; }
-        
-        .ascii-art { font-family: 'JetBrains Mono', monospace; white-space: pre; font-size: 0.75rem; background: #fff; padding: 1rem; border: 1px dashed #cbd5e1; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 2rem; color: #475569; }
-        
-        details > summary { list-style: none; cursor: pointer; font-weight: 700; color: #2563eb; outline: none; padding: 1rem; background: #f8fafc; border-radius: 0.5rem; margin-bottom: 0.5rem; border: 1px solid #e2e8f0; }
-        details[open] > summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: 0; background: #eff6ff; }
-        details > div { padding: 1.5rem; border: 1px solid #e2e8f0; border-top: 0; border-bottom-left-radius: 0.5rem; border-bottom-right-radius: 0.5rem; background: #fff; }
+        pre::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+
+        .code-comment {
+            color: #475569;
+            font-style: normal;
+            font-weight: 700;
+        }
+
+        .code-keyword {
+            color: #c084fc;
+            font-weight: bold;
+        }
+
+        .code-class {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .code-func {
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .code-str {
+            color: #a3e635;
+        }
+
+        .code-dec {
+            color: #f472b6;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.125rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-right: 0.5rem;
+        }
+
+        .badge-green {
+            background-color: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-red {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .badge-cyan {
+            background-color: #cffafe;
+            color: #0e7490;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .ascii-art {
+            font-family: 'JetBrains Mono', monospace;
+            white-space: pre;
+            font-size: 0.75rem;
+            background: #fff;
+            padding: 1rem;
+            border: 1px dashed #cbd5e1;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin-bottom: 2rem;
+            color: #475569;
+        }
+
+        details>summary {
+            list-style: none;
+            cursor: pointer;
+            font-weight: 700;
+            color: #2563eb;
+            outline: none;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        details[open]>summary {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            margin-bottom: 0;
+            background: #eff6ff;
+        }
+
+        details>div {
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            border-top: 0;
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+            background: #fff;
+        }
     </style>
 </head>
+
 <body class="flex bg-slate-50">
 
     <!-- SIDEBAR -->
@@ -63,12 +261,12 @@
         </div>
         <nav class="py-4">
             <div class="px-4 mb-4">
-                <div class="flex gap-2 text-xs font-bold text-slate-400">
-                    <a href="presentation.html" class="text-blue-400 font-bold">RU</a>
-                    <span class="text-slate-600">|</span>
-                    <a href="../en/presentation.html" class="hover:text-white transition">EN</a>
-                    <span class="text-slate-600">|</span>
-                    <a href="../ua/presentation.html" class="hover:text-white transition">UA</a>
+                <div class="flex gap-2 text-xs font-bold text-slate-400 bg-slate-800/50 rounded-lg p-2">
+                    <a href="presentation.html" class="text-blue-400 font-bold px-2 py-1 rounded bg-blue-500/20">RU</a>
+                    <a href="../en/presentation.html"
+                        class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">EN</a>
+                    <a href="../ua/presentation.html"
+                        class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">UA</a>
                 </div>
             </div>
 
@@ -134,21 +332,25 @@
 
     <!-- CONTENT -->
     <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-5xl mx-auto">
-        
+
         <header id="intro" class="mb-12 pb-6 border-b border-gray-200">
             <div class="flex items-center gap-3 mb-2">
-                <span class="bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Layer 4</span>
+                <span
+                    class="bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Layer
+                    4</span>
                 <span class="text-gray-400 text-sm font-mono">FastAPI / Django / Flask</span>
             </div>
-            <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Presentation Layer (Слой Представления)</h1>
+            <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">Presentation Layer</h1>
             <p class="text-xl text-gray-500 mt-4 font-light">
-                Точка входа в приложение. Здесь мы принимаем HTTP-запросы, вызываем Use Cases и возвращаем красивые ответы.
+                Точка входа в приложение. Здесь мы принимаем HTTP-запросы, вызываем Use Cases и возвращаем красивые
+                ответы.
             </p>
         </header>
 
         <!-- ASCII DIAGRAM -->
         <div class="mb-8" aria-label="Presentation Layer flow">
-            <img src="../assets/presentation-layer-diagram.svg" alt="Presentation Layer diagram" class="w-full h-auto rounded-lg shadow-lg" />
+            <img src="../assets/presentation-layer-diagram.svg" alt="Presentation Layer diagram"
+                class="w-full h-auto rounded-lg shadow-lg" />
         </div>
 
         <!-- ANATOMY -->
@@ -156,21 +358,25 @@
             <h2 class="text-2xl font-bold mb-6">Анатомия Слоя</h2>
             <div class="grid md:grid-cols-2 gap-8">
                 <div>
-                    <h3 class="flex items-center gap-2 font-bold text-green-800 mb-4 border-b border-green-200 pb-2 w-full">
+                    <h3
+                        class="flex items-center gap-2 font-bold text-green-800 mb-4 border-b border-green-200 pb-2 w-full">
                         ✅ MUST HAVE (Должно быть)
                     </h3>
                     <ul class="space-y-4 text-sm">
                         <li class="flex items-start">
                             <span class="badge badge-green mt-1">Route</span>
-                            <div><strong>Роутеры/Эндпоинты:</strong> Определение URL путей и HTTP методов (GET, POST, PUT, DELETE).</div>
+                            <div><strong>Роутеры/Эндпоинты:</strong> Определение URL путей и HTTP методов (GET, POST,
+                                PUT, DELETE).</div>
                         </li>
                         <li class="flex items-start">
                             <span class="badge badge-green mt-1">Schema</span>
-                            <div><strong>Request/Response схемы:</strong> Pydantic модели для валидации входящих данных и форматирования ответов.</div>
+                            <div><strong>Request/Response схемы:</strong> Pydantic модели для валидации входящих данных
+                                и форматирования ответов.</div>
                         </li>
                         <li class="flex items-start">
                             <span class="badge badge-green mt-1">Error</span>
-                            <div><strong>Exception Handlers:</strong> Преобразование DomainError в HTTP-ответы (400, 404, 409).</div>
+                            <div><strong>Exception Handlers:</strong> Преобразование DomainError в HTTP-ответы (400,
+                                404, 409).</div>
                         </li>
                         <li class="flex items-start">
                             <span class="badge badge-green mt-1">Auth</span>
@@ -178,7 +384,7 @@
                         </li>
                     </ul>
                 </div>
-                
+
                 <div>
                     <h3 class="flex items-center gap-2 font-bold text-red-800 mb-4 border-b border-red-200 pb-2 w-full">
                         ⛔ FORBIDDEN (Строго запрещено)
@@ -186,15 +392,18 @@
                     <ul class="space-y-4 text-sm">
                         <li class="flex items-start">
                             <span class="badge badge-red mt-1">Logic</span>
-                            <div><strong>Бизнес-логика:</strong> Никаких `if order.total > 1000: apply_discount()`. Это работа Use Case или Entity!</div>
+                            <div><strong>Бизнес-логика:</strong> Никаких `if order.total > 1000: apply_discount()`. Это
+                                работа Use Case или Entity!</div>
                         </li>
                         <li class="flex items-start">
                             <span class="badge badge-red mt-1">DB</span>
-                            <div><strong>SQL / ORM:</strong> Никаких `session.query()` в эндпоинтах. Всё через Use Case → Repository.</div>
+                            <div><strong>SQL / ORM:</strong> Никаких `session.query()` в эндпоинтах. Всё через Use Case
+                                → Repository.</div>
                         </li>
                         <li class="flex items-start">
                             <span class="badge badge-red mt-1">Domain</span>
-                            <div><strong>Возврат Entities:</strong> Не возвращайте `Order` напрямую. Сначала превратите в DTO/Schema.</div>
+                            <div><strong>Возврат Entities:</strong> Не возвращайте `Order` напрямую. Сначала превратите
+                                в DTO/Schema.</div>
                         </li>
                     </ul>
                 </div>
@@ -204,10 +413,12 @@
         <!-- SCHEMAS -->
         <section id="schemas" class="mb-16">
             <h2 class="text-2xl font-bold mb-4">1. Request/Response Schemas (Pydantic)</h2>
-            <p><strong>Pydantic</strong> — это библиотека для валидации данных. В FastAPI она встроена. Используем её для создания "контрактов" API.</p>
-            <p>Важно: Pydantic схемы — это <strong>не то же самое</strong>, что DTO из Application Layer. Схемы знают про JSON, сериализацию, HTTP. DTO — чистые данные.</p>
+            <p><strong>Pydantic</strong> — это библиотека для валидации данных. В FastAPI она встроена. Используем её
+                для создания "контрактов" API.</p>
+            <p>Важно: Pydantic схемы — это <strong>не то же самое</strong>, что DTO из Application Layer. Схемы знают
+                про JSON, сериализацию, HTTP. DTO — чистые данные.</p>
 
-<pre><code class="language-python"><span class="code-comment"># presentation/schemas/order.py</span>
+            <pre><code class="language-python"><span class="code-comment"># presentation/schemas/order.py</span>
 <span class="code-keyword">from</span> pydantic <span class="code-keyword">import</span> BaseModel, EmailStr, Field, field_validator
 <span class="code-keyword">from</span> typing <span class="code-keyword">import</span> List
 <span class="code-keyword">from</span> datetime <span class="code-keyword">import</span> datetime
@@ -228,7 +439,6 @@
             <span class="code-keyword">raise</span> ValueError(<span class="code-str">'Название не может быть пустым'</span>)
         <span class="code-keyword">return</span> v.strip()
 
-
 <span class="code-keyword">class</span> <span class="code-class">CreateOrderRequest</span>(BaseModel):
     <span class="code-str">"""Запрос на создание заказа"""</span>
     customer_email: EmailStr  <span class="code-comment"># Автоматическая валидация email</span>
@@ -243,7 +453,6 @@
             }
         }
 
-
 <span class="code-comment"># ═══════════════════════════════════════════════════</span>
 <span class="code-comment"># RESPONSE SCHEMAS (Исходящие данные)</span>
 <span class="code-comment"># ═══════════════════════════════════════════════════</span>
@@ -253,7 +462,6 @@
     price: float
     quantity: int
     subtotal: float  <span class="code-comment"># Вычисляемое поле</span>
-
 
 <span class="code-keyword">class</span> <span class="code-class">OrderResponse</span>(BaseModel):
     <span class="code-str">"""Ответ с данными заказа"""</span>
@@ -267,7 +475,6 @@
     <span class="code-keyword">class</span> <span class="code-class">Config</span>:
         from_attributes = <span class="code-keyword">True</span>  <span class="code-comment"># Позволяет создавать из ORM моделей</span>
 
-
 <span class="code-keyword">class</span> <span class="code-class">ErrorResponse</span>(BaseModel):
     <span class="code-str">"""Стандартный формат ошибки"""</span>
     error: str
@@ -279,9 +486,11 @@
         <!-- ROUTES -->
         <section id="routes" class="card">
             <h2 class="text-2xl font-bold mb-6">2. Роутеры и Эндпоинты (FastAPI)</h2>
-            <p>Роутер — это "тонкий" слой. Его задача: принять данные, вызвать Use Case, вернуть результат. <strong>Никакой логики!</strong></p>
+            <p>Роутер — это "тонкий" слой. Его задача: принять данные, вызвать Use Case, вернуть результат.
+                <strong>Никакой логики!</strong>
+            </p>
 
-<pre><code class="language-python"><span class="code-comment"># presentation/routers/orders.py</span>
+            <pre><code class="language-python"><span class="code-comment"># presentation/routers/orders.py</span>
 <span class="code-keyword">from</span> fastapi <span class="code-keyword">import</span> APIRouter, Depends, HTTPException, status
 <span class="code-keyword">from</span> typing <span class="code-keyword">import</span> List
 <span class="code-keyword">import</span> uuid
@@ -297,7 +506,6 @@
 <span class="code-keyword">from</span> ..dependencies <span class="code-keyword">import</span> get_create_order_use_case, get_order_use_case
 
 router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span class="code-str">"Orders"</span>])
-
 
 <span class="code-dec">@router.post</span>(
     <span class="code-str">"/"</span>,
@@ -349,7 +557,6 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
         created_at=result.created_at
     )
 
-
 <span class="code-dec">@router.get</span>(<span class="code-str">"/{order_id}"</span>, response_model=OrderResponse)
 <span class="code-keyword">async def</span> <span class="code-func">get_order</span>(
     order_id: uuid.UUID,
@@ -366,7 +573,6 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
     
     <span class="code-keyword">return</span> OrderResponse(**result.dict())
 
-
 <span class="code-dec">@router.post</span>(<span class="code-str">"/{order_id}/pay"</span>, response_model=OrderResponse)
 <span class="code-keyword">async def</span> <span class="code-func">pay_order</span>(
     order_id: uuid.UUID,
@@ -378,14 +584,12 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
 </code></pre>
         </section>
 
-
-
         <!-- DEPENDENCIES -->
         <section id="deps" class="card bg-gray-50 border-gray-200">
             <h2 class="text-2xl font-bold mb-4">4. Dependency Injection в FastAPI</h2>
             <p>FastAPI использует систему `Depends()` для внедрения зависимостей. Это наш Composition Root.</p>
 
-<pre><code class="language-python"><span class="code-comment"># presentation/dependencies.py</span>
+            <pre><code class="language-python"><span class="code-comment"># presentation/dependencies.py</span>
 <span class="code-keyword">from</span> functools <span class="code-keyword">import</span> lru_cache
 <span class="code-keyword">from</span> fastapi <span class="code-keyword">import</span> Depends
 <span class="code-keyword">from</span> sqlalchemy.orm <span class="code-keyword">import</span> Session
@@ -402,7 +606,6 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
 <span class="code-comment"># Конфигурация (можно вынести в отдельный файл)</span>
 <span class="code-keyword">from</span> config <span class="code-keyword">import</span> settings
 
-
 <span class="code-dec">@lru_cache</span>()
 <span class="code-keyword">def</span> <span class="code-func">get_email_service</span>():
     <span class="code-str">"""Singleton: создается один раз за всё время работы приложения"""</span>
@@ -413,11 +616,9 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
         password=settings.SMTP_PASSWORD
     )
 
-
 <span class="code-keyword">def</span> <span class="code-func">get_unit_of_work</span>(session: Session = Depends(get_session)):
     <span class="code-str">"""Создается для каждого запроса (Request Scope)"""</span>
     <span class="code-keyword">return</span> SqlAlchemyUnitOfWork(session)
-
 
 <span class="code-keyword">def</span> <span class="code-func">get_create_order_use_case</span>(
     uow = Depends(get_unit_of_work),
@@ -429,12 +630,10 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
         email_service=email_service
     )
 
-
 <span class="code-keyword">def</span> <span class="code-func">get_order_use_case</span>(
     uow = Depends(get_unit_of_work)
 ) -> GetOrderUseCase:
     <span class="code-keyword">return</span> GetOrderUseCase(uow=uow)
-
 
 <span class="code-keyword">def</span> <span class="code-func">get_pay_order_use_case</span>(
     uow = Depends(get_unit_of_work),
@@ -451,7 +650,7 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
         <section id="main" class="mb-16">
             <h2 class="text-2xl font-bold mb-4">5. Сборка приложения (main.py)</h2>
 
-<pre><code class="language-python"><span class="code-comment"># main.py</span>
+            <pre><code class="language-python"><span class="code-comment"># main.py</span>
 <span class="code-keyword">from</span> fastapi <span class="code-keyword">import</span> FastAPI
 <span class="code-keyword">from</span> fastapi.middleware.cors <span class="code-keyword">import</span> CORSMiddleware
 
@@ -461,7 +660,6 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
 <span class="code-comment"># Обработчики ошибок</span>
 <span class="code-keyword">from</span> presentation.exception_handlers <span class="code-keyword">import</span> domain_error_handler
 <span class="code-keyword">from</span> domain.exceptions <span class="code-keyword">import</span> DomainError
-
 
 <span class="code-keyword">def</span> <span class="code-func">create_app</span>() -> FastAPI:
     <span class="code-str">"""Фабрика приложения. Позволяет создавать разные конфигурации для тестов."""</span>
@@ -492,10 +690,8 @@ router = APIRouter(prefix=<span class="code-str">"/orders"</span>, tags=[<span c
     
     <span class="code-keyword">return</span> app
 
-
 <span class="code-comment"># Создаем экземпляр</span>
 app = create_app()
-
 
 <span class="code-comment"># Запуск: uvicorn main:app --reload</span>
 </code></pre>
@@ -509,7 +705,7 @@ app = create_app()
             <details>
                 <summary>Django Class-Based View (CBV)</summary>
                 <div>
-<pre><code class="language-python"><span class="code-comment"># orders/views.py</span>
+                    <pre><code class="language-python"><span class="code-comment"># orders/views.py</span>
 <span class="code-keyword">from</span> django.http <span class="code-keyword">import</span> JsonResponse
 <span class="code-keyword">from</span> django.views <span class="code-keyword">import</span> View
 <span class="code-keyword">import</span> json
@@ -520,7 +716,6 @@ app = create_app()
 
 <span class="code-comment"># DI вручную (или используйте django-injector)</span>
 <span class="code-keyword">from</span> .dependencies <span class="code-keyword">import</span> get_create_order_use_case
-
 
 <span class="code-keyword">class</span> <span class="code-class">OrderCreateView</span>(View):
     
@@ -561,10 +756,11 @@ app = create_app()
         <!-- ANTIPATTERNS -->
         <section id="antipatterns" class="mb-12">
             <h2 class="text-2xl font-bold text-red-700 mb-6">⚠️ Антипаттерны Presentation Layer</h2>
-            
+
             <div class="space-y-6">
                 <details class="group bg-white border border-red-200 rounded-lg p-4">
-                    <summary class="font-bold text-red-800 group-hover:text-red-600">1. Fat Controller (Толстый контроллер)</summary>
+                    <summary class="font-bold text-red-800 group-hover:text-red-600">1. Fat Controller (Толстый
+                        контроллер)</summary>
                     <div class="mt-3 text-sm">
                         <p class="mb-2">Когда вся логика находится в эндпоинте.</p>
                         <pre><span class="code-comment"># ❌ ПЛОХО: Логика в контроллере</span>
@@ -590,9 +786,11 @@ async def create_order(data: dict, db: Session = Depends(get_db)):
                 </details>
 
                 <details class="group bg-white border border-red-200 rounded-lg p-4">
-                    <summary class="font-bold text-red-800 group-hover:text-red-600">2. Возврат Entity напрямую</summary>
+                    <summary class="font-bold text-red-800 group-hover:text-red-600">2. Возврат Entity напрямую
+                    </summary>
                     <div class="mt-3 text-sm">
-                        <p class="mb-2">Entity имеет методы и приватные поля. JSON-сериализация может сломаться или раскрыть лишние данные.</p>
+                        <p class="mb-2">Entity имеет методы и приватные поля. JSON-сериализация может сломаться или
+                            раскрыть лишние данные.</p>
                         <pre><span class="code-comment"># ❌ ПЛОХО</span>
 return order  <span class="code-comment"># Entity напрямую</span>
 
@@ -606,9 +804,11 @@ return OrderResponse(
                 </details>
 
                 <details class="group bg-white border border-red-200 rounded-lg p-4">
-                    <summary class="font-bold text-red-800 group-hover:text-red-600">3. Бизнес-логика в Middleware</summary>
+                    <summary class="font-bold text-red-800 group-hover:text-red-600">3. Бизнес-логика в Middleware
+                    </summary>
                     <div class="mt-3 text-sm">
-                        <p class="mb-2">Middleware предназначен для cross-cutting concerns: логирование, аутентификация, CORS. НЕ для бизнес-правил!</p>
+                        <p class="mb-2">Middleware предназначен для cross-cutting concerns: логирование, аутентификация,
+                            CORS. НЕ для бизнес-правил!</p>
                         <pre><span class="code-comment"># ❌ ПЛОХО: Проверка лимитов в middleware</span>
 class OrderLimitMiddleware:
     async def __call__(self, request, call_next):
@@ -621,41 +821,55 @@ class OrderLimitMiddleware:
             </div>
         </section>
 
-        <!-- NAVIGATION -->
-        <div class="flex justify-between mt-12 pt-8 border-t border-gray-200">
-            <a href="infrastructure.html" class="group flex items-center gap-4 text-gray-600 hover:text-gray-900 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:-translate-x-1 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                <div>
-                    <div class="text-xs text-gray-400 uppercase font-bold">Назад</div>
-                    <div class="font-bold">Infrastructure Layer</div>
-                </div>
-            </a>
-            <a href="solid.html" class="group flex items-center gap-4 bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 transition">
-                <div class="text-right">
-                    <div class="text-xs text-blue-200 uppercase font-bold">Далее</div>
-                    <div class="font-bold">SOLID принципы</div>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:translate-x-1 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-            </a>
-        </div>
-
         <!-- NAVIGATION FOOTER -->
         <div class="mt-24 pt-10 border-t border-slate-200">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <a href="infrastructure.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
-                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Назад</span>
-                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🔧 Infrastructure Layer</span>
+                <a href="infrastructure.html"
+                    class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span
+                        class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Назад</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 🔧
+                        Infrastructure Layer</span>
                 </a>
-                <a href="middleware.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                <a href="middleware.html"
+                    class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
                     <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Далее</span>
-                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🔌 Middleware &rarr;</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">🔌
+                        Middleware &rarr;</span>
                 </a>
             </div>
         </div>
     </main>
+
+    <script>
+        // Сохранение позиции скролла sidebar
+        (function () {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+
+            const storageKey = 'sidebar_scroll_position';
+
+            // Восстановление позиции при загрузке
+            const savedScroll = sessionStorage.getItem(storageKey);
+            if (savedScroll !== null) {
+                sidebar.scrollTop = parseInt(savedScroll, 10);
+            }
+
+            // Сохранение позиции при скролле
+            let scrollTimeout;
+            sidebar.addEventListener('scroll', function () {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function () {
+                    sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+                }, 100);
+            });
+
+            // Сохранение позиции при уходе со страницы
+            window.addEventListener('beforeunload', function () {
+                sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+            });
+        })();
+    </script>
 </body>
+
 </html>

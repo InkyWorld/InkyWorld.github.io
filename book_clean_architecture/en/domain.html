@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 8: Domain Layer - Clean Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        h1, h2, h3, h4 { color: #0f172a; font-weight: 800; letter-spacing: -0.025em; }
+        p, li { font-family: 'Merriweather', serif; line-height: 1.8; color: #334155; margin-bottom: 1em; }
+        
+        .sidebar { 
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); 
+            border-right: 1px solid #334155; 
+            height: 100vh; 
+            position: fixed; 
+            width: 18rem; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            z-index: 50; 
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #1e293b;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .sidebar-title { 
+            color: #f8fafc; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.01em;
+        }
+        .sidebar-subtitle { 
+            color: #60a5fa; 
+            opacity: 0.9;
+        }
+        .nav-section { 
+            color: #94a3b8; 
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em; 
+            padding: 1rem 1rem 0.5rem; 
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+        .nav-link { 
+            display: block; 
+            padding: 0.7rem 1rem; 
+            color: #cbd5e1; 
+            font-weight: 500; 
+            font-size: 0.875rem; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-left: 3px solid transparent; 
+            text-decoration: none; 
+            margin: 0.15rem 0;
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+        .nav-link:hover { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); 
+            color: #f1f5f9; 
+            border-left-color: #60a5fa; 
+            transform: translateX(2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-link.active { 
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); 
+            color: #60a5fa; 
+            border-left-color: #3b82f6; 
+            font-weight: 600;
+            box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1);
+        }
+        .sidebar-title { color: #f8fafc; text-shadow: 0 2px 4px rgba(0,0,0,0.3); letter-spacing: -0.01em; }
+        .sidebar-subtitle { color: #60a5fa; opacity: 0.9; }
+        .nav-section { color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 1rem 1rem 0.5rem; margin-top: 0.5rem; opacity: 0.8; }
+        .nav-link { display: block; padding: 0.7rem 1rem; color: #cbd5e1; font-weight: 500; font-size: 0.875rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-left: 3px solid transparent; text-decoration: none; margin: 0.15rem 0; border-radius: 0 0.375rem 0.375rem 0; }
+        .nav-link:hover { background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%); color: #f1f5f9; border-left-color: #60a5fa; transform: translateX(2px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-link.active { background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%); color: #60a5fa; border-left-color: #3b82f6; font-weight: 600; box-shadow: inset 0 2px 4px rgba(59, 130, 246, 0.1); }
+
+        /* Code Styling */
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            margin: 1.5rem 0;
+            box-sizing: border-box;
+            max-width: 100%;
+            position: relative;
+        }
+        pre::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+        .code-comment { color: #475569; font-style: normal; font-weight: 700; }
+        .code-keyword { color: #c084fc; font-weight: bold; } 
+        .code-class { color: #fbbf24; font-weight: bold; }   
+        .code-func { color: #60a5fa; font-weight: bold; }    
+        .code-str { color: #a3e635; }                        
+
+        .card { background: white; border-radius: 1rem; padding: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; border: 1px solid #e2e8f0; }
+        
+        .anemic-box { background: #fff5f5; border-left: 5px solid #ef4444; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .rich-box { background: #f0fdf4; border-left: 5px solid #22c55e; padding: 1.5rem; margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body class="flex bg-slate-50">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hidden md:block">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold sidebar-title">Clean Architecture</h1>
+            <span class="sidebar-subtitle text-sm">Author: Alex | InkyWorld</span>
+        </div>
+        <nav class="py-4">
+            <div class="px-4 mb-4">
+                <div class="flex gap-2 text-xs font-bold text-slate-400 bg-slate-800/50 rounded-lg p-2">                    <a href="../ru/domain.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">RU</a>                    <a href="domain.html" class="text-blue-400 font-bold px-2 py-1 rounded bg-blue-500/20">EN</a>                    <a href="../ua/domain.html" class="hover:text-white transition px-2 py-1 rounded hover:bg-slate-700/50">UA</a>                </div>
+            </div>
+
+            <div class="nav-section">Basics</div>
+            <a href="index.html" class="nav-link">📘 Introduction</a>
+            <a href="solid.html" class="nav-link">📐 SOLID Principles</a>
+            <a href="project_structure.html" class="nav-link">🧭 Project Structure (DDD)</a>
+            <a href="dependency.html" class="nav-link">💉 Dependency Injection</a>
+
+            <div class="nav-section">Architecture Layers</div>
+            <a href="domain.html" class="nav-link active">🎯 Domain Layer</a>
+            <a href="application.html" class="nav-link">⚙️ Application Layer</a>
+            <a href="infrastructure.html" class="nav-link">🔧 Infrastructure Layer</a>
+            <a href="presentation.html" class="nav-link">🌐 Presentation Layer</a>
+            <a href="middleware.html" class="nav-link">🔌 Middleware</a>
+
+            <div class="nav-section">Tactical DDD</div>
+            <a href="aggregates.html" class="nav-link">📦 Aggregates</a>
+            <a href="invariants.html" class="nav-link">🛡️ Invariants</a>
+            <a href="repository_uow.html" class="nav-link">🗄️ Repository & UoW</a>
+            <a href="specification.html" class="nav-link">📋 Specification</a>
+            <a href="domain_events.html" class="nav-link">📣 Domain Events</a>
+            <a href="policies.html" class="nav-link">📜 Policies</a>
+            <a href="versioning.html" class="nav-link">🔄 Versioning</a>
+
+            <div class="nav-section">Strategic DDD</div>
+            <a href="bounded_context.html" class="nav-link">🌍 Bounded Contexts</a>
+            <a href="ubiquitous_language.html" class="nav-link">🗣️ Ubiquitous Language</a>
+            <a href="context_relationships.html" class="nav-link">🤝 Context Relationships</a>
+            <a href="acl.html" class="nav-link">🛡️ Anti-Corruption Layer</a>
+            <a href="subdomains.html" class="nav-link">🧬 Subdomains</a>
+            <a href="modular_monolith.html" class="nav-link">🏗️ Modular Monolith</a>
+            <a href="strategic_integration.html" class="nav-link">🌐 Strategic Integration</a>
+            <a href="big_ball_of_mud.html" class="nav-link">🐷 Big Ball of Mud</a>
+            <a href="boundaries_first.html" class="nav-link">🧠 Boundaries First</a>
+
+            <div class="nav-section">CQRS & Distributed Systems</div>
+            <a href="cqrs_es.html" class="nav-link">⚡ CQRS & ES</a>
+            <a href="saga.html" class="nav-link">🔄 Saga Pattern</a>
+            <a href="outbox.html" class="nav-link">📮 Outbox Pattern</a>
+            <a href="background_tasks.html" class="nav-link">⏳ Background Tasks</a>
+            <a href="observability.html" class="nav-link">🔍 Observability</a>
+
+            <div class="nav-section">Reliability & Security</div>
+            <a href="security.html" class="nav-link">🔐 Auth & Permissions</a>
+            <a href="error_handling.html" class="nav-link">🚫 Error Handling</a>
+            <a href="concurrency.html" class="nav-link">🛑 Concurrency & Migrations</a>
+            <a href="config_logging.html" class="nav-link">⚙️ Config & Observability</a>
+
+            <div class="nav-section">Quality & Practice</div>
+            <a href="testing.html" class="nav-link">🧪 Testing</a>
+            <a href="overengineering.html" class="nav-link">🛑 Overengineering</a>
+            <a href="deployment.html" class="nav-link">🚀 Deployment & Protection</a>
+            <a href="frameworks_django.html" class="nav-link">🐍 Django & Others</a>
+            <a href="projects.html" class="nav-link">🚀 Practice Projects</a>
+            <a href="antipatterns.html" class="nav-link">⚠️ Anti-patterns</a>
+            <a href="advanced_techniques.html" class="nav-link">🚀 Advanced Tech</a>
+
+            <div class="nav-section">About</div>
+            <a href="afterword.html" class="nav-link">👋 Afterword</a>
+        </nav>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="flex-1 md:ml-72 p-8 md:p-12 max-w-5xl mx-auto">
+        
+        <header id="intro" class="mb-12 pb-6 border-b border-gray-200">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Business Logic</span>
+            </div>
+            <h1 class="text-4xl font-extrabold text-gray-900 leading-tight">1. Domain Layer</h1>
+            <p class="text-xl text-gray-500 mt-4 font-light">
+                The heart of your application. Pure business logic lives here, independent of the database, internet, or frameworks.
+            </p>
+        </header>
+
+        <!-- ANEMIC VS RICH -->
+        <section class="card">
+            <h2 class="text-2xl font-bold mb-6">Anemic vs Rich Model</h2>
+            <p>In many frameworks (e.g., Django or older Java approaches), it is common to separate data and behavior. This often leads to the model becoming just a "data bag," while all logic flows into services.</p>
+
+            <div class="grid md:grid-cols-2 gap-8 mt-6">
+                <!-- ANEMIC -->
+                <div class="anemic-box rounded-xl">
+                    <h3 class="font-bold text-red-800 mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        Anemic Model
+                    </h3>
+                    <p class="text-sm text-red-900 mb-4">Model — just data structures. Logic lives somewhere in external Services.</p>
+                    <pre class="text-xs bg-red-900 text-red-100 border-none">
+class Order:
+    id: int
+    items: list
+    total: float
+    status: str
+
+# Logic lives somewhere in Service
+class OrderService:
+    def add_item(self, order, item):
+        if order.status != 'DRAFT':
+            raise Error()
+        order.items.append(item)
+        order.total += item.price</pre>
+                </div>
+
+                <!-- RICH -->
+                <div class="rich-box rounded-xl">
+                    <h3 class="font-bold text-green-800 mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Rich Model
+                    </h3>
+                    <p class="text-sm text-green-900 mb-4">Model encapsulates data AND rules for changing it. It protects itself.</p>
+                    <pre class="text-xs bg-green-900 text-green-100 border-none">
+class Order:
+    def add_item(self, item):
+        if self.status != 'DRAFT':
+            raise DomainError("Order is not editable")
+        self._items.append(item)
+        self._recalculate_total()
+        
+    def _recalculate_total(self):
+        self.total = sum(i.price for i in self._items)</pre>
+                </div>
+            </div>
+            
+            <p class="mt-4 font-bold text-gray-700">Why is a Rich Model better?</p>
+            <ul class="list-disc list-inside text-gray-600 mt-2 space-y-2">
+                <li><strong>Invariants are always protected.</strong> You cannot create an object in an invalid state or transition it to one.</li>
+                <li><strong>Locality of knowledge.</strong> Change rules are located next to data.</li>
+                <li><strong>Readability.</strong> Code reads like a business process description, not a set of data manipulations.</li>
+            </ul>
+        </section>
+
+        <!-- ENTITIES & VOS -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">2. Basic Building Blocks</h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-purple-600 font-black text-xs uppercase tracking-wider mb-2">Entity</div>
+                    <h3 class="text-xl font-bold mb-3">Entity</h3>
+                    <p class="text-sm text-slate-600 mb-4">An object that has a unique <strong>identity</strong> (ID) that persists throughout its lifecycle, even if its attributes change.</p>
+                    <div class="bg-slate-50 p-3 rounded text-xs font-mono text-slate-500 border border-slate-200">
+                        User(id=42, name="Alex") == User(id=42, name="Alexander")
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="text-indigo-600 font-black text-xs uppercase tracking-wider mb-2">Value Object</div>
+                    <h3 class="text-xl font-bold mb-3">Value Object</h3>
+                    <p class="text-sm text-slate-600 mb-4">An object defined by its <strong>attributes</strong>. Has no ID. Immutable. Changing an attribute means it's a new object.</p>
+                    <div class="bg-slate-50 p-3 rounded text-xs font-mono text-slate-500 border border-slate-200">
+                        Money(100, "USD") != Money(100, "EUR")
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CODE EXAMPLE (DOMAIN SERVICE) -->
+        <section class="card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">3. Domain Services</h2>
+            <p class="mb-4 text-gray-700">
+                Sometimes business operations cannot be "assigned" to any specific entity.
+                If you put this logic into an entity, it becomes bloated or knows too much about other classes (High Coupling).
+            </p>
+            
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                <h3 class="font-bold text-blue-800">Difference from Application Service:</h3>
+                <p class="text-sm text-blue-900 mt-1">
+                    🔍 <strong>Domain Service:</strong> Pure business logic (calculations, rules). Doesn't access database, doesn't send API requests. Lives in Domain Layer.<br>
+                    🛠️ <strong>Application Service:</strong> Orchestrator. Loads data from DB, calls Domain Service, saves result.
+                </p>
+            </div>
+
+            <h4 class="font-bold text-gray-900 mb-2">Example: Funds Transfer</h4>
+            <p class="mb-4 text-gray-700 text-sm">
+                A trivial <code>account_a.transfer_to(account_b)</code> forces Account A to depend on Account B. 
+                It's better to extract this interaction.
+            </p>
+
+            <pre><code class="language-python">class FundsTransferService:
+    def transfer(self, source: Account, destination: Account, amount: Money):
+        '''
+        Service doesn't save data itself! It only changes object state in memory.
+        Saving will be handled by Application Layer through UoW.
+        '''
+        
+        # 1. Check rules concerning BOTH accounts (process invariants)
+        if source.currency != destination.currency:
+            raise DomainException("Account currencies don't match")
+            
+        # 2. Execute actions
+        source.withdraw(amount)   # Inside Account checks its balance
+        destination.deposit(amount)
+        
+        # Done! Objects are changed.
+</code></pre>
+
+            <div class="mt-6 bg-gray-50 border-l-4 border-gray-300 p-4 rounded">
+                <h4 class="font-bold text-gray-900 mb-2">Why extract transfer to Domain Service?</h4>
+                <ul class="list-disc list-inside text-gray-700 mb-3">
+                    <li>Operation affects multiple aggregates and requires coordination (multiple accounts).</li>
+                    <li>Single Responsibility Principle is preserved: aggregate manages its state, service manages process between them.</li>
+                    <li>Application / UnitOfWork guarantee atomic saving (commit/rollback) and correct error handling.</li>
+                </ul>
+
+                <h5 class="font-bold mt-2 mb-2">Brief Comparison</h5>
+                <pre><code class="language-python"># Bad: method in Account hides coordination and saving
+class Account:
+    def transfer_to(self, other: 'Account', amount: Money):
+        self.withdraw(amount)
+        other.deposit(amount)
+        # Where and how to save both accounts? How to rollback on error?
+
+# Good: Domain Service + UoW coordinate changes and saving
+class FundsTransferService:
+    def transfer(self, source: Account, destination: Account, amount: Money):
+        if source.currency != destination.currency:
+            raise DomainException("Currencies don't match")
+        source.withdraw(amount)
+        destination.deposit(amount)
+
+# In Application layer:
+# with uow:
+#     source = uow.accounts.get(src_id)
+#     dest = uow.accounts.get(dest_id)
+#     svc.transfer(source, dest, amount)
+#     uow.commit()  # atomically saves both accounts
+</code></pre>
+            </div>
+        </section>
+
+        <!-- Section 4: Domain Events -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">4. Domain Events</h2>
+            <p class="mb-4 text-gray-700">
+                These are side effects of business logic. An entity should not send email or write to log itself. It should say: "This happened".
+                Events are simple DTOs.
+            </p>
+            <p class="mb-4 text-gray-700">
+                Domain events live in the aggregate's event queue. Even if, for example, `OrderPaid` can only happen once, the aggregate adds it to the event list because multiple invariants can trigger in one transaction, and the infrastructure layer must sequentially process each fact before saving.
+            </p>
+            <p class="mb-4 text-gray-700">
+                Entities don't send emails or logs, they just accumulate events. After the transaction, the Application layer or UnitOfWork iterates through this list, dispatches notifications, writes logs, and clears the queue. This keeps business logic clean, and all side effects are processed sequentially.
+            </p>
+            <pre><code class="language-python">@dataclass(frozen=True)
+class OrderPaid:  # Name in past tense
+    order_id: str
+    paid_at: datetime
+
+@dataclass(frozen=True)
+class InventoryReserved:
+    order_id: str
+    items: List[tuple]  # [(sku, qty), ...]
+
+@dataclass(frozen=True)
+class LoyaltyPointsAwarded:
+    user_id: str
+    points: int
+
+@dataclass
+class Order:
+    id: str
+    user_id: str
+    items: List[object]
+    status: str = "NEW"
+    events: List[object] = field(default_factory=list, init=False)
+
+    def pay(self):
+        # 1) change internal state
+        self.status = "PAID"
+
+        # 2) record several facts describing the operation result
+        self.events.append(OrderPaid(
+            order_id=self.id,
+            paid_at=datetime.utcnow()
+        ))
+        self.events.append(LoyaltyPointsAwarded(
+            user_id=self.user_id,
+            points=self.calculate_points()
+        ))
+
+    def collect_events(self) -> List[DomainEvent]:
+        """Returns events and clears the queue"""
+        events = self.events[:]
+        self.events.clear()
+        return events
+
+# In Application Layer or UoW:
+events = order.collect_events()
+for event in events:
+    event_bus.publish(event)  # Send to handlers
+</code></pre>
+        </section>
+        
+        <!-- RULES -->
+        <section class="bg-indigo-900 text-indigo-50 p-8 rounded-2xl">
+            <h2 class="text-2xl font-bold mb-6 text-white">Golden Domain Rules</h2>
+            <ul class="space-y-4">
+                <li class="flex items-start gap-3">
+                    <span class="text-green-400 font-bold">✓</span>
+                    <div>
+                        <strong class="text-white block">No dependencies on the identifying world</strong>
+                        <span class="text-indigo-200 text-sm">No imports from `django.models`, `sqlalchemy`, `flask`, `http`.</span>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="text-green-400 font-bold">✓</span>
+                    <div>
+                        <strong class="text-white block">Business language only</strong>
+                        <span class="text-indigo-200 text-sm">Classes are named `Order`, `Customer`, not `OrderModel`, `CustomerTable`.</span>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="text-green-400 font-bold">✓</span>
+                    <div>
+                        <strong class="text-white block">Testable without mocks</strong>
+                        <span class="text-indigo-200 text-sm">Since there are no external dependencies, unit tests are ultra-fast and simple.</span>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- NAVIGATION FOOTER -->
+        <div class="mt-24 pt-10 border-t border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <a href="dependency.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-right bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 flex justify-end">Back</span>
+                     <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">&larr; 💉 Dependency Injection</span>
+                </a>
+                <a href="application.html" class="group border border-slate-300 rounded-xl p-4 w-full md:w-1/2 hover:border-blue-500 hover:shadow-md transition text-left bg-white">
+                    <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Next</span>
+                    <span class="block text-lg font-bold text-slate-800 group-hover:text-blue-600 transition">⚙️ Application Layer &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Save sidebar scroll position
+        (function() {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            
+            const storageKey = 'sidebar_scroll_position';
+            
+            // Restore position on load
+            const savedScroll = sessionStorage.getItem(storageKey);
+            if (savedScroll !== null) {
+                sidebar.scrollTop = parseInt(savedScroll, 10);
+            }
+            
+            // Save position on scroll
+            let scrollTimeout;
+            sidebar.addEventListener('scroll', function() {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+                }, 100);
+            });
+            
+            // Save position on page unload
+            window.addEventListener('beforeunload', function() {
+                sessionStorage.setItem(storageKey, sidebar.scrollTop.toString());
+            });
+        })();
+    </script>
+</body>
